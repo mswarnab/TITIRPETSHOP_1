@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -10,16 +9,34 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Slide, Typography } from '@mui/material';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+export default function CustomerUpdate({ open, selectedDate, handleClose }) {
+  // console.log(selectedDate);
+  const [formData, setFormData] = useState({
+    customerName: '',
+    address: '',
+    id: '0',
+    mobileNo: '',
+    email: ''
   });
-
-export default function CustomerUpdate({open,handleClose}) {
-
+  let changeValue = (event) => {
+    let eventValue = event.target.value;
+    let eventName = event.target.name;
+    if (formData.id != selectedDate.id) {
+      formData.id == selectedDate.id;
+    }
+    let newData = [...formData];
+    newData[eventName] = eventValue;
+    setFormData(newData);
+  };
+  let handleUpdate = (data) => {};
   return (
     <>
       <Dialog
         open={open}
-        onClose={()=>handleClose()}
+        onClose={() => handleClose()}
         TransitionComponent={Transition}
         PaperProps={{
           component: 'form',
@@ -30,54 +47,74 @@ export default function CustomerUpdate({open,handleClose}) {
             const email = formJson.email;
             console.log(email);
             handleClose();
-          },
+          }
         }}
       >
-        <DialogTitle variant='h4' style={{padding:'40px 40px',paddingBottom:'30px'}}>Update Customer</DialogTitle>
-        <DialogContent style={{padding:'0 40px',paddingBottom:'20px'}}>
-          <DialogContentText>
-            Update Existing Customer
-          </DialogContentText>
+        <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
+          Update Customer
+        </DialogTitle>
+        <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
+          <DialogContentText>Update Existing Customer</DialogContentText>
           <TextField
             autoFocus
             required
             margin="normal"
-            id="name"
-            name="email"
+            id="customerName"
+            name="customerName"
             label="Customer Name"
-            type="email"
+            type="text"
             fullWidth
             variant="standard"
+            value={formData.customerName ? formData.customerName : selectedDate.customerName}
+            onChange={changeValue}
           />
-
-        <TextField
-            autoFocus
+          <TextField
             required
             margin="normal"
-            id="name"
-            name="email"
+            id="mobileNo"
+            name="mobileNo"
             label="Mobile No."
             type="number"
             fullWidth
             variant="standard"
+            value={formData.mobileNo ? formData.mobileNo : selectedDate.mobileNo}
+            onChange={changeValue}
           />
-        <TextField
+          <TextField
             autoFocus
             required
             margin="normal"
-            id="name"
+            id="email"
             name="email"
+            label="Email"
+            type="email"
+            fullWidth
+            variant="standard"
+            value={formData.email ? formData.email : selectedDate.email}
+            onChange={changeValue}
+          />
+          <TextField
+            autoFocus
+            required
+            margin="normal"
+            id="address"
+            name="address"
             label="Address"
-            value={""}
             type="text"
             fullWidth
             variant="standard"
+            value={formData.address ? formData.address : selectedDate.address}
+            onChange={changeValue}
           />
-          <Typography variant='h5' sx={{pt:3}}>Total Due Amount:  ₹{15299}</Typography>
+          {/* <Typography variant='h5' sx={{pt:3}}>Total Due Amount:  ₹{15299}</Typography> */}
         </DialogContent>
-        <DialogActions style={{paddingBottom:'40px',paddingRight:'40px'}}        >
-          <Button variant='contained' color='secondary' onClick={()=>handleClose()}>Cancel</Button>
-          <Button variant='contained' color='success' type="submit" success>Update</Button>
+        <DialogActions style={{ paddingBottom: '40px', paddingRight: '40px' }}>
+          <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+            Cancel
+          </Button>
+          <Button variant="contained" color="success" onClick={() => handleUpdate(formData)}>
+            Update
+          </Button>
         </DialogActions>
       </Dialog>
     </>

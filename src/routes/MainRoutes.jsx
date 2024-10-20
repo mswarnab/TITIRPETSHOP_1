@@ -3,7 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
-import ManageStock from '../pages/stock'
+import ManageStock from '../pages/stock';
 import PurchaseOrder from 'pages/purchaseOrder/AddPurchase';
 import AddSale from 'pages/sales/addSale';
 import AddCustomer from 'pages/customer/addCustomer';
@@ -26,10 +26,6 @@ const MainRoutes = {
   path: '/',
   element: <Dashboard />,
   children: [
-    {
-      path: '/stock/add',
-      element: <ManageStock />
-    },
     {
       path: '/stock/manage',
       element: <ManageStock />
@@ -55,9 +51,9 @@ const MainRoutes = {
       element: <ManageCustomer />
     },
     {
-    path: '/supplier/manage',
-    element: <ManageSupplier />
-  },
+      path: '/supplier/manage',
+      element: <ManageSupplier />
+    },
     {
       path: '/',
       element: <DashboardDefault />
