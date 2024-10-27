@@ -88,12 +88,13 @@ export default function ProductTable({
   open,
   row,
   column,
-  prodCatagoryArr,
   handleClose,
   handleClickOpen,
   handleUpdate,
   handleDelete,
-  htmlData
+  type,
+  paginationModel
+  // htmlData
 }) {
   // console.log(htmlData);
   // const [open, setOpen] = React.useState(false);
@@ -134,6 +135,9 @@ export default function ProductTable({
         onRowClick={(value) => handleClickOpen(value)}
         initialState={{ pagination: { paginationModel }, density: 'comfortable' }}
         pageSizeOptions={[5, 10]}
+        // disableRowSelectionOnClick={type == 'view' ? true : false}
+        // disableRowSelectionOnClick
+        // disableVirtualization
         sx={{ m: 2 }}
         getCellClassName={(params) => {
           return 'hot';
@@ -143,15 +147,18 @@ export default function ProductTable({
         }}
         header
       />
-      <StockUpdateView
-        open={open}
-        rowData={selectedRowData}
-        prodCatagoryArr={prodCatagoryArr}
-        handleClose={handleClose}
-        handleUpdate={handleUpdate}
-        handleDelete={handleDelete}
-        htmlData={htmlData}
-      />
+      {type == 'view' ? (
+        ''
+      ) : (
+        <StockUpdateView
+          open={open}
+          rowData={selectedRowData}
+          handleClose={handleClose}
+          handleUpdate={handleUpdate}
+          handleDelete={handleDelete}
+          // htmlData={htmlData}
+        />
+      )}
     </Box>
   );
 }

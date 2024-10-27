@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Slide, Typography } from '@mui/material';
+import { Alert, Slide, Snackbar, Typography } from '@mui/material';
 import { client } from 'api/client';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -14,39 +14,79 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function SupplierUpdate({ open, handleClose, data }) {
+  // console.log(data);
   const [supplierUpdateForm, setSupplierUpdateForm] = useState({
     supplierName: '',
     supplierAddress: '',
     supplierContactNo: '',
-    creditAmount: '',
-    _id: ''
+    gstinNumber: '',
+    totalCreditAmount: '',
+    __v: '',
+    lastPurchaseDate: '',
+    supplierEmail: ''
   });
   useEffect(() => {
-    console.log('in here');
+    // console.log('in here');
     setSupplierUpdateForm({
       ...supplierUpdateForm,
       supplierName: data.supplierName,
       supplierAddress: data.address,
       supplierContactNo: data.mobileNo,
-      creditAmount: data.totalDue,
-      _id: data._id
+      gstinNumber: data.gstinNumber,
+      totalCreditAmount: data.totalDue,
+      __v: data.__v,
+      lastPurchaseDate: data.lastPurchaseDate,
+      supplierEmail: data.supplierEmail
+      // _id: data._id
     });
   }, [data]);
+  let updateSupplier = () => {
+    let id = data._id;
+    client
+      .put('/supplier/' + id, supplierUpdateForm)
+      .then((res) => {
+        // console.log(res);
+        setError({ err: false, message: res.data.message });
+        handleClose();
+      })
+      .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+  };
+  const [error, setError] = React.useState('');
+  let handleCloseSnackBar = () => {
+    setError('');
+  };
+  let vertical = 'top';
+  let horizontal = 'center';
   return (
     <>
-      {console.log('data', data)}
+      {/* {console.log('data', data)} */}
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={error ? true : false}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackBar}
+        // action={action}
+        key={vertical + horizontal}
+      >
+        {error && (
+          <Alert severity={error && error.err ? 'error' : 'success'} variant="filled" sx={{ width: '100%' }}>
+            {error.message}
+          </Alert>
+        )}
+      </Snackbar>
+
       <Dialog
         open={open}
         onClose={() => handleClose()}
         TransitionComponent={Transition}
         PaperProps={{
-          component: 'form',
-          onSubmit: async (event) => {
-            event.preventDefault();
-            console.log(supplierUpdateForm);
-            client.put(`/supplier/${supplierUpdateForm._id}`, supplierUpdateForm).then((res) => console.log(res));
-            handleClose();
-          }
+          component: 'form'
+          // onSubmit: async (event) => {
+          //   event.preventDefault();
+          //   console.log(supplierUpdateForm);
+          //   client.put(`/supplier/${supplierUpdateForm._id}`, supplierUpdateForm).then((res) => console.log(res));
+          //   handleClose();
+          // }
         }}
       >
         <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
@@ -69,7 +109,6 @@ export default function SupplierUpdate({ open, handleClose, data }) {
           />
 
           <TextField
-            autoFocus
             required
             margin="normal"
             id="name"
@@ -82,7 +121,6 @@ export default function SupplierUpdate({ open, handleClose, data }) {
             variant="standard"
           />
           <TextField
-            autoFocus
             required
             margin="normal"
             id="name"
@@ -94,15 +132,27 @@ export default function SupplierUpdate({ open, handleClose, data }) {
             fullWidth
             variant="standard"
           />
+          <TextField
+            required
+            margin="normal"
+            id="name"
+            name="gstinNumber"
+            label="GSTIN"
+            onChange={(e) => setSupplierUpdateForm({ ...supplierUpdateForm, gstinNumber: e.target.value })}
+            value={supplierUpdateForm.gstinNumber}
+            type="text"
+            fullWidth
+            variant="standard"
+          />
           <Typography variant="h5" sx={{ pt: 3 }}>
-            Total Due Amount: ₹{supplierUpdateForm.creditAmount}
+            Total Due Amount: ₹{data.creditAmount}
           </Typography>
         </DialogContent>
         <DialogActions style={{ paddingBottom: '40px', paddingRight: '40px' }}>
           <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
-          <Button variant="contained" color="success" type="submit" success>
+          <Button variant="contained" color="success" onClick={() => updateSupplier()}>
             Update
           </Button>
         </DialogActions>

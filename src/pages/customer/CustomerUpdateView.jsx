@@ -75,9 +75,9 @@ const data = {
     totalSuppliers: 6
   }
 };
-let id = 0;
-function createData(customerName, mobileNo, address, totalDue, custId) {
-  id = id + 1;
+// let id = 0;
+function createData(id, customerName, mobileNo, address, totalDue, custId) {
+  // id = id + 1;
   return { id, customerName, mobileNo, address, totalDue, custId };
 }
 
@@ -97,24 +97,6 @@ export default function ManageCustomer() {
   const handleClose = () => {
     setOpen(false);
   };
-  // const rows = [
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999, 100),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999),
-  //   createData('Swarnab Majumder', 8250857676, 'Kolkata North Natagarh', 'abc@xyz.com', 15999)
-  // ];
 
   const columns = [
     { field: 'id', headerName: 'Sl No.', width: 100, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
@@ -160,12 +142,15 @@ export default function ManageCustomer() {
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
-        setPaginationCount(Math.ceil(count / pageSize));
+        let pagiCount = Math.ceil(count / pageSize);
+        setPaginationCount(pagiCount);
         let newData = [];
         let result = [...res.data.result.result];
         // console.log(result);
+        let id = parseInt(parseInt(page * 20) + 1);
         result.map((value) => {
           let createdData = createData(
+            id,
             value.customerName,
             value.customerContactNo,
             value.customerAddress,
@@ -174,6 +159,7 @@ export default function ManageCustomer() {
           );
           // console;
           newData = [...newData, createdData];
+          id = parseInt(id) + 1;
         });
         setRows(newData);
       })

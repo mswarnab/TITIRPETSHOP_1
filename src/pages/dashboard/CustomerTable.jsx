@@ -49,6 +49,7 @@ export default function CustomerTable({
         // pageSizeOptions={[paginationModel.pageSize]}
         // paginationModel={paginationModel}
         // hideFooterSelectedRowCount
+        hideFooterPagination
         sx={{ m: 2 }}
         getCellClassName={(params) => {
           return 'hot';
@@ -59,7 +60,7 @@ export default function CustomerTable({
         header
         onPaginationModelChange={pageChange}
       />
-      <Stack spacing={2} justifyContent="center" alignItems="end">
+      <Stack justifyContent="center" alignItems="end" marginBottom={3}>
         <Pagination count={paginationCount} color="primary" onChange={(event, page) => pageChange(page)} />
       </Stack>
       <CustomerUpdate open={open} selectedDate={selectedDate} handleClose={handleClose} />

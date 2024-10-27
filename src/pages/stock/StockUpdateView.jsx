@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -6,24 +6,27 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Divider, MenuItem, Select, Slide, Stack } from '@mui/material';
+import { Autocomplete, Divider, MenuItem, Select, Slide, Stack } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { date } from 'yup';
+import { client } from 'api/client';
+import { prodCatagoryArr, gstPercArr } from 'static';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function StockUpdateView({ open, rowData, prodCatagoryArr, handleClose, handleUpdate, handleDelete }) {
-  console.log(rowData);
+export default function StockUpdateView({ open, rowData, handleClose, handleUpdate, handleDelete, viewType }) {
+  // console.log(rowData);
   const [formData, setFormDate] = useState({
     id: 0,
     name: '',
     catagory: '',
     batch: '',
     hsn: '',
+    mfr: '',
     qty: '',
     mrp: '',
     sgstperc: '',
@@ -33,10 +36,28 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
     totalPrice: '',
     totalPriceWithGst: ''
   });
+  useEffect(() => {
+    setFormDate({
+      id: rowData.id,
+      name: rowData.productName,
+      catagory: rowData.productCategory,
+      batch: rowData.batch,
+      hsn: rowData.hsn,
+      mfr: rowData.mfr,
+      qty: rowData.qty,
+      mrp: rowData.mrp,
+      sgstperc: rowData.sgstPerc,
+      cgstPerc: rowData.cgstPerc,
+      expDate: rowData.expDate,
+      prodPurchasePrice: rowData.purchaseRate,
+      totalPrice: rowData.amount,
+      totalPriceWithGst: rowData.amountWithgst
+    });
+  }, [rowData]);
   let changeDataOnClick = (event) => {
     let objName = event.target.name;
     let objValue = event.target.value;
-    console.log(event.target);
+    // console.log(event.target);
     let oldData = { ...formData };
     if (oldData['id'] == '') {
       oldData['id'] = rowData.id;
@@ -122,7 +143,50 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
     oldData['expDate'] = yy + '-' + mm + '-' + dd;
     setFormDate(oldData);
   };
-  console.log(formData);
+  // console.log(formData);
+  const [prodSearch, setProdSearch] = useState([]);
+  const [prodNameParm, setProdNameParm] = useState('');
+  // useEffect(()=>{
+  //   setProdNameParm(row);
+  // },[rowData]);
+  useEffect(() => {
+    // console.log('hi');
+    const getDate = setTimeout(() => {
+      let strProdNameLength = prodNameParm.length;
+      // console.log('hello : ' + strProdNameLength);
+      if (strProdNameLength >= 3) {
+        client
+          .get('/stock/search', {
+            params: { pattern: prodNameParm }
+          })
+          .then((res) => {
+            let top100Films = [];
+            let dataResultArr = res.data.result.result;
+            dataResultArr.forEach((element) => {
+              // console.log(element.supplierName);
+              top100Films = [
+                ...top100Films,
+                {
+                  productName: element.productName
+                }
+              ];
+            });
+            setProdSearch(top100Films);
+          })
+          .catch();
+      }
+    }, 300);
+    return () => clearTimeout(getDate);
+  }, [prodNameParm]);
+  // console.log(prodNameParm);
+  let autoChangeName = (v) => {
+    let oldData = { ...formData };
+    if (oldData['id'] != rowData.id) {
+      oldData['id'] = rowData.id;
+    }
+    oldData['name'] = v;
+    setFormDate(oldData);
+  };
   return (
     <>
       <Dialog
@@ -148,7 +212,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
           <Divider style={{ margin: '20px 0px 20px 0px' }}></Divider>
           {/* <DefaultFields rowData={rowData} setStockData={setStockData}/> */}
           <Stack spacing={2}>
-            <TextField
+            {/* <TextField
               autoFocus
               required
               margin="normal"
@@ -160,11 +224,11 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               variant="outlined"
               value={formData.name != '' ? formData.name : rowData.productName}
               onChange={changeDataOnClick}
-            />
+            /> */}
             <Select
               labelId="sgstLavel"
               id="catagory"
-              value={formData.catagory != '' ? formData.catagory : rowData.productCategory}
+              value={formData.catagory}
               displayEmpty
               name="catagory"
               onChange={changeDataOnClick}
@@ -178,6 +242,45 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
                 <MenuItem value={e}>{e}</MenuItem>
               ))}
             </Select>
+            <Autocomplete
+              id="free-solo-demo"
+              freeSolo
+              required
+              options={prodSearch.map((option) => option.productName)}
+              value={formData.name}
+              name="name"
+              disableClearable="true"
+              size="small"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Product Name"
+                  variant="outlined"
+                  fullWidth
+                  autoComplete="off"
+                  name="name"
+                  // style={{ paddingTop: '0px' }}
+                  onChange={changeDataOnClick}
+                  onKeyUp={(event) => setProdNameParm(event.target.value)}
+                />
+              )}
+              onChange={(event, value) => {
+                // setSupplierName(value);
+                autoChangeName(value);
+              }}
+            />
+
+            <TextField
+              margin="normal"
+              id="prodBatch"
+              name="mfr"
+              label="Mfr"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={formData.mfr}
+              onChange={changeDataOnClick}
+            />
             <TextField
               required
               margin="normal"
@@ -187,7 +290,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               type="text"
               fullWidth
               variant="outlined"
-              value={formData.batch != '' ? formData.batch : rowData.batch}
+              value={formData.batch}
               onChange={changeDataOnClick}
             />
             <TextField
@@ -199,7 +302,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               type="text"
               fullWidth
               variant="outlined"
-              value={formData.hsn != '' ? formData.hsn : rowData.hsn}
+              value={formData.hsn}
               onChange={changeDataOnClick}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -207,7 +310,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
                 label="Exp. Date"
                 fullWidth
                 views={['year', 'month']}
-                defaultValue={dayjs(formData.expDate != '' ? formData.expDate : rowData.expDate)}
+                defaultValue={dayjs(formData.expDate)}
                 name="expDate"
                 onChange={(date) => setExpDateFunction(date)}
               />
@@ -221,7 +324,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               type="number"
               fullWidth
               variant="outlined"
-              value={formData.qty != '' ? formData.qty : rowData.qty}
+              value={formData.qty}
               onChange={changeDataOnClick}
             />
             <TextField
@@ -233,7 +336,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               type="number"
               fullWidth
               variant="outlined"
-              value={formData.prodPurchasePrice > '0' ? formData.prodPurchasePrice : rowData.purchaseRate}
+              value={formData.prodPurchasePrice}
               onChange={changeDataOnClick}
             />
 
@@ -246,7 +349,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               type="number"
               fullWidth
               variant="outlined"
-              value={formData.mrp > '0' ? formData.mrp : rowData.mrp}
+              value={formData.mrp}
               onChange={changeDataOnClick}
             />
             <TextField
@@ -265,7 +368,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
-              value={formData.sgstperc != '' ? formData.sgstperc : rowData.sgstPerc}
+              value={formData.sgstperc}
               displayEmpty
               name="sgstperc"
               onChange={changeDataOnClick}
@@ -275,15 +378,18 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               <MenuItem value="" disabled>
                 <em>Select SGST</em>
               </MenuItem>
-              <MenuItem value={0}>SGST 0%</MenuItem>
+              {gstPercArr.map((gstv) => (
+                <MenuItem value={gstv}>SGST {gstv}%</MenuItem>
+              ))}
+              {/* <MenuItem value={0}>SGST 0%</MenuItem>
               <MenuItem value={5}>SGST 5%</MenuItem>
               <MenuItem value={12}>SGST 12%</MenuItem>
-              <MenuItem value={18}>SGST 18%</MenuItem>
+              <MenuItem value={18}>SGST 18%</MenuItem> */}
             </Select>
             <Select
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
-              value={formData.cgstPerc != '' ? formData.cgstPerc : rowData.cgstPerc}
+              value={formData.cgstPerc}
               displayEmpty
               name="cgstPerc"
               onChange={changeDataOnClick}
@@ -293,10 +399,13 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               <MenuItem value="" disabled>
                 <em>Select CGST</em>
               </MenuItem>
-              <MenuItem value={0}>CGST 0%</MenuItem>
+              {gstPercArr.map((gstv) => (
+                <MenuItem value={gstv}>CGST {gstv}%</MenuItem>
+              ))}
+              {/* <MenuItem value={0}>CGST 0%</MenuItem>
               <MenuItem value={5}>CGST 5%</MenuItem>
               <MenuItem value={12}>CGST 12%</MenuItem>
-              <MenuItem value={18}>CGST 18%</MenuItem>
+              <MenuItem value={18}>CGST 18%</MenuItem> */}
             </Select>
             <TextField
               required
@@ -307,7 +416,7 @@ export default function StockUpdateView({ open, rowData, prodCatagoryArr, handle
               type="number"
               fullWidth
               variant="outlined"
-              value={formData.totalPriceWithGst > '0' ? formData.totalPriceWithGst : rowData.amountWithgst}
+              value={formData.totalPriceWithGst}
               disabled
             />
           </Stack>

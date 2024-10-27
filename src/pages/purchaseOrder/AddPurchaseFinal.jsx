@@ -17,7 +17,12 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
   Slide,
   Snackbar,
@@ -26,7 +31,7 @@ import {
   Typography
 } from '@mui/material';
 import { client } from '../../api/client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -36,15 +41,14 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import ProductTable from 'pages/dashboard/ProductTable';
 import dayjs from 'dayjs';
 import { title } from 'process';
+import { padding } from '@mui/system';
+import { prodCatagoryArr, gstPercArr } from 'static';
+import LottieAnimation from 'components/loaderDog';
 
 // import './Css/AddPurchase.css'
 // import AddStockDiv from '../relationComponents/AddStockDiv';
 
 export default function AddPurchase() {
-  const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
-
   // dayjs.tz.setDefault("Asia/Kolkata");
   let today = new Date();
   let dd = String(today.getDate()).padStart(2, '0');
@@ -52,11 +56,11 @@ export default function AddPurchase() {
   let yyyy = today.getFullYear();
   // today = dd + '/' + mm + '/' + yyyy;
   today = yyyy + '-' + mm + '-' + dd;
-  const prodCatagoryArr = ['DOGFOOD', 'MEDICINE', 'ACCESSORIES'];
+  // const prodCatagoryArr = ['FOOD', 'MEDICINE', 'ACCESSORIES'];
   const [orderNumber, setOrderNumber] = React.useState('');
   const [supplierName, setSupplierName] = React.useState('');
-  const [supplierId, setSupplierId] = React.useState('67119658f41338f8c392f72b');
-  const [purchaseDate, setPurchaseDate] = React.useState(null);
+  const [supplierId, setSupplierId] = React.useState('');
+  const [purchaseDate, setPurchaseDate] = React.useState('');
   const [totalSGSTAmount, setTotalSGSTAmount] = React.useState(0);
   const [totalCGSTAmount, setTotalCGSTAmount] = React.useState(0);
   const [totalAmount, setTotalAmount] = React.useState(0);
@@ -72,6 +76,7 @@ export default function AddPurchase() {
   const [open, setOpen] = React.useState(false);
   const [prodTotalPrice, setProdTotalPrice] = React.useState('');
   const [prodTotalPriceWithGST, setProdTotalPriceWithGST] = React.useState('');
+  const [modeOfPayment, setModeofPayment] = useState('');
   const [stockData, setStockData] = React.useState([
     // {
     //   prodName: 'abc',
@@ -111,6 +116,7 @@ export default function AddPurchase() {
   const [prodMrpPrice, setProdMrpPrice] = React.useState('');
   const [emptyProdNameCheck, setEmptyProdNameCheck] = React.useState('');
   const [emptyProdCategoryCheck, setEmptyProdCategoryCheck] = React.useState('');
+  const [prodMfr, setProdMfr] = useState('');
   // const [emptyProdExpDateCheck,setEmptyProdExpDateCheck]=React.useState('');
   const [emptyProdQtyCheck, setEmptyProdQtyCheck] = React.useState('');
   const [emptyProdPurchasePriceCheck, setEmptyProdPurchasePriceCheck] = React.useState('');
@@ -251,14 +257,15 @@ export default function AddPurchase() {
         newCreditAmount = 0;
       }
       setCreditAmount(newCreditAmount);
-      setTotalSGSTAmount((prodTotalPrice * (sgstPerc / 100)).toFixed(2));
-      setTotalCGSTAmount((prodTotalPrice * (cgstPerc / 100)).toFixed(2));
+      // setTotalSGSTAmount(parseFloat(totalSGSTAmount + (prodTotalPrice * (sgstPerc / 100)).toFixed(2)));
+      // setTotalCGSTAmount(parseFloat(totalCGSTAmount + (prodTotalPrice * (cgstPerc / 100)).toFixed(2)));
       const newDataForm = {
         prodName: prodName,
         prodQty: prodQty,
         prodCatagory: prodCatagory,
         prodPurcahsePrice: prodPurcahsePrice,
         prodMrpPrice: prodMrpPrice,
+        prodMfr: prodMfr,
         prodBatch: prodBatch,
         prodSGST: sgstPerc,
         prodCGST: cgstPerc,
@@ -273,7 +280,7 @@ export default function AddPurchase() {
       setProdCatagory('');
       setProdPurcahsePrice('');
       setProdMrpPrice('');
-
+      setProdMfr('');
       setSgstPerc('');
       setCgstPerc('');
       setProdBatch('');
@@ -290,6 +297,16 @@ export default function AddPurchase() {
       setEmptyProdMrpCheck('');
     }
   };
+  useEffect(() => {
+    let totSgstAmount = 0;
+    let totCgstAmount = 0;
+    stockData.map((e) => {
+      totSgstAmount = parseFloat(totCgstAmount + parseFloat(e.prodAmountWithoutGst * (e.prodSGST / 100)).toFixed(2));
+      totCgstAmount = parseFloat(totCgstAmount + parseFloat(e.prodAmountWithoutGst * (e.prodCGST / 100)).toFixed(2));
+    });
+    setTotalSGSTAmount(totSgstAmount);
+    setTotalCGSTAmount(totCgstAmount);
+  }, [stockData]);
   // let orderNumberOnchange=(e)=>{
   //   const result = e.target.value.replace(/\D/g, '');
 
@@ -310,6 +327,11 @@ export default function AddPurchase() {
       headerName: 'Product Categroy',
       width: 150,
       editable: true
+    },
+    {
+      field: 'mfr',
+      headerName: 'Mfr',
+      width: 160
     },
     {
       field: 'batch',
@@ -390,6 +412,7 @@ export default function AddPurchase() {
       id: count,
       productName: rowValues.prodName,
       productCategory: rowValues.prodCatagory,
+      mfr: rowValues.prodMfr,
       batch: rowValues.prodBatch,
       expDate: mmmm + ' ,' + yy,
       hsn: rowValues.prodHsn,
@@ -420,6 +443,7 @@ export default function AddPurchase() {
     let yy = newDate.getFullYear();
     setPurchaseDate(yy + '-' + mm + '-' + dd);
   };
+  // console.log(stockData);
   let setExpDateFunction = (date) => {
     let newDate = new Date(date);
     // console.log(newDate);
@@ -446,12 +470,17 @@ export default function AddPurchase() {
     }
     setCreditAmount(newCreditAmount);
   };
-  let htmlDataStockView = '<p>hello</p>';
   let handleDelete = (e) => {
     e = e - 1;
     // alert('hello');
     if (e >= 0) {
       setStockData((l) => l.filter((item, i) => i != e));
+    }
+    if (stockData?.length == 1) {
+      setTotalSGSTAmount(0);
+      setTotalCGSTAmount(0);
+      setTotalAmount(0);
+      setCreditAmount(0);
     }
     handleCloseUpdate();
   };
@@ -467,7 +496,7 @@ export default function AddPurchase() {
     setOpenUpdate(true);
   };
   let handleUpdate = (formData) => {
-    console.log(formData);
+    // console.log(formData);
     let findId = formData.id - 1;
 
     if (findId >= 0) {
@@ -476,6 +505,7 @@ export default function AddPurchase() {
       let qty = newData[findId].prodQty;
       let catagory = newData[findId]['prodCatagory'];
       let prodPurchasePrice = newData[findId]['prodPurcahsePrice'];
+      let mfr = newData[findId]['prodMfr'];
       let mrp = newData[findId]['prodMrpPrice'];
       let batch = newData[findId]['prodBatch'];
       let sgstperc = newData[findId]['prodSGST'];
@@ -486,6 +516,9 @@ export default function AddPurchase() {
       let totalPriceWithGst = newData[findId]['prodAmountWithGst'];
       if (formData.name != '') {
         name = formData.name;
+      }
+      if (formData.mfr != '') {
+        mfr = formData.mfr;
       }
       if (formData.qty != '') {
         qty = formData.qty;
@@ -536,6 +569,7 @@ export default function AddPurchase() {
         prodQty: qty,
         prodCatagory: catagory,
         prodPurcahsePrice: prodPurchasePrice,
+        prodMfr: mfr,
         prodMrpPrice: mrp,
         prodBatch: batch,
         prodSGST: sgstperc,
@@ -552,46 +586,80 @@ export default function AddPurchase() {
     handleCloseUpdate();
     // setStockData(newData);
   };
+  let onloader = () => {
+    setLoading(true);
+  };
 
   let submitPurchaseOrder = () => {
+    /// Check mand values
+    let flag = 1;
+    if (orderNumber == '') {
+      flag = 0;
+      setError({ err: true, message: 'Error: Enter Invoice No.' });
+    } else if (supplierId == '') {
+      flag = 0;
+      setError({ err: true, message: 'Error: Select valid supplier name.' });
+    } else if (purchaseDate == '') {
+      flag = 0;
+      setError({ err: true, message: 'Error: Pick a purchase date.' });
+    } else if (stockData?.length == 0) {
+      flag = 0;
+      setError({ err: true, message: 'Error: Add atleast one product.' });
+    } else if (modeOfPayment == '') {
+      flag = 0;
+      setError({ err: true, message: 'Error: Choose payment mode.' });
+    }
     // alert('hi');
-    let stockBody = [];
-    stockData.forEach((e) => {
-      stockBody = [
-        ...stockBody,
-        {
-          productName: e.prodName,
-          category: e.prodCatagory,
-          supplierName: supplierName,
-          mfgDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
-          expDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
-          quantity: e.prodQty,
-          rate: e.prodPurcahsePrice,
-          sgst: parseInt((e.prodPurcahsePrice * parseFloat(e.prodSGST)) / 100),
-          cgst: parseInt((e.prodPurcahsePrice * parseFloat(e.prodCGST)) / 100),
-          mrp: e.prodMrpPrice,
-          batchNumber: e.prodBatch,
-          discount: '0'
-        }
-      ];
-    });
-    const purchaseOrderBody = {
-      invoiceNumber: orderNumber,
-      supplierId: supplierId,
-      dateOfPruchase: dayjs(purchaseDate).format('YYYYMMDD'),
-      paidAmount: paidAmount,
-      dueDate: '20241231',
-      addLessAmount: 'NA',
-      crDrNote: 'NA'
-    };
-    // let baseURL = 'popo-backend-1.onrender.com';
-    client
-      .post('/purchaseorder', {
-        purchaseOrderBody,
-        stockBody
-      })
-      .then((res) => setError({ err: false, message: res.data.message }))
-      .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+    if (flag) {
+      let stockBody = [];
+      stockData.forEach((e) => {
+        let splitSupplierName = supplierName.split('--');
+        stockBody = [
+          ...stockBody,
+          {
+            productName: e.prodName,
+            category: e.prodCatagory,
+            supplierName: splitSupplierName[0],
+            mfrCode: e.prodMfr,
+            hsnCode: e.prodHsn,
+            mfgDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
+            expDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
+            quantity: e.prodQty,
+            supplierId: supplierId,
+            rate: e.prodPurcahsePrice,
+            sgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodSGST)) / 100).toFixed(2),
+            cgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodCGST)) / 100).toFixed(2),
+            mrp: e.prodMrpPrice,
+            batchNumber: e.prodBatch,
+            discount: '0'
+          }
+        ];
+      });
+      const purchaseOrderBody = {
+        invoiceNumber: orderNumber,
+        supplierId: supplierId,
+        dateOfPruchase: dayjs(purchaseDate).format('YYYYMMDD'),
+        paidAmount: paidAmount,
+        modeOfPayment,
+        dueDate: '20241231',
+        addLessAmount: 'NA',
+        crDrNote: 'NA'
+      };
+      // let baseURL = 'popo-backend-1.onrender.com';
+      client
+        .post('/purchaseorder', {
+          purchaseOrderBody,
+          stockBody
+        })
+        .then((res) => {
+          setError({ err: false, message: res.data.message });
+          setLoading(true);
+        })
+        .catch((err) => {
+          setError({ err: true, message: err.response.data.errorMessage });
+          setLoading(true);
+        });
+    }
   };
   const [error, setError] = React.useState('');
   let handleCloseSnackBar = () => {
@@ -600,51 +668,110 @@ export default function AddPurchase() {
   let vertical = 'top';
   let horizontal = 'center';
   let [supplierSearch, setSupplierSearch] = React.useState([]);
-  let fetchSupplier = () => {
-    let strLength = supplierName.length;
-
-    if (strLength >= 3) {
-      // alert(strLength);
-      client
-        .get('/supplier/search', {
-          params: { pattern: supplierName }
-        })
-        .then((res) => {
-          // console.log(res.data.result.result)
-          // setSupplierSearch([]);
-          let top100Films = [];
-          let dataResultArr = res.data.result.result;
-          dataResultArr.forEach((element) => {
-            console.log(element.supplierName);
-            top100Films = [
-              ...top100Films,
-              {
-                supplierName: element.supplierName,
-                supplierContactNo: element.supplierContactNo,
-                id: element._id
-              }
-            ];
-          });
-          if (!top100Films.length) {
-            top100Films = [
+  const [supplierSearchParm, setSupplierSearchParm] = useState('');
+  useEffect(() => {
+    const getData = setTimeout(() => {
+      // console.log(supplierName);
+      let strLength = supplierName.length;
+      // console.log(strLength);
+      if (strLength >= 3) {
+        // alert(strLength);
+        client
+          .get('/supplier/search', {
+            params: { pattern: supplierName }
+          })
+          .then((res) => {
+            // console.log(res.data.result.result)
+            // setSupplierSearch([]);
+            let top100Films = [];
+            let dataResultArr = res.data.result.result;
+            dataResultArr.forEach((element) => {
+              // console.log(element.supplierName);
+              top100Films = [
+                ...top100Films,
+                {
+                  supplierName: element.supplierName,
+                  supplierContactNo: element.supplierContactNo,
+                  id: element._id
+                }
+              ];
+            });
+            if (!top100Films.length) {
+              top100Films = [
+                {
+                  supplierName: 'NO DATA FOUND'
+                }
+              ];
+            }
+            setSupplierSearch(top100Films);
+          })
+          .catch(() => {
+            let top100Films = [
               {
                 supplierName: 'NO DATA FOUND'
               }
             ];
-          }
-          setSupplierSearch(top100Films);
-        })
-        .catch(() => {
-          let top100Films = [
-            {
-              supplierName: 'NO DATA FOUND'
-            }
-          ];
-          setSupplierSearch(top100Films);
-        });
-    }
+            setSupplierSearch(top100Films);
+          });
+      }
+    }, 300);
+    return () => clearTimeout(getData);
+  }, [supplierSearchParm]);
+  let [productSearch, setProductSearch] = useState([]);
+  const [productSearchParm, setProductSearchParm] = useState('');
+  // console.log('prod : ' + prodName);
+  useEffect(() => {
+    const getData = setTimeout(() => {
+      // console.log(supplierName);
+      let strLength = prodName.length;
+      // console.log(strLength);
+      if (strLength >= 3) {
+        // alert(strLength);
+        client
+          .get('/stock/search', {
+            params: { pattern: productSearchParm }
+          })
+          .then((res) => {
+            // console.log(res.data.result.result)
+            // setSupplierSearch([]);
+            let top100Films = [];
+            let dataResultArr = res.data.result.result;
+            dataResultArr.forEach((element) => {
+              // console.log(element.supplierName);
+              top100Films = [
+                ...top100Films,
+                {
+                  productName: element.productName
+                }
+              ];
+            });
+            setProductSearch(top100Films);
+          })
+          .catch(() => {});
+      }
+    }, 300);
+    return () => clearTimeout(getData);
+  }, [productSearchParm]);
+  let changeSupplierId = (e) => {
+    //console.log(supplierSearch);
+    let name = e;
+    // console.log(name);
+    let split_name = name.split('--');
+    //console.log(split_name);
+    let supName = split_name[0];
+    let phNo = split_name[1];
+    //console.log(name + '----' + supName + '----' + phNo);
+    supplierSearch.forEach((value) => {
+      if (value.supplierName == supName && value.supplierContactNo == phNo) {
+        setSupplierId(value.id);
+      }
+    });
   };
-  console.log(supplierSearch);
+  const [loading, setLoading] = useState(false);
+  // console.log(rows);
+  if (loading) {
+    return <LottieAnimation />;
+  }
   return (
     <Container style={{ padding: 0, margin: 0 }}>
       {/* <h3 className='ColorPrimary'>Purchase Order</h3> */}
@@ -670,7 +797,7 @@ export default function AddPurchase() {
       <Stack spacing={2} marginTop={3} marginBottom={3}>
         <TextField
           id="outlined-basic"
-          label="Order Number"
+          label="Invoice No."
           variant="outlined"
           fullWidth
           autoComplete="off"
@@ -678,23 +805,14 @@ export default function AddPurchase() {
           onChange={(event) => setOrderNumber(event.target.value)}
         />
 
-        <TextField
-          id="outlined-basic"
-          label="Supplier Name"
-          variant="outlined"
-          fullWidth
-          autoComplete="off"
-          value={supplierName}
-          onChange={(event) => {
-            // fetchSupplier();
-            setSupplierName(event.target.value);
-          }}
-        />
         <Autocomplete
           id="free-solo-demo"
           freeSolo
-          options={supplierSearch.map((option) => option.supplierName)}
+          options={supplierSearch.map((option) => option.supplierName + '--' + option.supplierContactNo)}
           value={supplierName}
+          name="supplier"
+          disableClearable="true"
+          size="small"
           renderInput={(params) => (
             <TextField
               {...params}
@@ -703,11 +821,17 @@ export default function AddPurchase() {
               fullWidth
               autoComplete="off"
               onChange={(event) => {
-                fetchSupplier();
+                //console.log('name : ' + value);
                 setSupplierName(event.target.value);
               }}
+              onKeyUp={(event) => setSupplierSearchParm(event.target.value)}
             />
           )}
+          onChange={(event, value) => {
+            //console.log('name : ' + value);
+            setSupplierName(value);
+            changeSupplierId(value);
+          }}
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -717,26 +841,7 @@ export default function AddPurchase() {
             selected={purchaseDate}
             onChange={(date) => setPurchaseDateFunction(date)}
           />
-          {/*  */}
         </LocalizationProvider>
-        <TextField
-          id="outlined-basic"
-          label="Total SGST Amount"
-          variant="outlined"
-          fullWidth
-          value={totalSGSTAmount}
-          aria-readonly="true"
-        />
-        <TextField
-          id="outlined-basic"
-          label="Total CGST Amount"
-          variant="outlined"
-          fullWidth
-          value={totalCGSTAmount}
-          aria-readonly="true"
-        />
-        <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} aria-readonly="true" />
-
         <TextField
           id="outlined-basic"
           label="Paid Amount"
@@ -746,49 +851,62 @@ export default function AddPurchase() {
           value={paidAmount}
           onChange={(event) => changePaidAmount(event)}
         />
+        {/*  */}
 
-        <TextField id="outlined-basic" label="Credit Amount" variant="outlined" fullWidth value={creditAmount} aria-readonly="true" />
+        <FormControl>
+          <FormLabel id="demo-row-radio-buttons-group-label">Payment Mode</FormLabel>
+          <RadioGroup row aria-labelledby="demo-row-radio-buttons-group-label" name="row-radio-buttons-group" value={modeOfPayment}>
+            <FormControlLabel
+              value="CARD"
+              control={<Radio size="small" />}
+              label="CARD"
+              onClick={(event) => setModeofPayment(event.target.value)}
+            />
+            <FormControlLabel
+              value="CASH"
+              control={<Radio size="small" />}
+              label="CASH"
+              onClick={(event) => setModeofPayment(event.target.value)}
+            />
+            <FormControlLabel
+              value="ONLINE"
+              control={<Radio size="small" />}
+              label="ONLINE"
+              onClick={(event) => setModeofPayment(event.target.value)}
+            />
+          </RadioGroup>
+        </FormControl>
+        <TextField id="outlined-basic" label="Total SGST Amount" variant="outlined" fullWidth value={totalSGSTAmount} disabled />
+        <TextField id="outlined-basic" label="Total CGST Amount" variant="outlined" fullWidth value={totalCGSTAmount} disabled />
+        <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} disabled />
 
-        {/* <TextField id="outlined-basic" label="Order Number" variant="outlined" fullWidth/> */}
+        <TextField id="outlined-basic" label="Credit Amount" variant="outlined" fullWidth value={creditAmount} disabled />
       </Stack>
-      {/* <Divider ></Divider> */}
       <Stack direction="row" spacing={2}>
         <Button variant="contained" color="secondary" onClick={handleClickOpen} marginTop={3} style={{ width: '50%' }}>
           Add Stock
         </Button>
-        <Button variant="contained" color="secondary" marginTop={3} style={{ width: '50%' }} onClick={submitPurchaseOrder}>
+        <Button
+          variant="contained"
+          color="secondary"
+          marginTop={3}
+          style={{ width: '50%' }}
+          onClick={() => {
+            onloader();
+            submitPurchaseOrder();
+          }}
+        >
           Submit
         </Button>
       </Stack>
-
       <Dialog open={open} fullWidth maxWidth="lg">
-        {/* <DialogTitle>
-          </DialogTitle> */}
-        <Container>
-          <DialogContent>
-            {/* <DialogTitle variant='h4' style={{padding:'40px 40px',paddingBottom:'30px'}}>Update Stock</DialogTitle> */}
-            <DialogContentText>
-              {/* <Typography variant='h4' style={{ paddingBottom:"10px"}} color="primary">Add Stock</Typography> */}
-            </DialogContentText>
-          </DialogContent>
-          {/* <AddStockDiv data={{prodName,prodQty,prodCatagory,prodMrpPrice,prodPurcahsePrice}}/> */}
-          <Stack spacing={2}>
-            <Typography variant="h4" style={{ paddingBottom: '10px' }} color="primary">
-              Add Stock
-            </Typography>
-            <TextField
-              id="outlined-basic"
-              error={emptyProdNameCheck}
-              helperText={emptyProdNameCheck ? emptyProdNameCheck : ''}
-              label="Product Name"
-              variant="outlined"
-              autoComplete="off"
-              name="prodName"
-              value={prodName}
-              onChange={(event) => setProdName(event.target.value)}
-              onClick={() => setEmptyProdNameCheck('')}
-            ></TextField>
+        <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
+          Add Stock
+        </DialogTitle>
 
+        <DialogContent>
+          <DialogContentText></DialogContentText>
+          <Stack spacing={2}>
             <Select
               labelId="sgstLavel"
               id="prodCat"
@@ -811,6 +929,44 @@ export default function AddPurchase() {
               <MenuItem value={12}>SGST 12%</MenuItem>
               <MenuItem value={18}>SGST 18%</MenuItem> */}
             </Select>
+            <Autocomplete
+              id="free-solo-demo"
+              freeSolo
+              options={productSearch.map((option) => option.productName)}
+              value={prodName}
+              name="prodName"
+              disableClearable="true"
+              size="small"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Product Name"
+                  variant="outlined"
+                  fullWidth
+                  autoComplete="off"
+                  onChange={(event) => {
+                    setProdName(event.target.value);
+                  }}
+                  onKeyUp={(event) => setProductSearchParm(event.target.value)}
+                />
+              )}
+              onChange={(event, value) => {
+                setProdName(value);
+              }}
+            />
+
+            <TextField
+              id="outlined-basic"
+              label="Mfr"
+              variant="outlined"
+              fullWidth
+              autoComplete="off"
+              value={prodMfr}
+              onChange={(event) => {
+                // fetchSupplier();
+                setProdMfr(event.target.value);
+              }}
+            />
             <TextField
               id="outlined-basic"
               label="Batch"
@@ -835,6 +991,8 @@ export default function AddPurchase() {
                 fullWidth
                 views={['year', 'month']}
                 name="expDate"
+                value={dayjs(prodExpDate)}
+                // defaultValue={}
                 onChange={(date) => setExpDateFunction(date)}
               />
             </LocalizationProvider>
@@ -842,7 +1000,7 @@ export default function AddPurchase() {
               id="outlined-basic"
               error={emptyProdQtyCheck}
               helperText={emptyProdQtyCheck ? emptyProdQtyCheck : ''}
-              type="number"
+              type="text"
               label="Quantity"
               variant="outlined"
               autoComplete="off"
@@ -855,7 +1013,7 @@ export default function AddPurchase() {
               id="outlined-basic"
               error={emptyProdPurchasePriceCheck}
               helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
-              type="number"
+              type="text"
               label="Purchase Price"
               variant="outlined"
               autoComplete="off"
@@ -868,7 +1026,7 @@ export default function AddPurchase() {
               id="outlined-basic"
               error={emptyProdMrpCheck}
               helperText={emptyProdMrpCheck ? emptyProdMrpCheck : ''}
-              type="number"
+              type="text"
               label="MRP"
               variant="outlined"
               autoComplete="off"
@@ -890,7 +1048,6 @@ export default function AddPurchase() {
               aria-readonly="true"
               onClick={() => setEmptyProdTotalPriceWithoutGstCheck('')}
             ></TextField>
-            {/* <InputLabel id="sgstLavel">Select GST</InputLabel> */}
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
@@ -902,10 +1059,13 @@ export default function AddPurchase() {
               <MenuItem value="" disabled>
                 <em>Select SGST</em>
               </MenuItem>
-              <MenuItem value={0}>SGST 0%</MenuItem>
+              {gstPercArr.map((gstV) => (
+                <MenuItem value={gstV}>SGST {gstV}%</MenuItem>
+              ))}
+              {/* <MenuItem value={0}>SGST 0%</MenuItem>
               <MenuItem value={5}>SGST 5%</MenuItem>
               <MenuItem value={12}>SGST 12%</MenuItem>
-              <MenuItem value={18}>SGST 18%</MenuItem>
+              <MenuItem value={18}>SGST 18%</MenuItem> */}
             </Select>
             <Select
               labelId="demo-simple-select-helper-label"
@@ -918,10 +1078,13 @@ export default function AddPurchase() {
               <MenuItem value="" disabled>
                 <em>Select CGST</em>
               </MenuItem>
-              <MenuItem value={0}>CGST 0%</MenuItem>
+              {gstPercArr.map((gstV) => (
+                <MenuItem value={gstV}>CGST {gstV}%</MenuItem>
+              ))}
+              {/* <MenuItem value={0}>CGST 0%</MenuItem>
               <MenuItem value={5}>CGST 5%</MenuItem>
               <MenuItem value={12}>CGST 12%</MenuItem>
-              <MenuItem value={18}>CGST 18%</MenuItem>
+              <MenuItem value={18}>CGST 18%</MenuItem> */}
             </Select>
             <TextField
               id="outlined-basic"
@@ -936,18 +1099,18 @@ export default function AddPurchase() {
               onClick={() => setEmptyProdTotalPriceWithGstCheck('')}
             ></TextField>
           </Stack>
+        </DialogContent>
 
-          <DialogActions>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button variant="outlined" onClick={handleClose} style={{ margin: '0 10px 0 0' }}>
-                Cancel
-              </Button>
-              <Button variant="outlined" onClick={() => addStock()}>
-                Add
-              </Button>
-            </div>
-          </DialogActions>
-        </Container>
+        <DialogActions>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="contained" color="secondary" onClick={handleClose} style={{ margin: '0 10px 0 0' }}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="secondary" onClick={() => addStock()}>
+              Add
+            </Button>
+          </div>
+        </DialogActions>
       </Dialog>
       <Divider style={{ margin: '20px 0px 20px 0px' }}></Divider>
 
@@ -961,7 +1124,7 @@ export default function AddPurchase() {
           open={openUpdate}
           row={dataRows}
           column={dataColumns}
-          htmlData={htmlDataStockView}
+          // htmlData={htmlDataStockView}
           handleClickOpen={handleClickOpenUpdate}
           handleDelete={handleDelete}
           handleUpdate={handleUpdate}

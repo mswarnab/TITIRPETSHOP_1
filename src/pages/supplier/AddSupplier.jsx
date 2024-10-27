@@ -80,11 +80,13 @@ const data = {
 export default function AddSupplier() {
   const [checkSupplierName, setCheckSupplierName] = useState(false);
   const [checkSupplierPhoneNo, setCheckSupplierPhoneNo] = useState(false);
+  const [checkSupplierGstin, setCheckSupplierGstin] = useState(false);
   const [addSupplierData, setAddSupplierData] = useState({
     supplierName: '',
     supplierContactNo: '',
     supplierEmail: '',
-    supplierAddress: ''
+    supplierAddress: '',
+    gstinNumber: ''
   });
   let onChangeData = (event) => {
     let eventName = event.target.name;
@@ -103,11 +105,15 @@ export default function AddSupplier() {
       setCheckSupplierPhoneNo('Please enter phone number.');
       flag = 0;
     }
+    if (addSupplierData.supplierGSTIN == '') {
+      setCheckSupplierGstin('Please enter GSTIN no.');
+      flag = 0;
+    }
     if (flag) {
       client
         .post('/supplier', addSupplierData)
         .then((res) => {
-          setAddSupplierData([]);
+          setAddSupplierData({ supplierName: '', supplierContactNo: '', supplierEmail: '', supplierAddress: '', gstinNumber: '' });
           setError({ err: false, message: res.data.message });
         })
         .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
@@ -166,13 +172,28 @@ export default function AddSupplier() {
               id="supplierContactNo"
               name="supplierContactNo"
               label="Mobile No."
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               autoComplete="off"
               value={addSupplierData.supplierContactNo}
               onChange={(event) => onChangeData(event)}
               onFocus={() => setCheckSupplierPhoneNo('')}
+            />
+            <TextField
+              error={checkSupplierGstin ? true : false}
+              required
+              margin="normal"
+              id="gstinNumber"
+              name="gstinNumber"
+              label="GSTIN"
+              type="text"
+              fullWidth
+              variant="outlined"
+              autoComplete="off"
+              value={addSupplierData.gstinNumber}
+              onChange={(event) => onChangeData(event)}
+              onFocus={() => setCheckSupplierGstin('')}
             />
             <TextField
               margin="normal"

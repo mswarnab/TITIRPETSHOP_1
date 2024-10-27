@@ -18,7 +18,7 @@ export default function NavGroup({ item }) {
   const navCollapse = item.children?.map((menuItem) => {
     switch (menuItem.type) {
       case 'collapse':
-      return <AccordionNavItem menuItem={menuItem}/>
+        return <AccordionNavItem menuItem={menuItem} />;
       case 'item':
         return <NavItem key={menuItem.id} item={menuItem} level={1} />;
       default:
@@ -35,7 +35,7 @@ export default function NavGroup({ item }) {
       subheader={
         item.title &&
         drawerOpen && (
-          <Box sx={{ pl: 3, mb: 1.5 }} >
+          <Box sx={{ pl: 3, mb: 1.5 }}>
             <Typography variant="subtitle2" color="textSecondary">
               {item.title}
             </Typography>
@@ -52,34 +52,21 @@ export default function NavGroup({ item }) {
 
 NavGroup.propTypes = { item: PropTypes.object };
 
-function AccordionNavItem ({menuItem}){
+function AccordionNavItem({ menuItem }) {
   return (
     // <Typography key={menuItem.id} variant="caption" color="error" sx={{ p: 2.5 }}>
     //   collapse - only available in paid version
     // </Typography>
-    <Accordion style={{boxShadow:'none',marginLeft:10}}>
-      <AccordionSummary
-         expandIcon={<DownOutlined />}
-        aria-controls="panel1-content"
-        id="panel1-header"
-      > 
-      <Stack direction="row" spacing={1.5}>
-        <div>
-      {menuItem.icon({fontSize:16})}
-
-        </div>
-        <div>
-      {menuItem.title}
-
-        </div>
-      </Stack>
+    <Accordion style={{ boxShadow: 'none', marginLeft: 10 }}>
+      <AccordionSummary expandIcon={<DownOutlined />} aria-controls="panel1-content" id="panel1-header">
+        <Stack direction="row" spacing={1.5}>
+          <div>{menuItem.icon({ fontSize: 16 })}</div>
+          <div>{menuItem.title}</div>
+        </Stack>
       </AccordionSummary>
       <AccordionDetails>
-        
-        {menuItem.children.map((value)=>{
-          return(
-          <NavItem key={value.id} item={value} level={1} />
-        );
+        {menuItem.children.map((value) => {
+          return <NavItem key={value.id} item={value} level={1} />;
         })}
       </AccordionDetails>
     </Accordion>
