@@ -10,28 +10,33 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import axios from 'axios';
 
 // third-party
 import { NumericFormat } from 'react-number-format';
 
 // project import
 import Dot from 'components/@extended/Dot';
+import { useEffect, useState } from 'react';
+import { client } from 'api/client';
 
 function createData(tracking_no, name, mobile, fat, carbs, protein) {
   return { tracking_no, name, mobile, fat, carbs, protein };
 }
 
-const rows = [
-  createData(84564564, 'Pintu da', '8240828075', 40, 2, 40570),
-  createData(98764564, 'Prashanta da', '8240828075', 300, 2, 180139),
-  createData(98756325, 'Samir Da', '8240828075',355, 2, 90989),
-  createData(98652366, 'Swarnab Majumder', '780988075',50, 2, 10239),
-  createData(13286564, 'Supratim Sarkar', '8240828075',100, 2, 83348),
-  createData(86739658, 'Bipul Majumder', '8240828075',99, 2, 410780),
-  createData(13256498, 'Sandeep Ghosh', '8240828075',125, 2, 70999),
-  createData(98753263, 'Sayan Gowswami', '8240828075',89, 2, 10570),
-  createData(98751263, 'Bhabesh Kathari', '8240828075',89, 2, 10570),
-];
+// const rows = [
+//   createData(84564564, 'Pintu da', '8240828075', 40, 2, 40570),
+//   createData(98764564, 'Prashanta da', '8240828075', 300, 2, 180139),
+//   createData(98756325, 'Samir Da', '8240828075', 355, 2, 90989),
+//   createData(98652366, 'Swarnab Majumder', '780988075', 50, 2, 10239),
+//   createData(13286564, 'Supratim Sarkar', '8240828075', 100, 2, 83348),
+//   createData(86739658, 'Bipul Majumder', '8240828075', 99, 2, 410780),
+//   createData(13256498, 'Sandeep Ghosh', '8240828075', 125, 2, 70999),
+//   createData(98753263, 'Sayan Gowswami', '8240828075', 89, 2, 10570),
+//   createData(98751263, 'Bhabesh Kathari', '8240828075', 89, 2, 10570)
+// ];
+
+// let rows = [];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -65,38 +70,37 @@ const headCells = [
     id: 'tracking_no',
     align: 'left',
     disablePadding: false,
-    label: 'Bill No.'
+    label: 'Invoice No.'
   },
   {
     id: 'name',
     align: 'left',
     disablePadding: true,
-    label: 'Customer Name'
-  }, 
+    label: 'Mobile No.'
+  },
   {
     id: 'mobile',
     align: 'left',
     disablePadding: true,
-    label: 'Mobile No.'
+    label: 'Total Amount'
   },
   {
     id: 'fat',
     align: 'right',
     disablePadding: false,
-    label: 'Total Amount'
+    label: 'Amount paid'
   },
   {
     id: 'carbs',
     align: 'left',
     disablePadding: false,
-
-    label: 'Status'
+    label: 'Amount due'
   },
   {
     id: 'protein',
     align: 'right',
     disablePadding: false,
-    label: 'Due Amount'
+    label: 'Billing date'
   }
 ];
 
@@ -156,7 +160,29 @@ function OrderStatus({ status }) {
 export default function OrderTable() {
   const order = 'asc';
   const orderBy = 'tracking_no';
+  const [rows, setRows] = useState([]);
+  const [salesArray, setSalesArray] = useState([]);
 
+  useEffect(() => {
+    salesArray.forEach((e) => {
+      setRows([...rows, createData(e.billNumber, e.customerMobileNo, e.grandTotalAmount, e.paidAmount, e.cerditAmount, e.dateOfSale)]);
+    });
+  }, [salesArray]);
+
+  useEffect(() => {
+    client
+      .get('/sales', {
+        params: {
+          page: 0,
+          sortByCreditAmount: '-1',
+          filterByCreditAmount: { $gt: 0 }
+        }
+      })
+      .then((res) => {
+        console.log(res.data.result.result);
+        setSalesArray(res.data.result.result);
+      });
+  }, []);
   return (
     <Box>
       <TableContainer
@@ -174,7 +200,7 @@ export default function OrderTable() {
           <TableBody>
             {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
-              console.log(row)
+              console.log(row);
               return (
                 <TableRow
                   hover
@@ -186,15 +212,17 @@ export default function OrderTable() {
                   <TableCell component="th" id={labelId} scope="row">
                     <Link color="secondary"> {row.tracking_no}</Link>
                   </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="right">{row.mobile}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
-                  <TableCell>
-                    <OrderStatus status={row.carbs} />
+                  <TableCell align="right">{row.name}</TableCell>
+                  <TableCell align="right">
+                    <NumericFormat value={row.mobile} displayType="text" thousandSeparator prefix="" />
                   </TableCell>
                   <TableCell align="right">
-                    <NumericFormat value={row.protein} displayType="text" thousandSeparator prefix="" />
+                    <NumericFormat value={row.fat} displayType="text" thousandSeparator prefix="" />
                   </TableCell>
+                  <TableCell align="right">
+                    <NumericFormat value={row.carbs} displayType="text" thousandSeparator prefix="" />
+                  </TableCell>
+                  <TableCell align="right">{row.protein}</TableCell>
                 </TableRow>
               );
             })}

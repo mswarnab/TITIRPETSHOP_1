@@ -11,7 +11,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
 // project import
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
@@ -29,6 +28,11 @@ import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
+import { useEffect, useState } from 'react';
+import { Alert } from '@mui/material';
+import dayjs from 'dayjs';
+import { client } from 'api/client';
+import { useNavigate } from 'react-router';
 
 // avatar style
 const avatarSX = {
@@ -48,38 +52,68 @@ const actionSX = {
 };
 
 const data = {
-  sales:{
-    totalSale:250000,
+  sales: {
+    totalSale: 250000,
     percentage: 29,
-    extraSale:2000
+    extraSale: 2000
   },
-  stock:{
-   expiredProducts: 299,
-   expiryDate: 2024-10, 
+  stock: {
+    expiredProducts: 299,
+    expiryDate: 2024 - 10
   },
-  customer:{
-    totalCustomer:280,
-    totalCreditInMarket:29000,
+  customer: {
+    totalCustomer: 280,
+    totalCreditInMarket: 29000
   },
-  purchaseOrder:{
+  purchaseOrder: {
     totalOrders: 188
   },
-  supplier:{
-    totalDue:19999,
-    totalSuppliers:6
+  supplier: {
+    totalDue: 19999,
+    totalSuppliers: 6
   }
-
-}
+};
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
-  const {sales,customer,purchaseOrder,stock,supplier} = data;
-  const {totalSale=100,percentage=20,extraSale=2000} = sales;
-  const {totalCustomer,totalCreditInMarket} = customer;
-  const {expiredProducts,expiryDate} = stock;
-  const {totalOrders} = purchaseOrder;
-  const {totalDue,totalSuppliers} = supplier;
+  const { sales, customer, purchaseOrder, stock, supplier } = data;
+  const { totalSale = 100, percentage = 20, extraSale = 2000 } = sales;
+  const [totalSales, setTotalSales] = useState('');
+  const [weeklyTotalSales, setWeeklyTotalSales] = useState('');
+
+  const [totalCustomers, setTotalCustomers] = useState('');
+  const [expiredProducts, setExpiredProducts] = useState('');
+
+  const expiryDate = dayjs().add(3, 'month').format('YYYY-MM-DD');
+  const { totalOrders } = purchaseOrder;
+  const [totalSupplierDue, setTotalSupplierDue] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    client
+      .get('/stock/getexpiredproducts')
+      .then((res) => {
+        console.log(res.data.result);
+        // setError({ err: false, message: res.data.message });
+        setExpiredProducts(res.data.result);
+      })
+      .catch((err) => setError({ err: true, message: null }));
+
+    client.get('/sales/totalsale').then((res) => {
+      setTotalSales({ count: res.data.result.count, amount: res.data.result.result[0].totalSales });
+    });
+
+    client.get('/supplier/totaldue').then((res) => {
+      setTotalSupplierDue({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
+    });
+
+    client.get('/customer/totaldue').then((res) => {
+      setTotalCustomers({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
+    });
+
+    return null;
+  }, []);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -87,25 +121,47 @@ export default function DashboardDefault() {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce  expiredProducts={expiredProducts} title={`Stocks expiring by ${expiryDate}`} isLoss count={expiredProducts}  extra={"Click here to view more"} />
+        {console.log(expiredProducts)}
+        <AnalyticEcommerce
+          expiredProducts={expiredProducts}
+          title={`Stocks expiring by ${expiryDate}`}
+          isLoss
+          extraLabel={'Click to view the stocks'}
+          count={expiredProducts?.count}
+          // extra={'Click here to view more'}
+        />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total sales in current month" count={`₹${totalSale}`} percentage={percentage} extra={extraSale}/>
+        <AnalyticEcommerce
+          title="Total sales in current month"
+          count={`₹${totalSales.amount}`}
+          // percentage={percentage}
+          extraLabel={''}
+          extra={totalSales.count + ` sales made since last month`}
+        />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total due for suppliers" count={totalDue}  isLoss color="warning" extraLabel={"Total amount due"} extra={` to ${totalSuppliers} suppliers.`} />
+        <AnalyticEcommerce
+          title="Total due to suppliers"
+          count={'₹' + totalSupplierDue.amount}
+          isLoss
+          color="warning"
+          extraLabel={'Total amount due'}
+          extra={` to ${totalSupplierDue.count} suppliers.`}
+        />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="New customer acquired" count={totalCustomer} percentage={percentage} extraLabel={"Your total credit in market is "} extra={totalCreditInMarket} />
+        <AnalyticEcommerce
+          title="Total amount due from customers"
+          count={'₹' + totalCustomers.amount}
+          percentage={percentage}
+          extraLabel={'You have payment due for '}
+          extra={totalCustomers.count + ' customer(s)'}
+        />
       </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
-      {/* row 2 */}
-      {/* <Grid item xs={12} md={7} lg={8}>
-        {/* <UniqueVisitorCard /> */}
-        
-      {/* </Grid>  */}
       <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
@@ -119,10 +175,10 @@ export default function DashboardDefault() {
               <Typography variant="h6" color="text.secondary">
                 This Week's Sales report
               </Typography>
-              <Typography variant="h3">{totalSale}</Typography>
+              <Typography variant="h3">₹{weeklyTotalSales}</Typography>
             </Stack>
           </Box>
-          <MonthlyBarChart />
+          <MonthlyBarChart onTotalSaleChange={(value) => setWeeklyTotalSales(value)} />
         </MainCard>
       </Grid>
 
@@ -138,31 +194,6 @@ export default function DashboardDefault() {
           <OrdersTable />
         </MainCard>
       </Grid>
-      {/* <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Analytics Report</Typography>
-          </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <List sx={{ p: 0, '& .MuiListItemButton-root': { py: 2 } }}>
-            <ListItemButton divider>
-              <ListItemText primary="Company Finance Growth" />
-              <Typography variant="h5">+45.14%</Typography>
-            </ListItemButton>
-            <ListItemButton divider>
-              <ListItemText primary="Company Expenses Ratio" />
-              <Typography variant="h5">0.58%</Typography>
-            </ListItemButton>
-            <ListItemButton>
-              <ListItemText primary="Business Risk Cases" />
-              <Typography variant="h5">Low</Typography>
-            </ListItemButton>
-          </List>
-          <ReportAreaChart />
-        </MainCard>
-      </Grid> */}
 
       {/* row 4 */}
       <Grid item xs={12} md={7} lg={8}>
@@ -201,7 +232,7 @@ export default function DashboardDefault() {
                     25,000
                   </Typography>
                   <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024 
+                    23-10-2024
                   </Typography>
                 </Stack>
               </ListItemSecondaryAction>
@@ -220,7 +251,7 @@ export default function DashboardDefault() {
                     25,000
                   </Typography>
                   <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024 
+                    23-10-2024
                   </Typography>
                 </Stack>
               </ListItemSecondaryAction>
@@ -239,7 +270,7 @@ export default function DashboardDefault() {
                     25,000
                   </Typography>
                   <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024 
+                    23-10-2024
                   </Typography>
                 </Stack>
               </ListItemSecondaryAction>
@@ -258,7 +289,7 @@ export default function DashboardDefault() {
                     25,000
                   </Typography>
                   <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024 
+                    23-10-2024
                   </Typography>
                 </Stack>
               </ListItemSecondaryAction>
@@ -277,7 +308,7 @@ export default function DashboardDefault() {
                     25,000
                   </Typography>
                   <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024 
+                    23-10-2024
                   </Typography>
                 </Stack>
               </ListItemSecondaryAction>
@@ -295,7 +326,7 @@ export default function DashboardDefault() {
                     25,000
                   </Typography>
                   <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024 
+                    23-10-2024
                   </Typography>
                 </Stack>
               </ListItemSecondaryAction>

@@ -23,60 +23,10 @@ const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
-const MainRoutes = {
-  path: '/',
-  element: <Dashboard />,
-  children: [
-    {
-      path: '/stock/add',
-      element: <ManageStock />
-    },
-    {
-      path: '/stock/manage',
-      element: <ManageStock />
-    },
-    {
-      path: '/purchaseorder/add',
-      element: <PurchaseOrder />
-    },
-    {
-      path: '/sale/add',
-      element: <AddSale />
-    },
-    {
-      path: '/customer/add',
-      element: <AddCustomer />
-    },
-    {
-      path: '/supplier/add',
-      element: <AddSupplier />
-    },
-    {
-      path: '/customer/manage',
-      element: <ManageCustomer />
-    },
-    {
-      path: '/supplier/manage',
-      element: <ManageSupplier />
-    },
-    {
-      path: '/',
-      element: <DashboardDefault />
-    },
-    {
-      path: 'color',
-      element: <Color />
-    },
-    {
-      path: 'dashboard',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />
-        }
-      ]
-    }
-  ]
+const LoginRoute = {
+  path: '/login',
+  element: <Login />,
+  children: []
 };
 
-export default MainRoutes;
+export default LoginRoute;

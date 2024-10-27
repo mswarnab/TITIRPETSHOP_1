@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 // material-ui
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -14,12 +14,26 @@ import Loader from 'components/Loader';
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
 
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
+import { client } from 'api/client';
 
 // ==============================|| MAIN LAYOUT ||============================== //
 
 export default function DashboardLayout() {
   const { menuMasterLoading } = useGetMenuMaster();
   const downXL = useMediaQuery((theme) => theme.breakpoints.down('xl'));
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await client.get('/auth', { withCredentials: true });
+        console.log(response);
+      } catch (error) {
+        console.log('here');
+        navigate('/login');
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     handlerDrawerOpen(!downXL);

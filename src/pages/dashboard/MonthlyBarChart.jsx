@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 
 // third-party
 import ReactApexChart from 'react-apexcharts';
+import { client } from 'api/client';
+import dayjs from 'dayjs';
 
 // chart options
 const barChartOptions = {
@@ -44,15 +46,17 @@ const barChartOptions = {
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
-export default function MonthlyBarChart({sales=[2800,2099,1800,700,5000,8000,1200]}) {
+export default function MonthlyBarChart({ onTotalSaleChange }) {
   const theme = useTheme();
 
   const { primary, secondary } = theme.palette.text;
+  const [salesData, setSalesData] = useState('');
+  const [totalSale, setTotalSale] = useState('');
   const info = theme.palette.info.light;
 
-  const [series] = useState([
+  const [series, setSeries] = useState([
     {
-      data: [sales[0], sales[1], sales[2], sales[3], sales[4], sales[5], sales[6]]
+      data: [0, 0, 0, 0, 0, 0, 0]
     }
   ]);
 
@@ -71,6 +75,28 @@ export default function MonthlyBarChart({sales=[2800,2099,1800,700,5000,8000,120
       }
     }));
   }, [primary, info, secondary]);
+  useEffect(async () => {
+    client.get('/sales/weeklysale').then((res) => {
+      const salesArray = res.data.result.result.sort((a, b) => {
+        if (a.date < b.date) return -1;
+        if (a.date > b.date) return 1;
+      });
+      let dateArray = [];
+      let resultArray = [];
+      let sumSales = 0;
+      salesArray.map((e) => {
+        dateArray = [...dateArray, dayjs(e.date).format('ddd')];
+        resultArray = [...resultArray, e.result];
+        sumSales += parseFloat(e.result);
+      });
+      console.log(dateArray);
+      barChartOptions.xaxis.categories = dateArray;
+      setOptions(barChartOptions);
+      onTotalSaleChange(sumSales);
+      setSeries([{ data: resultArray }]);
+      setSalesData({ dateArray, resultArray });
+    });
+  }, []);
 
   return (
     <Box id="chart" sx={{ bgcolor: 'transparent' }}>
