@@ -1,37 +1,12 @@
 // material-ui
 import React from 'react';
-import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 
 // project import
 import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import MonthlyBarChart from '../dashboard/MonthlyBarChart';
-import ReportAreaChart from '../dashboard/ReportAreaChart';
-import UniqueVisitorCard from '../dashboard/UniqueVisitorCard';
-import SaleReportCard from '../dashboard/SaleReportCard';
-import OrdersTable from '../dashboard/OrdersTable';
-
-// assets
-import GiftOutlined from '@ant-design/icons/GiftOutlined';
-import MessageOutlined from '@ant-design/icons/MessageOutlined';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
-import avatar1 from 'assets/images/users/avatar-1.png';
-import avatar2 from 'assets/images/users/avatar-2.png';
-import avatar3 from 'assets/images/users/avatar-3.png';
-import avatar4 from 'assets/images/users/avatar-4.png';
-import { Alert, ButtonGroup, FormControl, FormHelperText, Input, InputLabel, Snackbar, TextField, useTheme } from '@mui/material';
-import getColors from 'utils/getColors';
+import { Alert, Snackbar, TextField } from '@mui/material';
 import { useState } from 'react';
 import { client } from 'api/client';
 

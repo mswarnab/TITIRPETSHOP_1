@@ -1,10 +1,9 @@
 import React from 'react';
 import { DataGrid, GridToolbar, gridClasses } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import StockUpdateView from 'pages/stock/StockUpdateView';
 import CustomerUpdate from 'pages/customer/CustomerUpdate';
 import { Pagination } from '@mui/material';
-import { display, Stack } from '@mui/system';
+import { Stack } from '@mui/system';
 
 // data table value
 

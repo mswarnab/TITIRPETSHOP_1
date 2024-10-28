@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridToolbar, gridClasses } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import StockUpdateView from 'pages/stock/StockUpdateView';
-import CustomerUpdate from 'pages/customer/CustomerUpdate';
 import SupplierUpdate from 'pages/supplier/SupplierUpdate';
 import { client } from 'api/client';
 import { Stack } from '@mui/system';

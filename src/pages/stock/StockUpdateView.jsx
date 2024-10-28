@@ -10,7 +10,6 @@ import { Autocomplete, Divider, MenuItem, Select, Slide, Stack } from '@mui/mate
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { date } from 'yup';
 import { client } from 'api/client';
 import { prodCatagoryArr, gstPercArr } from 'static';
 

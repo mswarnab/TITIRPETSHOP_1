@@ -11,7 +11,7 @@ import MainCard from 'components/MainCard';
 
 // assets
 
-import { ButtonGroup, Pagination, useTheme } from '@mui/material';
+import { Pagination } from '@mui/material';
 import ProductTable from 'pages/dashboard/ProductTable';
 
 import LottieAnimation from 'components/loaderDog';

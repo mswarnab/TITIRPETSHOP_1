@@ -1,7 +1,7 @@
-import { RouterProvider, useNavigate } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 
 // project import
-import { loginRouter, router } from 'routes';
+import { router } from 'routes';
 import ThemeCustomization from 'themes';
 
 import ScrollTop from 'components/ScrollTop';

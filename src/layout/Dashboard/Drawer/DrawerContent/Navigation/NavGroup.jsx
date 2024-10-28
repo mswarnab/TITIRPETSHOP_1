@@ -9,7 +9,7 @@ import NavItem from './NavItem';
 import { useGetMenuMaster } from 'api/menu';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { DownOutlined } from '@ant-design/icons';
-import { fontSize, Stack } from '@mui/system';
+import { Stack } from '@mui/system';
 
 export default function NavGroup({ item }) {
   const { menuMaster } = useGetMenuMaster();
