@@ -180,8 +180,9 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
             .catch();
         }
       }, 300);
+
+      return () => clearTimeout(getDate);
     })();
-    return () => clearTimeout(getDate);
   }, [prodNameParm]);
   // console.log(prodNameParm);
   let autoChangeName = (v) => {

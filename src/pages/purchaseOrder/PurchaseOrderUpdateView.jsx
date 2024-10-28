@@ -35,6 +35,7 @@ import CustomerTable from 'pages/dashboard/CustomerTable';
 import getColors from 'utils/getColors';
 import axios from 'axios';
 import { client } from 'api/client';
+import dayjs from 'dayjs';
 
 // avatar style
 const avatarSX = {
@@ -76,14 +77,14 @@ const data = {
   }
 };
 // let id = 0;
-function createData(id, customerName, mobileNo, address, totalDue, custId) {
+function createData(id, invoiceNumber, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount, modeOfPayment) {
   // id = id + 1;
-  return { id, customerName, mobileNo, address, totalDue, custId };
+  return { id, invoiceNumber, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount, modeOfPayment };
 }
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
-export default function ManageCustomer() {
+export default function ManagePurchaseOrder() {
   let pageSize = 20;
   // let paginationCount = (50/;
   const [open, setOpen] = useState(false);
@@ -100,25 +101,49 @@ export default function ManageCustomer() {
 
   const columns = [
     { field: 'id', headerName: 'Sl No.', width: 100, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    { field: 'customerName', headerName: 'Customer Name', width: 300, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    { field: 'mobileNo', headerName: 'Mobile No', width: 250, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    { field: 'invoiceNumber', headerName: 'invoice Number', width: 300, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    // { field: 'supplierName', headerName: 'Supplier Name', width: 250, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
     {
-      field: 'address',
-      headerName: 'Address',
+      field: 'grandTotalAmount',
+      headerName: 'Total Amount',
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 360
+      width: 160
     },
     {
-      field: 'totalDue',
-      headerName: 'Credit Amount',
+      field: 'dateOfPurchase',
+      headerName: 'Date Of Purchase',
       //   description: 'This column has a value getter and is not sortable.',
       sortable: true,
       width: 160,
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center'
       //   valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
+    },
+    {
+      field: 'paidAmount',
+      headerName: 'Paid Amount',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+      //   type: 'number',
+      width: 160
+    },
+    {
+      field: 'modeOfPayment',
+      headerName: 'Payment Mode',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+      //   type: 'number',
+      width: 160
+    },
+    {
+      field: 'creditAmount',
+      headerName: 'Due Amount',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+      //   type: 'number',
+      width: 160
     }
   ];
   let pageChange = (page) => {
@@ -138,7 +163,7 @@ export default function ManageCustomer() {
   let fetchRowData = async (page) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/customer?page=' + page)
+      .get('/purchaseorder?page=' + page)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -147,14 +172,18 @@ export default function ManageCustomer() {
         let newData = [];
         let result = [...res.data.result.result];
         // console.log(result);
+        // /createData(id, invoiceNumber, supplierName, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount) {
+
         let id = parseInt(parseInt(page * 20) + 1);
         result.map((value) => {
           let createdData = createData(
             id,
-            value.customerName,
-            value.customerContactNo,
-            value.customerAddress,
-            value.totalCreditAmount,
+            value.invoiceNumber,
+            value.grandTotalAmount,
+            dayjs(value.dateOfPruchase).format('YYYY-MM-DD'),
+            value.cerditAmount,
+            value.paidAmount,
+            value.modeOfPayment,
             value._id
           );
           // console;
@@ -181,7 +210,7 @@ export default function ManageCustomer() {
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
           <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{rows.length} Customers found</Typography>
+            <Typography variant="h5">{rows.length} Purchase Orders found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">

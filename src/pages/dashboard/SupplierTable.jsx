@@ -54,7 +54,7 @@ const columns = [
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function SupplierTable() {
+export default function SupplierTable({ handleRowData }) {
   let pageSize = 20;
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState('');
@@ -112,6 +112,7 @@ export default function SupplierTable() {
           id = parseInt(id) + 1;
         });
         setRows(newData);
+        handleRowData(newData.length);
         setLoading(false);
       })
       .catch((err) => setLoading(false));

@@ -1,5 +1,5 @@
 // material-ui
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Button from '@mui/material/Button';
@@ -78,6 +78,10 @@ const data = {
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function ManageSupplier() {
+  const [rowData, setRowData] = useState('');
+  const handleRowData = (data) => {
+    setRowData(data);
+  };
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -87,7 +91,7 @@ export default function ManageSupplier() {
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
           <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{209} Products found</Typography>
+            <Typography variant="h5">{rowData} Suppliers found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">
@@ -97,7 +101,7 @@ export default function ManageSupplier() {
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <SupplierTable />
+          <SupplierTable handleRowData={handleRowData} />
         </MainCard>
       </Grid>
     </Grid>

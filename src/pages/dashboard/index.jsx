@@ -117,6 +117,8 @@ export default function DashboardDefault() {
       return null;
     };
   }, []);
+  const navigate = useNavigate();
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -124,7 +126,6 @@ export default function DashboardDefault() {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        {console.log(expiredProducts)}
         <AnalyticEcommerce
           expiredProducts={expiredProducts}
           title={`Stocks expiring by ${expiryDate}`}
@@ -132,6 +133,7 @@ export default function DashboardDefault() {
           extraLabel={'Click to view the stocks'}
           count={expiredProducts?.count}
           // extra={'Click here to view more'}
+          onHandleClick={() => navigate('/stock/expired')}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>

@@ -1,8 +1,8 @@
 import Lottie from 'lottie-react';
-import animationData from 'assets/loader.json';
+import animationData from 'assets/pageNotFound.json';
 import { Typography } from '@mui/material';
 
-const LottieAnimation = () => {
+const PageNotFoundAnimation = () => {
   return (
     <div
       style={{
@@ -10,7 +10,7 @@ const LottieAnimation = () => {
         zIndex: 999999999,
         left: 0,
         width: '100%',
-        height: '100%',
+        height: '70vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -23,13 +23,10 @@ const LottieAnimation = () => {
         animationData={animationData}
         loop={true}
         autoplay={true}
-        style={{ width: 300, height: 300 }} // Set your desired size
+        style={{ width: 500, height: 500 }} // Set your desired size
       />
-      <Typography variant="h2" color={`#AE6985`} margin={-2}>
-        Loading...
-      </Typography>
     </div>
   );
 };
 
-export default LottieAnimation;
+export default PageNotFoundAnimation;
