@@ -28,10 +28,6 @@ const MainRoutes = {
   element: <Dashboard />,
   children: [
     {
-      path: '/stock/add',
-      element: <ManageStock />
-    },
-    {
       path: '/stock/manage',
       element: <ManageStock />
     },
