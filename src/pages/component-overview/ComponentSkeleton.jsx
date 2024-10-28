@@ -18,6 +18,9 @@ export default function ComponentSkeleton({ children }) {
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(false);
+    return () => {
+      return null;
+    };
   }, []);
 
   const skeletonCard = (

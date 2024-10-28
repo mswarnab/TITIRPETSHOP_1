@@ -170,18 +170,23 @@ export default function OrderTable() {
   }, [salesArray]);
 
   useEffect(() => {
-    client
-      .get('/sales', {
-        params: {
-          page: 0,
-          sortByCreditAmount: '-1',
-          filterByCreditAmount: { $gt: 0 }
-        }
-      })
-      .then((res) => {
-        console.log(res.data.result.result);
-        setSalesArray(res.data.result.result);
-      });
+    (async () => {
+      client
+        .get('/sales', {
+          params: {
+            page: 0,
+            sortByCreditAmount: '-1',
+            filterByCreditAmount: { $gt: 0 }
+          }
+        })
+        .then((res) => {
+          console.log(res.data.result.result);
+          setSalesArray(res.data.result.result);
+        });
+    })();
+    return () => {
+      return null;
+    };
   }, []);
   return (
     <Box>

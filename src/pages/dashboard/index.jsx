@@ -91,28 +91,31 @@ export default function DashboardDefault() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    client
-      .get('/stock/getexpiredproducts')
-      .then((res) => {
-        console.log(res.data.result);
-        // setError({ err: false, message: res.data.message });
-        setExpiredProducts(res.data.result);
-      })
-      .catch((err) => setError({ err: true, message: null }));
+    (async () => {
+      client
+        .get('/stock/getexpiredproducts')
+        .then((res) => {
+          // setError({ err: false, message: res.data.message });
+          setExpiredProducts(res.data.result);
+        })
+        .catch((err) => setError({ err: true, message: null }));
 
-    client.get('/sales/totalsale').then((res) => {
-      setTotalSales({ count: res.data.result.count, amount: res.data.result.result[0].totalSales });
-    });
+      client.get('/sales/totalsale').then((res) => {
+        setTotalSales({ count: res.data.result.count, amount: res.data.result.result[0].totalSales });
+      });
 
-    client.get('/supplier/totaldue').then((res) => {
-      setTotalSupplierDue({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
-    });
+      client.get('/supplier/totaldue').then((res) => {
+        setTotalSupplierDue({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
+      });
 
-    client.get('/customer/totaldue').then((res) => {
-      setTotalCustomers({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
-    });
+      client.get('/customer/totaldue').then((res) => {
+        setTotalCustomers({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
+      });
+    })();
 
-    return null;
+    return () => {
+      return null;
+    };
   }, []);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>

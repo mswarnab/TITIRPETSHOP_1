@@ -75,27 +75,32 @@ export default function MonthlyBarChart({ onTotalSaleChange }) {
       }
     }));
   }, [primary, info, secondary]);
-  useEffect(async () => {
-    client.get('/sales/weeklysale').then((res) => {
-      const salesArray = res.data.result.result.sort((a, b) => {
-        if (a.date < b.date) return -1;
-        if (a.date > b.date) return 1;
+  useEffect(() => {
+    (async () => {
+      client.get('/sales/weeklysale').then((res) => {
+        const salesArray = res.data.result.result.sort((a, b) => {
+          if (a.date < b.date) return -1;
+          if (a.date > b.date) return 1;
+        });
+        let dateArray = [];
+        let resultArray = [];
+        let sumSales = 0;
+        salesArray.map((e) => {
+          dateArray = [...dateArray, dayjs(e.date).format('ddd')];
+          resultArray = [...resultArray, e.result];
+          sumSales += parseFloat(e.result);
+        });
+        console.log(dateArray);
+        barChartOptions.xaxis.categories = dateArray;
+        setOptions(barChartOptions);
+        onTotalSaleChange(sumSales);
+        setSeries([{ data: resultArray }]);
+        setSalesData({ dateArray, resultArray });
       });
-      let dateArray = [];
-      let resultArray = [];
-      let sumSales = 0;
-      salesArray.map((e) => {
-        dateArray = [...dateArray, dayjs(e.date).format('ddd')];
-        resultArray = [...resultArray, e.result];
-        sumSales += parseFloat(e.result);
-      });
-      console.log(dateArray);
-      barChartOptions.xaxis.categories = dateArray;
-      setOptions(barChartOptions);
-      onTotalSaleChange(sumSales);
-      setSeries([{ data: resultArray }]);
-      setSalesData({ dateArray, resultArray });
-    });
+    })();
+    return () => {
+      return null;
+    };
   }, []);
 
   return (

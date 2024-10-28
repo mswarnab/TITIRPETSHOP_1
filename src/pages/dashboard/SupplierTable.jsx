@@ -81,7 +81,7 @@ export default function SupplierTable() {
     fetchRowData(page);
     setOpen(false);
   };
-  let fetchRowData = (page) => {
+  let fetchRowData = async (page) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
       .get('/supplier?page=' + page)
@@ -117,7 +117,10 @@ export default function SupplierTable() {
       .catch((err) => setLoading(false));
   };
   useEffect(() => {
-    fetchRowData(paginationModel.page);
+    (async () => await fetchRowData(paginationModel.page))();
+    return () => {
+      return null;
+    };
   }, []);
   const [loading, setLoading] = useState(true);
   // console.log(rows);

@@ -5,9 +5,6 @@ import { loginRouter, router } from 'routes';
 import ThemeCustomization from 'themes';
 
 import ScrollTop from 'components/ScrollTop';
-import { useEffect, useState } from 'react';
-import { client } from 'api/client';
-import LottieAnimation from 'components/Animation';
 
 // ==============================|| APP - THEME, ROUTER, LOCAL ||============================== //
 

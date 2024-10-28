@@ -14,10 +14,14 @@ export default function OnlyCheck() {
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    client
-      .get('/login', { withCredentials: true })
-      .then((res) => setLoggedIn(res.data.status == '200' ? true : false))
-      .catch((err) => navigate('/login'));
+    (async () => {
+      client
+        .get('/login', { withCredentials: true })
+        .then((res) => setLoggedIn(res.data.status == '200' ? true : false))
+        .catch((err) => navigate('/login'));
+    })();
   }, []);
-  return null;
+  return () => {
+    return null;
+  };
 }

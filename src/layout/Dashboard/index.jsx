@@ -27,12 +27,13 @@ export default function DashboardLayout() {
     (async () => {
       try {
         const response = await client.get('/auth', { withCredentials: true });
-        console.log(response);
       } catch (error) {
-        console.log('here');
-        navigate('/login');
+        return navigate('/login');
       }
     })();
+    return () => {
+      return null;
+    };
   }, []);
 
   useEffect(() => {

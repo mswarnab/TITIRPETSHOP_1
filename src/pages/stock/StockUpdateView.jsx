@@ -53,6 +53,9 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       totalPrice: rowData.amount,
       totalPriceWithGst: rowData.amountWithgst
     });
+    return () => {
+      return null;
+    };
   }, [rowData]);
   let changeDataOnClick = (event) => {
     let objName = event.target.name;
@@ -151,31 +154,33 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
   // },[rowData]);
   useEffect(() => {
     // console.log('hi');
-    const getDate = setTimeout(() => {
-      let strProdNameLength = prodNameParm.length;
-      // console.log('hello : ' + strProdNameLength);
-      if (strProdNameLength >= 3) {
-        client
-          .get('/stock/search', {
-            params: { pattern: prodNameParm }
-          })
-          .then((res) => {
-            let top100Films = [];
-            let dataResultArr = res.data.result.result;
-            dataResultArr.forEach((element) => {
-              // console.log(element.supplierName);
-              top100Films = [
-                ...top100Films,
-                {
-                  productName: element.productName
-                }
-              ];
-            });
-            setProdSearch(top100Films);
-          })
-          .catch();
-      }
-    }, 300);
+    (async () => {
+      const getDate = setTimeout(() => {
+        let strProdNameLength = prodNameParm.length;
+        // console.log('hello : ' + strProdNameLength);
+        if (strProdNameLength >= 3) {
+          client
+            .get('/stock/search', {
+              params: { pattern: prodNameParm }
+            })
+            .then((res) => {
+              let top100Films = [];
+              let dataResultArr = res.data.result.result;
+              dataResultArr.forEach((element) => {
+                // console.log(element.supplierName);
+                top100Films = [
+                  ...top100Films,
+                  {
+                    productName: element.productName
+                  }
+                ];
+              });
+              setProdSearch(top100Films);
+            })
+            .catch();
+        }
+      }, 300);
+    })();
     return () => clearTimeout(getDate);
   }, [prodNameParm]);
   // console.log(prodNameParm);

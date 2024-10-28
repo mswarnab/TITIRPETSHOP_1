@@ -2,7 +2,7 @@ import { Alert, Button, Divider, Grid, Snackbar, Stack, TextField, Typography } 
 import React, { useEffect, useState } from 'react';
 import Image from 'assets/images/icons/logo/Titir Pet Logo.png';
 import { client } from 'api/client';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 
 function AlertMessage({ open, severity, message, handleClose }) {
   return (
@@ -32,9 +32,16 @@ function Login() {
 
   useEffect(() => {
     (async () => {
-      await client.get('/auth', { withCredentials: true });
-      navigate('/');
+      await client.get('/auth');
+      // navigate('/');
+      return () => {
+        return null;
+      };
     })();
+
+    return () => {
+      return null;
+    };
   }, []);
 
   const handleSubmit = (e) => {
@@ -44,6 +51,8 @@ function Login() {
       .then((res) => {
         setLoginStatus('SUCCESS');
         return navigate('/');
+
+        return null;
       })
       .catch((err) => setLoginStatus('FAILED'));
   };
@@ -53,7 +62,18 @@ function Login() {
   };
 
   return (
-    <div style={{ backgroundColor: 'white', height: '100vh', margin: 0 }}>
+    <div
+      style={{
+        backgroundColor: 'white',
+        height: '800px',
+        width: '100%',
+        top: 0,
+        left: 0,
+        margin: 0,
+        position: 'absolute',
+        zIndex: 999999999999999
+      }}
+    >
       {loginStatus == 'SUCCESS' ? (
         <AlertMessage open={true} severity={'success'} message={'Login Successful !!'} handleClose={handleClose} />
       ) : loginStatus == 'FAILED' ? (

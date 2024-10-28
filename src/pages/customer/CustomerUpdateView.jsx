@@ -135,7 +135,7 @@ export default function ManageCustomer() {
   const [rows, setRows] = useState([]);
   const [paginationCount, setPaginationCount] = useState(0);
   ////// call apito get data in every page change
-  let fetchRowData = (page) => {
+  let fetchRowData = async (page) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
       .get('/customer?page=' + page)
@@ -167,7 +167,10 @@ export default function ManageCustomer() {
   };
   // console.log(paginationCount);
   useEffect(() => {
-    fetchRowData(paginationModel.page);
+    (async () => await fetchRowData(paginationModel.page))();
+    return () => {
+      return null;
+    };
   }, []);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -177,14 +180,14 @@ export default function ManageCustomer() {
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%' }}>
+          {/* <Grid style={{ width: '50%' }}>
             <Typography variant="h5">{209} Products found</Typography>
-          </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+          </Grid> */}
+          {/* <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">
               Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
             </Typography>
-          </Grid>
+          </Grid> */}
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>

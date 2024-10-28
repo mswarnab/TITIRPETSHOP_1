@@ -39,6 +39,9 @@ export default function SupplierUpdate({ open, handleClose, data }) {
       supplierEmail: data.supplierEmail
       // _id: data._id
     });
+    return () => {
+      return null;
+    };
   }, [data]);
   let updateSupplier = () => {
     let id = data._id;

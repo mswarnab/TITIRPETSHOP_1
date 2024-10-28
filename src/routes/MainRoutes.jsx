@@ -56,22 +56,22 @@ const MainRoutes = {
       element: <ManageSupplier />
     },
     {
+      path: '/login',
+      element: <Login />
+    },
+    {
       path: '/',
       element: <DashboardDefault />
-    },
-    {
-      path: 'color',
-      element: <Color />
-    },
-    {
-      path: 'dashboard',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />
-        }
-      ]
     }
+    // {
+    // //   path: 'dashboard',
+    // //   children: [
+    // //     {
+    // //       path: 'default',
+    // //       element: <DashboardDefault />
+    // //     }
+    // //   ]
+    // // }
   ]
 };
 

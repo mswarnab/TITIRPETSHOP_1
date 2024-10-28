@@ -670,87 +670,92 @@ export default function AddPurchase() {
   let [supplierSearch, setSupplierSearch] = React.useState([]);
   const [supplierSearchParm, setSupplierSearchParm] = useState('');
   useEffect(() => {
-    const getData = setTimeout(() => {
-      // console.log(supplierName);
-      let strLength = supplierName.length;
-      // console.log(strLength);
-      if (strLength >= 3) {
-        // alert(strLength);
-        client
-          .get('/supplier/search', {
-            params: { pattern: supplierName }
-          })
-          .then((res) => {
-            // console.log(res.data.result.result)
-            // setSupplierSearch([]);
-            let top100Films = [];
-            let dataResultArr = res.data.result.result;
-            dataResultArr.forEach((element) => {
-              // console.log(element.supplierName);
-              top100Films = [
-                ...top100Films,
-                {
-                  supplierName: element.supplierName,
-                  supplierContactNo: element.supplierContactNo,
-                  id: element._id
-                }
-              ];
-            });
-            if (!top100Films.length) {
-              top100Films = [
+    (async () => {
+      const getData = setTimeout(async () => {
+        // console.log(supplierName);
+        let strLength = supplierName.length;
+        // console.log(strLength);
+        if (strLength >= 3) {
+          // alert(strLength);
+          client
+            .get('/supplier/search', {
+              params: { pattern: supplierName }
+            })
+            .then((res) => {
+              // console.log(res.data.result.result)
+              // setSupplierSearch([]);
+              let top100Films = [];
+              let dataResultArr = res.data.result.result;
+              dataResultArr.forEach((element) => {
+                // console.log(element.supplierName);
+                top100Films = [
+                  ...top100Films,
+                  {
+                    supplierName: element.supplierName,
+                    supplierContactNo: element.supplierContactNo,
+                    id: element._id
+                  }
+                ];
+              });
+              if (!top100Films.length) {
+                top100Films = [
+                  {
+                    supplierName: 'NO DATA FOUND'
+                  }
+                ];
+              }
+              setSupplierSearch(top100Films);
+            })
+            .catch(() => {
+              let top100Films = [
                 {
                   supplierName: 'NO DATA FOUND'
                 }
               ];
-            }
-            setSupplierSearch(top100Films);
-          })
-          .catch(() => {
-            let top100Films = [
-              {
-                supplierName: 'NO DATA FOUND'
-              }
-            ];
-            setSupplierSearch(top100Films);
-          });
-      }
-    }, 300);
-    return () => clearTimeout(getData);
+              setSupplierSearch(top100Films);
+            });
+        }
+      }, 300);
+      return () => clearTimeout(getData);
+    })();
   }, [supplierSearchParm]);
   let [productSearch, setProductSearch] = useState([]);
   const [productSearchParm, setProductSearchParm] = useState('');
   // console.log('prod : ' + prodName);
   useEffect(() => {
-    const getData = setTimeout(() => {
-      // console.log(supplierName);
-      let strLength = prodName.length;
-      // console.log(strLength);
-      if (strLength >= 3) {
-        // alert(strLength);
-        client
-          .get('/stock/search', {
-            params: { pattern: productSearchParm }
-          })
-          .then((res) => {
-            // console.log(res.data.result.result)
-            // setSupplierSearch([]);
-            let top100Films = [];
-            let dataResultArr = res.data.result.result;
-            dataResultArr.forEach((element) => {
-              // console.log(element.supplierName);
-              top100Films = [
-                ...top100Films,
-                {
-                  productName: element.productName
-                }
-              ];
-            });
-            setProductSearch(top100Films);
-          })
-          .catch(() => {});
-      }
-    }, 300);
-    return () => clearTimeout(getData);
+    (async () => {
+      const getData = setTimeout(() => {
+        // console.log(supplierName);
+        let strLength = prodName.length;
+        // console.log(strLength);
+        if (strLength >= 3) {
+          // alert(strLength);
+          client
+            .get('/stock/search', {
+              params: { pattern: productSearchParm }
+            })
+            .then((res) => {
+              // console.log(res.data.result.result)
+              // setSupplierSearch([]);
+              let top100Films = [];
+              let dataResultArr = res.data.result.result;
+              dataResultArr.forEach((element) => {
+                // console.log(element.supplierName);
+                top100Films = [
+                  ...top100Films,
+                  {
+                    productName: element.productName
+                  }
+                ];
+              });
+              setProductSearch(top100Films);
+            })
+            .catch(() => {});
+        }
+      }, 300);
+
+      return () => clearTimeout(getData);
+    })();
   }, [productSearchParm]);
   let changeSupplierId = (e) => {
     //console.log(supplierSearch);

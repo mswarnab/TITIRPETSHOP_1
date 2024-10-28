@@ -218,6 +218,9 @@ export default function ManageStock() {
   };
   useEffect(() => {
     fetchRowData(paginationModel.page);
+    return () => {
+      return null;
+    };
   }, []);
   const [loading, setLoading] = useState(true);
   // console.log(dataRows);
