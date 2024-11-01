@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const client = axios.create({
-  baseURL: 'https://popo-backend-v.vercel.app/',
+  baseURL: 'https://popo-backend-1.onrender.com',
   headers: {
     'Content-Type': 'application/json'
   },
