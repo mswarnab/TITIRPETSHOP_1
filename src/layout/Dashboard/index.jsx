@@ -28,7 +28,7 @@ export default function DashboardLayout() {
       try {
         const response = await client.get('/auth', { withCredentials: true });
       } catch (error) {
-        return navigate('/login');
+        //return navigate('/login');
       }
     })();
     return () => {

@@ -589,7 +589,9 @@ export default function AddPurchase() {
   let onloader = () => {
     setLoading(true);
   };
-
+  let offloader = () => {
+    setLoading(false);
+  };
   let submitPurchaseOrder = () => {
     /// Check mand values
     let flag = 1;
@@ -645,6 +647,7 @@ export default function AddPurchase() {
         addLessAmount: 'NA',
         crDrNote: 'NA'
       };
+      onloader();
       // let baseURL = 'popo-backend-1.onrender.com';
       client
         .post('/purchaseorder', {
@@ -658,6 +661,9 @@ export default function AddPurchase() {
         .catch((err) => {
           setError({ err: true, message: err.response.data.errorMessage });
           setLoading(true);
+        })
+        .finally(() => {
+          offloader();
         });
     }
   };
@@ -897,7 +903,6 @@ export default function AddPurchase() {
           marginTop={3}
           style={{ width: '50%' }}
           onClick={() => {
-            onloader();
             submitPurchaseOrder();
           }}
         >
