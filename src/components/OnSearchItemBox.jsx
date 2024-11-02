@@ -6,11 +6,12 @@ import dayjs from 'dayjs';
 const OnSearchItemBox = ({
   data = { productName: '', quantity: '', sgst: 0, cgst: 0, mrp: 0, expDate: '' },
   result = true,
+  selected = false,
   onSelect,
   onDelete
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
+  //   const [isSelected, setIsSelected] = useState(false);
   return (
     <Box
       sx={{
@@ -19,14 +20,14 @@ const OnSearchItemBox = ({
         // border: '1px solid #cccccc',
         boxShadow: '1px 1px 10px #cccccc',
         borderRadius: '5px',
-        backgroundColor: isHovered || isSelected ? '#f7f4e9' : 'white',
+        backgroundColor: isHovered || selected ? '#f7f4e9' : 'white',
         marginBottom: '10px',
         transition: '0.3s'
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
-        setIsSelected(true);
+        // setIsSelected(!isSelected);
         onSelect(data);
       }}
     >
