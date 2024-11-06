@@ -6,6 +6,7 @@ const LottieAnimation = () => {
   return (
     <div
       style={{
+        position: 'absolute',
         top: 0,
         zIndex: 999999999,
         left: 0,

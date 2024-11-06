@@ -8,9 +8,11 @@ import Divider from '@mui/material/Divider';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { CloseCircleFilled } from '@ant-design/icons';
+
 // import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import { Box, Grid, TextField } from '@mui/material';
+import { Alert, Box, Grid, IconButton, Snackbar, TextField } from '@mui/material';
 import { Stack } from '@mui/system';
 import OnSearchItemBox from './OnSearchItemBox';
 import { debounce } from 'utils/debounce';
@@ -22,7 +24,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog({ open, handleClose }) {
+export default function FullScreenDialog({ open, selectedLots, handleClose, handleAddItemSale }) {
   const [productNameSearch, setProductNameSearch] = useState('');
   const [quantity, setQuantity] = useState('');
   const [sellingPrice, setSellingPrice] = useState('');
@@ -32,17 +34,17 @@ export default function FullScreenDialog({ open, handleClose }) {
 
   useEffect(() => {
     let quantityArr = [];
-
+    let availableQuantity = parseInt(quantity);
     selectedProducts.map((e) => {
-      if (e.quantity >= quantity) {
-        quantityArr = [...quantityArr, { _id: e._id, quantity }];
+      if (e.quantity >= availableQuantity) {
+        quantityArr = [...quantityArr, { _id: e._id, quantity: availableQuantity }];
       } else {
         quantityArr = [...quantityArr, { _id: e._id, quantity: e.quantity }];
+        availableQuantity -= e.quantity;
       }
     });
     setQuantityArray(quantityArr);
   }, [selectedProducts]);
-
   const handleSelectedProductDelete = (id) => {
     const newArray = selectedProducts.filter((e) => e._id != id);
     setSelectedProducts(newArray);
@@ -50,38 +52,114 @@ export default function FullScreenDialog({ open, handleClose }) {
 
   const handleSelectedProducts = async (element) => {
     let matchFound = false;
-    quantityArray.map((e) => {
-      if (e.quantity >= quantity) {
-        matchFound = true;
+    if (parseInt(quantity) > 0) {
+      quantityArray.map((e) => {
+        if (e.quantity >= quantity) {
+          matchFound = true;
+        }
+      });
+      if (!matchFound && !selectedProducts.find((e) => e._id == element._id)) {
+        setSelectedProducts([...selectedProducts, element]);
       }
-    });
-    if (!matchFound && !selectedProducts.find((e) => e._id == element._id)) {
-      setSelectedProducts([...selectedProducts, element]);
+    } else {
+      setError({ err: true, message: 'Please Enter valid Quantity.' });
     }
   };
 
   useEffect(() => {
-    (async () =>
-      client
-        .get('/stock/searchfullproduct?pattern=' + productNameSearch)
-        .then((res) => {
-          const { result } = res.data.result;
-          setProductData(result);
-        })
-        .catch((err) => console.log(err)))();
-    return () => null;
-  }, [productNameSearch]);
+    console.clear();
 
+    productNameSearch?.length &&
+      (async () =>
+        client
+          .get('/stock/searchfullproduct?pattern=' + productNameSearch)
+          .then((res) => {
+            const { result } = res.data.result;
+            if (selectedLots?.length) {
+              console.log(result);
+              let newArray = [];
+              // const newArray = result.filter((e) => {
+              //   const tempObj = selectedLots.find((el) => el._id == e._id);
+              //   console.log(e._id, tempObj?._id);
+              //   if(new)
+              //   return e._id != tempObj?._id || e.quantity != tempObj?.quantity;
+              // });
+
+              result.map((e) => {
+                const tempObj = selectedLots.find((el) => el._id == e._id);
+                if (tempObj) {
+                  if (parseInt(e.quantity - tempObj.quantity) != 0) {
+                    newArray = [...newArray, { ...tempObj, quantity: e.quantity - tempObj.quantity }];
+                  }
+                } else {
+                  newArray = [...newArray, e];
+                }
+              });
+
+              setProductData(newArray);
+            } else {
+              setProductData(result);
+            }
+          })
+          .catch((err) => console.log(err)))();
+    return () => null;
+  }, [productNameSearch, open]);
+
+  let addSaleItem = () => {
+    let message = '';
+    if (quantityArray?.length == 0) {
+      message = 'Select atlease one product.';
+    } else if (sellingPrice == '') {
+      message = 'Please enter selling price.';
+    } else if (sellingPrice == 0) {
+      message = 'Selling price must be greater than 0.';
+    }
+    if (message == '') {
+      handleAddItemSale(selectedProducts, quantityArray, sellingPrice);
+      setProductNameSearch('');
+      setQuantity('');
+      setSellingPrice('');
+      setProductData([]);
+      setSelectedProducts([]);
+      setQuantityArray([]);
+    } else {
+      setError({ err: true, message });
+    }
+  };
+  const [error, setError] = useState('');
+  let handleCloseSnackBar = () => {
+    setError('');
+  };
+  let vertical = 'top';
+  let horizontal = 'center';
   return (
     <React.Fragment>
-      {console.log(quantityArray)}
+      {/* {console.log(selectedProducts)} */}
       <Dialog fullScreen open={open} onClose={() => handleClose()} TransitionComponent={Transition}>
+        <Snackbar
+          anchorOrigin={{ vertical, horizontal }}
+          open={error ? true : false}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackBar}
+          // action={action}
+          key={vertical + horizontal}
+        >
+          {error && (
+            <Alert severity={error && error.err ? 'error' : 'success'} variant="filled" sx={{ width: '100%' }}>
+              {error.message}
+            </Alert>
+          )}
+        </Snackbar>
+
         <AppBar sx={{ position: 'fixed' }} color="default" style={{ boxShadow: 'none' }}>
           <Toolbar style={{ justifyContent: 'space-between' }}>
+            <IconButton onClick={() => handleClose()}>
+              <CloseCircleFilled />
+            </IconButton>
             <Typography variant="h3" marginLeft={'25px'}>
               Add Items for Sale
             </Typography>
-            <Button autoFocus color="success" variant="contained" onClick={() => handleClose()}>
+            <Button autoFocus color="success" variant="contained" onClick={() => addSaleItem()}>
               Add
             </Button>
           </Toolbar>
@@ -124,8 +202,9 @@ export default function FullScreenDialog({ open, handleClose }) {
               <Box>
                 {selectedProducts.map((e) => {
                   if (productData.find((el) => e._id == el._id)) {
-                    return <OnSearchItemBox data={e} result={true} selected={true} onDelete={handleSelectedProductDelete} />;
-                  } else return <OnSearchItemBox data={e} result={true} selected={false} onDelete={handleSelectedProductDelete} />;
+                    return <OnSearchItemBox data={e} result={true} selected={true} added={false} onDelete={handleSelectedProductDelete} />;
+                  } else
+                    return <OnSearchItemBox data={e} result={true} selected={false} added={false} onDelete={handleSelectedProductDelete} />;
                 })}
               </Box>
             </Stack>
@@ -139,8 +218,9 @@ export default function FullScreenDialog({ open, handleClose }) {
                 <Stack overflow={'auto'} height={'600px'}>
                   {productData.map((e) => {
                     if (selectedProducts.find((el) => el._id == e._id)) {
-                      return <OnSearchItemBox result={false} selected={true} data={e} onSelect={handleSelectedProducts} />;
-                    } else return <OnSearchItemBox result={false} selected={false} data={e} onSelect={handleSelectedProducts} />;
+                      return <OnSearchItemBox result={false} selected={true} added={false} data={e} onSelect={handleSelectedProducts} />;
+                    } else
+                      return <OnSearchItemBox result={false} selected={false} added={false} data={e} onSelect={handleSelectedProducts} />;
                   })}
                 </Stack>
               </Stack>

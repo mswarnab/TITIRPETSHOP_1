@@ -56,6 +56,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       return null;
     };
   }, [rowData]);
+
   let changeDataOnClick = (event) => {
     let objName = event.target.name;
     let objValue = event.target.value;
@@ -234,6 +235,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               labelId="sgstLavel"
               id="catagory"
               value={formData.catagory}
+              defaultValue={rowData.productCategory}
               displayEmpty
               name="catagory"
               onChange={changeDataOnClick}
@@ -252,6 +254,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               freeSolo
               required
               options={prodSearch.map((option) => option.productName)}
+              defaultValue={rowData.productName}
               value={formData.name}
               name="name"
               disableClearable="true"
@@ -374,6 +377,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               labelId="sgstLavel"
               id="demo-simple-select-helper"
               value={formData.sgstperc}
+              defaultValue={rowData.sgstPerc}
               displayEmpty
               name="sgstperc"
               onChange={changeDataOnClick}
@@ -395,6 +399,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               value={formData.cgstPerc}
+              defaultValue={rowData.cgstPerc}
               displayEmpty
               name="cgstPerc"
               onChange={changeDataOnClick}

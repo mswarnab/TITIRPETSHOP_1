@@ -148,7 +148,7 @@ export default function SupplierUpdate({ open, handleClose, data }) {
             variant="standard"
           />
           <Typography variant="h5" sx={{ pt: 3 }}>
-            Total Due Amount: ₹{data.creditAmount}
+            Total Due Amount: ₹{data.totalDue}
           </Typography>
         </DialogContent>
         <DialogActions style={{ paddingBottom: '40px', paddingRight: '40px' }}>

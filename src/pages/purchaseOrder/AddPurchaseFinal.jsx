@@ -592,6 +592,7 @@ export default function AddPurchase() {
   let offloader = () => {
     setLoading(false);
   };
+
   let submitPurchaseOrder = () => {
     /// Check mand values
     let flag = 1;
@@ -613,6 +614,7 @@ export default function AddPurchase() {
     }
     // alert('hi');
     if (flag) {
+      onloader();
       let stockBody = [];
       stockData.forEach((e) => {
         let splitSupplierName = supplierName.split('--');
@@ -664,7 +666,12 @@ export default function AddPurchase() {
         })
         .finally(() => {
           offloader();
+        })
+        .finally(() => {
+          offloader();
         });
+    } else {
+      offloader();
     }
   };
   const [error, setError] = React.useState('');
@@ -750,7 +757,7 @@ export default function AddPurchase() {
                 top100Films = [
                   ...top100Films,
                   {
-                    productName: element.productName
+                    productName: element
                   }
                 ];
               });
@@ -763,6 +770,7 @@ export default function AddPurchase() {
       return () => clearTimeout(getData);
     })();
   }, [productSearchParm]);
+  // console.log(productSearch);
   let changeSupplierId = (e) => {
     //console.log(supplierSearch);
     let name = e;
