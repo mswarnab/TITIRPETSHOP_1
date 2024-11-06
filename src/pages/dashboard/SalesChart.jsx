@@ -16,83 +16,90 @@ import MainCard from 'components/MainCard';
 
 // third-party
 import ReactApexChart from 'react-apexcharts';
+import { client } from 'api/client';
+import dayjs from 'dayjs';
 
 // chart options
-const columnChartOptions = {
-  chart: {
-    type: 'bar',
-    height: 430,
-    toolbar: {
-      show: false
-    }
-  },
-  plotOptions: {
-    bar: {
-      columnWidth: '30%',
-      borderRadius: 4
-    }
-  },
-  dataLabels: {
-    enabled: false
-  },
-  stroke: {
-    show: true,
-    width: 8,
-    colors: ['transparent']
-  },
-  xaxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-  },
-  yaxis: {
-    title: {
-      text: '$ (thousands)'
-    }
-  },
-  fill: {
-    opacity: 1
-  },
-  tooltip: {
-    y: {
-      formatter(val) {
-        return `$ ${val} thousands`;
-      }
-    }
-  },
-  legend: {
-    show: false
-  },
-  responsive: [
-    {
-      breakpoint: 600,
-      options: {
-        yaxis: {
-          show: false
-        }
-      }
-    }
-  ]
-};
-
-const initialSeries = [
-  {
-    name: 'Income',
-    data: [12000, 25000, 13500, 11400, 12000, 22000]
-  },
-  {
-    name: 'Cost Of Sales',
-    data: [18000, 35000, 27000, 15000, 16800, 25000]
-  }
-];
 
 // ==============================|| SALES COLUMN CHART ||============================== //
 
-export default function SalesChart() {
+export default function SalesChart({ duration }) {
   const theme = useTheme();
+
+  const [columnChartOptions, setColumnChartOptions] = useState({
+    chart: {
+      type: 'bar',
+      height: 430,
+      toolbar: {
+        show: false
+      }
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '30%',
+        borderRadius: 4
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 8,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: []
+    },
+    yaxis: {
+      title: {
+        text: '₹ (Rupees)'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter(val) {
+          return `₹ ${val} rupees`;
+        }
+      }
+    },
+    legend: {
+      show: false
+    },
+    responsive: [
+      {
+        breakpoint: 600,
+        options: {
+          yaxis: {
+            show: false
+          }
+        }
+      }
+    ]
+  });
+
+  const [costSeries, setCostSeries] = useState([]);
+  const [profitSeries, setProfitSeries] = useState([]);
+  const [dateSeries, setDateSeries] = useState([]);
 
   const [legend, setLegend] = useState({
     income: true,
     cos: true
   });
+
+  const [initialSeries, setInitialSeries] = useState([
+    {
+      name: 'Income',
+      data: [...profitSeries]
+    },
+    {
+      name: 'Cost Of Sales',
+      data: [...costSeries]
+    }
+  ]);
 
   const { income, cos } = legend;
 
@@ -104,6 +111,7 @@ export default function SalesChart() {
   const successDark = theme.palette.success.dark;
 
   const [series, setSeries] = useState(initialSeries);
+  const [totalProfit, setTotalProfit] = useState(0);
 
   const handleLegendChange = (event) => {
     setLegend({ ...legend, [event.target.name]: event.target.checked });
@@ -113,26 +121,92 @@ export default function SalesChart() {
   const [options, setOptions] = useState(columnChartOptions);
 
   useEffect(() => {
+    setOptions({
+      chart: {
+        type: 'bar',
+        height: 430,
+        toolbar: {
+          show: false
+        }
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: '30%',
+          borderRadius: 4
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        show: true,
+        width: 8,
+        colors: ['transparent']
+      },
+      xaxis: {
+        categories: [...dateSeries]
+      },
+      yaxis: {
+        title: {
+          text: '₹ (Rupees)'
+        }
+      },
+      fill: {
+        opacity: 1
+      },
+      tooltip: {
+        y: {
+          formatter(val) {
+            return `₹ ${val} rupees`;
+          }
+        }
+      },
+      legend: {
+        show: false
+      },
+      responsive: [
+        {
+          breakpoint: 600,
+          options: {
+            yaxis: {
+              show: false
+            }
+          }
+        }
+      ]
+    });
+  }, [dateSeries]);
+
+  useEffect(() => {
     if (income && cos) {
-      setSeries(initialSeries);
+      setSeries([
+        {
+          name: 'Total Profit',
+          data: [...profitSeries]
+        },
+        {
+          name: 'Total sales',
+          data: [...costSeries]
+        }
+      ]);
     } else if (income) {
       setSeries([
         {
-          name: 'Total Cost Of Purchase',
-          data: [12000, 8000, 6000, 11000, 12000, 14500]
+          name: 'Total Profit',
+          data: [...profitSeries]
         }
       ]);
     } else if (cos) {
       setSeries([
         {
-          name: 'Total Cost Of Sales',
-          data: [18000, 13500, 7890, 15000, 16800, 22000]
+          name: 'Total Sales',
+          data: [...costSeries]
         }
       ]);
     } else {
       setSeries([]);
     }
-  }, [income, cos]);
+  }, [income, cos, profitSeries, costSeries, dateSeries]);
 
   useEffect(() => {
     setOptions((prevState) => ({
@@ -162,6 +236,48 @@ export default function SalesChart() {
       }
     }));
   }, [primary, secondary, line, warning, primaryMain, successDark, income, cos, xsDown]);
+  useEffect(() => {
+    (async () => {
+      console.clear();
+      console.log('duration', duration);
+      client.get('/sales/profit?duration=' + duration).then((res) => {
+        let date = '';
+        let tempProfitArray = [];
+        let tempCostArray = [];
+        let tempDateArray = [];
+        let totalProfit = 0;
+        res.data.result.result.map((e) => {
+          switch (duration.toUpperCase()) {
+            case 'YEARLY':
+              date = dayjs(e.date).format('YYYY');
+              break;
+            case 'QUARTERLY':
+              date = dayjs(e.date).format('MMMM');
+              break;
+            case 'MONTHLY':
+              date = dayjs(e.date).format('MMMM');
+              break;
+            case 'WEEKLY':
+              date = dayjs(e.date).format('MMM-DD');
+              break;
+            case 'DAILY':
+              date = dayjs(e.date).format('dddd');
+              break;
+            default:
+              break;
+          }
+          totalProfit += e.result[0]?.totalProfitSum || 0;
+          tempProfitArray = [...tempProfitArray, e.result[0]?.totalProfitSum || 0];
+          tempCostArray = [...tempCostArray, e.result[0]?.totalSoldSum ? parseFloat(e.result[0]?.totalSoldSum) : 0];
+          tempDateArray = [...tempDateArray, date];
+        });
+        setCostSeries(tempCostArray);
+        setProfitSeries(tempProfitArray);
+        setDateSeries(tempDateArray);
+        setTotalProfit(totalProfit);
+      });
+    })();
+  }, [duration]);
 
   return (
     <MainCard sx={{ mt: 1 }} content={false}>
@@ -171,15 +287,15 @@ export default function SalesChart() {
             <Typography variant="h6" color="secondary">
               Net Profit
             </Typography>
-            <Typography variant="h4">1,59,960</Typography>
+            <Typography variant="h4">₹{totalProfit}</Typography>
           </Stack>
           <FormControl component="fieldset">
             <FormGroup row>
               <FormControlLabel
-                control={<Checkbox color="warning" checked={income} onChange={handleLegendChange} name="Income" />}
-                label="Total Cost Of Purchase"
+                control={<Checkbox color="warning" checked={income} onChange={handleLegendChange} name="income" />}
+                label="Total Profit"
               />
-              <FormControlLabel control={<Checkbox checked={cos} onChange={handleLegendChange} name="cos" />} label="Total Cost of Sales" />
+              <FormControlLabel control={<Checkbox checked={cos} onChange={handleLegendChange} name="cos" />} label="Total Sales" />
             </FormGroup>
           </FormControl>
         </Stack>

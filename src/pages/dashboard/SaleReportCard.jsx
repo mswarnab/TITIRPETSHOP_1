@@ -12,23 +12,31 @@ import SalesChart from './SalesChart';
 // sales report status
 const status = [
   {
-    value: 'today',
-    label: 'Today'
+    value: 'daily',
+    label: 'Daily'
   },
   {
-    value: 'month',
-    label: 'This Month'
+    value: 'weekly',
+    label: 'Weekly'
   },
   {
-    value: 'year',
-    label: 'This Year'
+    value: 'monthly',
+    label: 'Monthly'
+  },
+  {
+    value: 'quarterly',
+    label: 'Quarterly'
+  },
+  {
+    value: 'yearly',
+    label: 'Yearly'
   }
 ];
 
 // ==============================|| DEFAULT - SALES REPORT ||============================== //
 
 export default function SaleReportCard() {
-  const [value, setValue] = useState('today');
+  const [value, setValue] = useState('weekly');
 
   return (
     <>
@@ -46,14 +54,14 @@ export default function SaleReportCard() {
             sx={{ '& .MuiInputBase-input': { py: 0.75, fontSize: '0.875rem' } }}
           >
             {status.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
+              <MenuItem key={option.value} value={option.value} onClick={(e) => setValue(e.target.value)}>
                 {option.label}
               </MenuItem>
             ))}
           </TextField>
         </Grid>
       </Grid>
-      <SalesChart />
+      <SalesChart duration={value} />
     </>
   );
 }

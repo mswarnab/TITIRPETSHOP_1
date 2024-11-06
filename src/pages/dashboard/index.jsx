@@ -70,6 +70,7 @@ export default function DashboardDefault() {
   const { totalSale = 100, percentage = 20, extraSale = 2000 } = sales;
   const [totalSales, setTotalSales] = useState('');
   const [weeklyTotalSales, setWeeklyTotalSales] = useState('');
+  const [purchaseOrdersWithAmountDue, setPurchaseOrdersWithAmountDue] = useState([]);
 
   const [totalCustomers, setTotalCustomers] = useState('');
   const [expiredProducts, setExpiredProducts] = useState('');
@@ -99,6 +100,10 @@ export default function DashboardDefault() {
 
       client.get('/customer/totaldue').then((res) => {
         setTotalCustomers({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
+      });
+
+      client.get('/purchaseorder?page=0&filterByCreditAmountGte=1&filterByCreditAmountLte=9999999999').then((res) => {
+        setPurchaseOrdersWithAmountDue(res.data.result.result);
       });
     })();
 
@@ -213,118 +218,31 @@ export default function DashboardDefault() {
               }
             }}
           >
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="ABCD PVT Limited" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    25,000
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
+            {purchaseOrdersWithAmountDue.length &&
+              purchaseOrdersWithAmountDue.map((e) => {
+                const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
+                return (
+                  <ListItemButton divider>
+                    <ListItemAvatar>
+                      <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
+                        <GiftOutlined />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={<Typography variant="subtitle1">Order #{invoiceNumber}</Typography>} secondary={supplierName} />
+                    <ListItemSecondaryAction>
+                      <Stack alignItems="flex-end">
+                        <Typography variant="subtitle1" noWrap>
+                          ₹{cerditAmount}
+                        </Typography>
+                        <Typography variant="h6" color="secondary" noWrap>
+                          {dayjs(dueDate).format('YYYY-MM-DD')}
+                        </Typography>
+                      </Stack>
+                    </ListItemSecondaryAction>
+                  </ListItemButton>
+                );
+              })}
 
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="ABCD PVT Limited" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    25,000
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="ABCD PVT Limited" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    25,000
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="ABCD PVT Limited" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    25,000
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="ABCD PVT Limited" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    25,000
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
-            <ListItemButton divider>
-              <ListItemAvatar>
-                <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                  <GiftOutlined />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={<Typography variant="subtitle1">Order #002434</Typography>} secondary="ABCD PVT Limited" />
-              <ListItemSecondaryAction>
-                <Stack alignItems="flex-end">
-                  <Typography variant="subtitle1" noWrap>
-                    25,000
-                  </Typography>
-                  <Typography variant="h6" color="secondary" noWrap>
-                    23-10-2024
-                  </Typography>
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItemButton>
             {/* <ListItemButton divider>
               <ListItemAvatar>
                 <Avatar sx={{ color: 'primary.main', bgcolor: 'primary.lighter' }}>
