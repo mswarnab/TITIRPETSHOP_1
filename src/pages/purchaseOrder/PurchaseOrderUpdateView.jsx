@@ -7,50 +7,48 @@ import MainCard from 'components/MainCard';
 import CustomerTable from 'pages/dashboard/CustomerTable';
 import { client } from 'api/client';
 import dayjs from 'dayjs';
+import PurchaseTable from 'pages/dashboard/PurchaseTable';
 
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: '1rem'
-};
-
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-  transform: 'none'
-};
-
-const data = {
-  sales: {
-    totalSale: 250000,
-    percentage: 29,
-    extraSale: 2000
-  },
-  stock: {
-    expiredProducts: 299,
-    expiryDate: 2024 - 10
-  },
-  customer: {
-    totalCustomer: 280,
-    totalCreditInMarket: 29000
-  },
-  purchaseOrder: {
-    totalOrders: 188
-  },
-  supplier: {
-    totalDue: 19999,
-    totalSuppliers: 6
-  }
-};
 // let id = 0;
-function createData(id, invoiceNumber, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount, modeOfPayment) {
+function createData(
+  id,
+  invoiceNumber,
+  grandTotalAmount,
+  dateOfPruchase,
+  cerditAmount,
+  paidAmount,
+  modeOfPayment,
+  _id,
+  addLessAmount,
+  cgst,
+  crDrNote,
+  discount,
+  dueDate,
+  sgst,
+  supplierId,
+  totalAmount,
+  __v
+) {
   // id = id + 1;
-  return { id, invoiceNumber, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount, modeOfPayment };
+  return {
+    id,
+    invoiceNumber,
+    grandTotalAmount,
+    dateOfPruchase,
+    cerditAmount,
+    paidAmount,
+    modeOfPayment,
+    _id,
+    addLessAmount,
+    cgst,
+    crDrNote,
+    discount,
+    dueDate,
+    sgst,
+    supplierId,
+    totalAmount,
+    __v
+  };
 }
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
@@ -59,14 +57,15 @@ export default function ManagePurchaseOrder() {
   let pageSize = 20;
   // let paginationCount = (50/;
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedData] = useState([]);
+  const [selectedData, setSelectedData] = useState([]);
   const handleClickOpen = (value) => {
-    console.log(value);
+    // console.log(value);
     setSelectedData(value.row);
     setOpen(true);
   };
 
   const handleClose = () => {
+    fetchRowData(paginationModel.page);
     setOpen(false);
   };
 
@@ -83,7 +82,7 @@ export default function ManagePurchaseOrder() {
       width: 160
     },
     {
-      field: 'dateOfPurchase',
+      field: 'dateOfPruchase',
       headerName: 'Date Of Purchase',
       //   description: 'This column has a value getter and is not sortable.',
       sortable: true,
@@ -109,7 +108,7 @@ export default function ManagePurchaseOrder() {
       width: 160
     },
     {
-      field: 'creditAmount',
+      field: 'cerditAmount',
       headerName: 'Due Amount',
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
@@ -136,7 +135,7 @@ export default function ManagePurchaseOrder() {
     client
       .get('/purchaseorder?page=' + page)
       .then((res) => {
-        // console.log(res.data.result.result);
+        console.log(res.data.result.result);
         let count = res.data.result.count;
         let pagiCount = Math.ceil(count / pageSize);
         setPaginationCount(pagiCount);
@@ -155,7 +154,16 @@ export default function ManagePurchaseOrder() {
             value.cerditAmount,
             value.paidAmount,
             value.modeOfPayment,
-            value._id
+            value._id,
+            value.addLessAmount,
+            value.cgst,
+            value.crDrNote,
+            value.discount,
+            value.dueDate,
+            value.sgst,
+            value.supplierId,
+            value.totalAmount,
+            value.__v
           );
           // console;
           newData = [...newData, createdData];
@@ -191,9 +199,9 @@ export default function ManagePurchaseOrder() {
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <CustomerTable
+          <PurchaseTable
             paginationCount={paginationCount}
-            selectedDate={selectedDate}
+            selectedData={selectedData}
             paginationModel={paginationModel}
             rows={rows}
             pageChange={pageChange}

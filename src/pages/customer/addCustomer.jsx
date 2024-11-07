@@ -9,6 +9,7 @@ import MainCard from 'components/MainCard';
 import { Alert, Snackbar, TextField } from '@mui/material';
 import { useState } from 'react';
 import { client } from 'api/client';
+import LottieAnimation from 'components/loaderDog';
 
 // avatar style
 const avatarSX = {
@@ -69,6 +70,7 @@ export default function AddCustomer() {
     setAddCustomerData(newArr);
   };
   let addCustomerName = () => {
+    setLoading(true);
     let flag = 1;
     if (addCustomerData.customerName == '') {
       setCheckCustomerName('Please enter customer name.');
@@ -82,17 +84,28 @@ export default function AddCustomer() {
       client
         .post('/customer', addCustomerData)
         .then((res) => {
-          // setAddCustomerData([]);
+          setAddCustomerData({ customerName: '', customerContactNo: '', customerEmail: '', customerAddress: '' });
           // console.log(res);
+          setLoading(false);
           setError({ err: false, message: res.data.message });
         })
-        .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+        .catch((err) => {
+          setError({ err: true, message: err.response.data.errorMessage });
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
   };
   const [error, setError] = React.useState('');
   let handleCloseSnackBar = () => {
     setError('');
   };
+  const [loading, setLoading] = useState(false);
+  // console.log(rows);
+  if (loading) {
+    return <LottieAnimation />;
+  }
   let vertical = 'top';
   let horizontal = 'center';
   return (
@@ -142,7 +155,7 @@ export default function AddCustomer() {
               id="customerContactNo"
               name="customerContactNo"
               label="Mobile No."
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               autoComplete="off"

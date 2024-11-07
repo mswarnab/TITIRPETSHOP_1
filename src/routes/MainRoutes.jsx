@@ -16,7 +16,7 @@ import { element } from 'prop-types';
 import PageNotFoundAnimation from '../../src/components/pageNotFound';
 import ExpiryDateProducts from 'pages/extra-pages/ExpiryDateProducts';
 import ManagePurchaseOrder from 'pages/purchaseOrder/PurchaseOrderUpdateView';
-
+import ManageSaleView from 'pages/sales/SaleUpdateView';
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
 const Shadow = Loadable(lazy(() => import('pages/component-overview/shadows')));
@@ -51,6 +51,10 @@ const MainRoutes = {
     {
       path: '/sale/add',
       element: <AddSale />
+    },
+    {
+      path: '/sale/manage',
+      element: <ManageSaleView />
     },
     {
       path: '/customer/add',
