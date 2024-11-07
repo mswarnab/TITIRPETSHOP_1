@@ -26,7 +26,7 @@
     "@fontsource/roboto": "^5.0.12",
     "@mui/base": "^5.0.0-beta.38",
     "@mui/lab": "^5.0.0-alpha.167",
-    "@mui/material": "^5.16.7",
+    "@mui/material": "^5.15.12",
     "@mui/system": "^5.15.12",
     "@mui/x-data-grid": "^7.18.0",
     "@mui/x-date-pickers": "^7.19.0",
