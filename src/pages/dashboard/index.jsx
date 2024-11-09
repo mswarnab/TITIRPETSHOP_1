@@ -142,20 +142,20 @@ export default function DashboardDefault() {
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           title="Total due to suppliers"
-          count={'₹' + totalSupplierDue.amount}
+          count={'₹' + (totalSupplierDue.amount || 0)}
           isLoss
           color="warning"
           extraLabel={'Total amount due'}
-          extra={` to ${totalSupplierDue.count} suppliers.`}
+          extra={` to ${totalSupplierDue.count || 0} suppliers.`}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           title="Total amount due from customers"
-          count={'₹' + totalCustomers.amount}
-          percentage={percentage}
+          count={'₹' + (totalCustomers.amount || 0)}
+          // percentage={percentage}
           extraLabel={'You have payment due for '}
-          extra={totalCustomers.count + ' customer(s)'}
+          extra={totalCustomers.count || 0 + ' customer(s)'}
         />
       </Grid>
 
@@ -174,7 +174,7 @@ export default function DashboardDefault() {
               <Typography variant="h6" color="text.secondary">
                 This Week's Sales report
               </Typography>
-              <Typography variant="h3">₹{weeklyTotalSales}</Typography>
+              <Typography variant="h3">₹{weeklyTotalSales || 0}</Typography>
             </Stack>
           </Box>
           <MonthlyBarChart onTotalSaleChange={(value) => setWeeklyTotalSales(value)} />
@@ -218,30 +218,34 @@ export default function DashboardDefault() {
               }
             }}
           >
-            {purchaseOrdersWithAmountDue.length &&
-              purchaseOrdersWithAmountDue.map((e) => {
-                const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
-                return (
-                  <ListItemButton divider>
-                    <ListItemAvatar>
-                      <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                        <GiftOutlined />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={<Typography variant="subtitle1">Order #{invoiceNumber}</Typography>} secondary={supplierName} />
-                    <ListItemSecondaryAction>
-                      <Stack alignItems="flex-end">
-                        <Typography variant="subtitle1" noWrap>
-                          ₹{cerditAmount}
-                        </Typography>
-                        <Typography variant="h6" color="secondary" noWrap>
-                          {dayjs(dueDate).format('YYYY-MM-DD')}
-                        </Typography>
-                      </Stack>
-                    </ListItemSecondaryAction>
-                  </ListItemButton>
-                );
-              })}
+            {purchaseOrdersWithAmountDue.length
+              ? purchaseOrdersWithAmountDue.map((e) => {
+                  const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
+                  return (
+                    <ListItemButton divider>
+                      <ListItemAvatar>
+                        <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
+                          <GiftOutlined />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={<Typography variant="subtitle1">Order #{invoiceNumber}</Typography>}
+                        secondary={supplierName}
+                      />
+                      <ListItemSecondaryAction>
+                        <Stack alignItems="flex-end">
+                          <Typography variant="subtitle1" noWrap>
+                            ₹{cerditAmount}
+                          </Typography>
+                          <Typography variant="h6" color="secondary" noWrap>
+                            {dayjs(dueDate).format('YYYY-MM-DD')}
+                          </Typography>
+                        </Stack>
+                      </ListItemSecondaryAction>
+                    </ListItemButton>
+                  );
+                })
+              : ''}
 
             {/* <ListItemButton divider>
               <ListItemAvatar>

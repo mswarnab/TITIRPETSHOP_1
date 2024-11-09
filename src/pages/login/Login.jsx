@@ -33,7 +33,7 @@ function Login() {
   useEffect(() => {
     (async () => {
       await client.get('/auth');
-      // navigate('/');
+      navigate('/');
       return () => {
         return null;
       };
@@ -50,7 +50,7 @@ function Login() {
       .post('/auth/login', { user: userData }, { withCredentials: true })
       .then((res) => {
         setLoginStatus('SUCCESS');
-        //return navigate('/');
+        return navigate('/');
 
         return null;
       })
