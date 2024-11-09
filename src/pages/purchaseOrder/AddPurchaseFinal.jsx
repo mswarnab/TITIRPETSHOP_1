@@ -680,7 +680,8 @@ export default function AddPurchase() {
               if (!top100Films.length) {
                 top100Films = [
                   {
-                    supplierName: 'NO DATA FOUND'
+                    supplierName: 'NO DATA FOUND',
+                    supplierContactNo: ''
                   }
                 ];
               }
@@ -689,7 +690,8 @@ export default function AddPurchase() {
             .catch(() => {
               let top100Films = [
                 {
-                  supplierName: 'NO DATA FOUND'
+                  supplierName: 'NO DATA FOUND',
+                  supplierContactNo: ''
                 }
               ];
               setSupplierSearch(top100Films);
