@@ -27,8 +27,11 @@ export default function DashboardLayout() {
     (async () => {
       try {
         const response = await client.get('/auth', { withCredentials: true });
+        if (response.data.status == '200') {
+          setLoggedIn(true);
+        }
       } catch (error) {
-        //return navigate('/login');
+        setLoggedIn(false);
       }
     })();
     return () => {
@@ -36,6 +39,11 @@ export default function DashboardLayout() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!loggedIn) {
+      return navigate('/login');
+    }
+  }, [loggedIn]);
   useEffect(() => {
     handlerDrawerOpen(!downXL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
