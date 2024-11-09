@@ -81,7 +81,6 @@ export default function NavItem({ item, level }) {
           }
         })
       }}
-
     >
       {itemIcon && (
         <ListItemIcon

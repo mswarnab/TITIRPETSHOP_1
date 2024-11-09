@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -6,120 +6,242 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Slide, Typography } from '@mui/material';
+import {
+  Alert,
+  Chip,
+  Divider,
+  FormControlLabel,
+  Paper,
+  Slide,
+  Snackbar,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@mui/material';
+import { client } from 'api/client';
+import dayjs from 'dayjs';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function SaleUpdate({ open, selectedDate, handleClose }) {
-  console.log(selectedDate);
-  const [formData, setFormData] = useState({
-    id: '',
-    billNumber: '',
-    dateOfBilling: '',
-    customerName: '',
-    dueAmount: '0',
-    paidAmount: '',
-    sellTotalAmount: '',
-    _id: ''
+export default function SaleUpdate({ open, selectedData, handleClose }) {
+  // console.log(selectedData);
+  const [saleUpdateForm, setSaleUpdateForm] = useState({
+    paidAmount: 0
   });
-  let changeValue = (event) => {
-    let eventValue = event.target.value;
-    let eventName = event.target.name;
-    if (formData.id != selectedDate.id) {
-      formData.id == selectedDate.id;
-    }
-    let newData = [...formData];
-    newData[eventName] = eventValue;
-    setFormData(newData);
+
+  // let changeValue = (event) => {
+  //   let eventValue = event.target.value;
+  //   let eventName = event.target.name;
+  //   if (formData.id != selectedDate.id) {
+  //     formData.id == selectedDate.id;
+  //   }
+  //   let newData = [...supplierUpdateForm];
+  //   newData[eventName] = eventValue;
+  //   setFormData(newData);
+  // };
+  let updateSaleOrder = () => {
+    let id = selectedData._id;
+    client
+      .put('/sales/' + id, saleUpdateForm)
+      .then((res) => {
+        setError({ err: false, message: res.data.message });
+        handleClose();
+        setSaleUpdateForm({
+          paidAmount: 0
+        });
+      })
+      .catch();
   };
-  let handleUpdate = (data) => {};
+  const [error, setError] = useState('');
+  let handleCloseSnackBar = () => {
+    setError('');
+  };
+  let vertical = 'top';
+  let horizontal = 'center';
+  const [fullPaid, setFullPaid] = useState(false);
+  // console.log(purchaseUpdateForm.paidAmount);
+  const [prodValue, setProdValue] = useState([]);
+  useEffect(() => {
+    (async () => {
+      if (selectedData?._id) {
+        client
+          .get('/sales/' + selectedData._id)
+          .then((res) => {
+            // console.log(res.data.result.result.products);
+            let productData = res.data.result.result.products;
+            setProdValue(productData);
+          })
+          .catch();
+      }
+    })();
+  }, [selectedData]);
+  let handleChangeFullPaid = () => {
+    if (!fullPaid) {
+      setSaleUpdateForm({ ...saleUpdateForm, paidAmount: parseFloat(selectedData.dueAmount) });
+    } else {
+      setSaleUpdateForm({ ...saleUpdateForm, paidAmount: 0 });
+    }
+    setFullPaid(!fullPaid);
+  };
+  let deleteSaleOrder = () => {
+    client
+      .delete('/sales/' + selectedData._id)
+      .then((res) => {
+        setError({ error: false, message: res.data.message });
+        handleClose();
+      })
+      .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+  };
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={error ? true : false}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackBar}
+        // action={action}
+        key={vertical + horizontal}
+      >
+        {error && (
+          <Alert severity={error && error.err ? 'error' : 'success'} variant="filled" sx={{ width: '100%' }}>
+            {error.message}
+          </Alert>
+        )}
+      </Snackbar>
+
       <Dialog
         open={open}
+        fullWidth="true"
+        maxWidth="lg"
         onClose={() => handleClose()}
         TransitionComponent={Transition}
         PaperProps={{
-          component: 'form',
-          onSubmit: (event) => {
-            // event.preventDefault();
-            // const formData = new FormData(event.currentTarget);
-            // const formJson = Object.fromEntries(formData.entries());
-            // const email = formJson.email;
-            // console.log(email);
-            // handleClose();
-          }
+          component: 'form'
         }}
       >
         <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
-          Update Customer
+          Update Purchase order
         </DialogTitle>
         <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
-          <DialogContentText>Update Existing Customer</DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="normal"
-            id="billNumber"
-            name="billNumber"
-            label="Bill Number"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={formData.billNumber ? formData.billNumber : selectedDate.billNumber}
-            onChange={changeValue}
-          />
-          <TextField
-            required
-            margin="normal"
-            id="customerName"
-            name="customerName"
-            label="Customer Name"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={formData.customerName ? formData.customerName : selectedDate.customerName}
-            onChange={changeValue}
-          />
-          <TextField
-            autoFocus
-            required
-            margin="normal"
-            id="email"
-            name="email"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="standard"
-            value={formData.email ? formData.email : selectedDate.email}
-            onChange={changeValue}
-          />
-          <TextField
-            autoFocus
-            required
-            margin="normal"
-            id="address"
-            name="address"
-            label="Address"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formData.address ? formData.address : selectedDate.address}
-            onChange={changeValue}
-          />
-          {/* <Typography variant='h5' sx={{pt:3}}>Total Due Amount:  ₹{15299}</Typography> */}
+          <DialogContentText>Update Existing Purchase Order</DialogContentText>
+          <Stack direction="row" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h6" sx={{ pt: 1 }}>
+              Bill Number: {selectedData?.paidAmount}
+            </Typography>
+            <Typography variant="h6" sx={{ pt: 1 }}>
+              Bill Date: {dayjs(selectedData?.dateOfBilling).format('YYYY-MM-DD')}
+            </Typography>
+            <Typography variant="h6" sx={{ pt: 1 }}>
+              Total Sell Amount: ₹{selectedData?.sellTotalAmount}
+            </Typography>
+          </Stack>
+          <Stack direction="row" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* <Typography variant="h6" sx={{ pt: 1 }}>
+              Payment Mode: {supplierUpdateForm.modeOfPayment}
+            </Typography> */}
+            {selectedData?.cerditAmount <= 0 ? (
+              <Typography variant="h6" sx={{ pt: 1 }}>
+                Paid Amount: ₹{selectedData?.paidAmount}
+              </Typography>
+            ) : (
+              ''
+            )}
+            <Typography variant="h6" sx={{ pt: 1 }}>
+              Total Due Amount: ₹{selectedData?.dueAmount}
+            </Typography>
+          </Stack>
+
+          {selectedData?.dueAmount > 0 ? (
+            <>
+              <FormControlLabel
+                control={<Switch checked={fullPaid} onChange={handleChangeFullPaid} aria-label="Full Paid" />}
+                label="Full Paid"
+              />
+              <TextField
+                margin="normal"
+                id="paidAmount"
+                name="paidAmount"
+                label="Paid Amount"
+                type="text"
+                onChange={(e) => setSaleUpdateForm({ ...saleUpdateForm, paidAmount: parseFloat(e.target.value) })}
+                value={saleUpdateForm.paidAmount}
+                fullWidth
+                variant="outlined"
+              />
+            </>
+          ) : (
+            ''
+          )}
+          {prodValue?.length ? (
+            <>
+              <Divider style={{ marginBottom: '10px' }}>
+                <Chip label="List Of Products" size="small" />
+              </Divider>
+              <DenseTable productDtls={prodValue} />
+            </>
+          ) : (
+            ''
+          )}
         </DialogContent>
         <DialogActions style={{ paddingBottom: '40px', paddingRight: '40px' }}>
           <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
-          <Button variant="contained" color="success" onClick={() => handleUpdate(formData)}>
-            Update
+          {selectedData?.dueAmount > 0 ? (
+            <Button variant="contained" color="success" onClick={() => updateSaleOrder()}>
+              Update
+            </Button>
+          ) : (
+            ''
+          )}
+          <Button variant="contained" color="error" onClick={() => deleteSaleOrder()}>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
     </>
+  );
+}
+
+function DenseTable({ productDtls = [] }) {
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Product Name</TableCell>
+            <TableCell align="right">Purchase Price + Gst</TableCell>
+            <TableCell align="right">MRP</TableCell>
+            <TableCell align="right">Sale Qty</TableCell>
+            <TableCell align="right">Selling Price</TableCell>
+            <TableCell align="right">Total Price</TableCell>
+            <TableCell align="right">Discount Amount</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {productDtls.map((row) => (
+            <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell component="th" scope="row">
+                {row.productName}
+              </TableCell>
+              <TableCell align="right">{row.purchasePriceWithGst}</TableCell>
+              <TableCell align="right">{row.mrp}</TableCell>
+              <TableCell align="right">{row.quantity}</TableCell>
+              <TableCell align="right">{row.sellingPrice}</TableCell>
+              <TableCell align="right">{row.quantity * row.sellingPrice}</TableCell>
+              <TableCell align="right">{row.discountedAmount}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

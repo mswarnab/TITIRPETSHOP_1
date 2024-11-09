@@ -4,10 +4,11 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 // project import
 import MainCard from 'components/MainCard';
-import CustomerTable from 'pages/dashboard/CustomerTable';
 import { client } from 'api/client';
 import dayjs from 'dayjs';
 import PurchaseTable from 'pages/dashboard/PurchaseTable';
+import LottieAnimation from 'components/loaderDog';
+import NoDataFoundAnimation from 'components/nodatafound';
 
 // let id = 0;
 function createData(
@@ -171,7 +172,8 @@ export default function ManagePurchaseOrder() {
         });
         setRows(newData);
       })
-      .catch((err) => console.log(err));
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false));
   };
   // console.log(paginationCount);
   useEffect(() => {
@@ -180,6 +182,14 @@ export default function ManagePurchaseOrder() {
       return null;
     };
   }, []);
+  const [loading, setLoading] = useState(true);
+  // console.log(rows);
+  if (loading) {
+    return <LottieAnimation />;
+  }
+  if (!loading && !rows.length) {
+    return <NoDataFoundAnimation />;
+  }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}

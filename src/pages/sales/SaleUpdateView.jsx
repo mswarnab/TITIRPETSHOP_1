@@ -7,46 +7,9 @@ import MainCard from 'components/MainCard';
 import { client } from 'api/client';
 import dayjs from 'dayjs';
 import SaleTable from 'pages/dashboard/SaleTable';
+import LottieAnimation from 'components/loaderDog';
+import NoDataFoundAnimation from 'components/nodatafound';
 
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: '1rem'
-};
-
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-  transform: 'none'
-};
-
-const data = {
-  sales: {
-    totalSale: 250000,
-    percentage: 29,
-    extraSale: 2000
-  },
-  stock: {
-    expiredProducts: 299,
-    expiryDate: 2024 - 10
-  },
-  customer: {
-    totalCustomer: 280,
-    totalCreditInMarket: 29000
-  },
-  purchaseOrder: {
-    totalOrders: 188
-  },
-  supplier: {
-    totalDue: 19999,
-    totalSuppliers: 6
-  }
-};
 // let id = 0;
 function createData(id, billNumber, sellTotalAmount, dateOfBilling, paidAmount, dueAmount, _id, value) {
   // id = id + 1;
@@ -66,7 +29,7 @@ export default function ManageSaleView() {
   let pageSize = 20;
   // let paginationCount = (50/;
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedData] = useState([]);
+  const [selectedData, setSelectedData] = useState([]);
   const handleClickOpen = (value) => {
     // console.log(value);
     setSelectedData(value.row);
@@ -74,6 +37,7 @@ export default function ManageSaleView() {
   };
 
   const handleClose = () => {
+    fetchRowData(paginationModel.page);
     setOpen(false);
   };
 
@@ -156,9 +120,9 @@ export default function ManageSaleView() {
         result.map((value) => {
           let createdData = createData(
             id,
-            value.invoiceNumber,
+            value.billNumber,
             value.grandTotalAmount,
-            dayjs(value.dateOfPruchase).format('YYYY-MM-DD'),
+            dayjs(value.dateOfSale).format('YYYY-MM-DD'),
             value.paidAmount,
             value.cerditAmount,
             value._id,
@@ -170,15 +134,25 @@ export default function ManageSaleView() {
         });
         setRows(newData);
       })
-      .catch((err) => console.log(err));
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false));
   };
-  // console.log(paginationCount);
   useEffect(() => {
     (async () => await fetchRowData(paginationModel.page))();
     return () => {
       return null;
     };
   }, []);
+  const [loading, setLoading] = useState(true);
+  // console.log(rows);
+  if (loading) {
+    return <LottieAnimation />;
+  }
+  if (!loading && !rows.length) {
+    return <NoDataFoundAnimation />;
+  }
+  // console.log(paginationCount);
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -188,7 +162,7 @@ export default function ManageSaleView() {
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
           <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{rows.length} Purchase Orders found</Typography>
+            <Typography variant="h5">{rows.length} Sales bill found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">
@@ -200,7 +174,7 @@ export default function ManageSaleView() {
         <MainCard sx={{ mt: 2 }} content={false}>
           <SaleTable
             paginationCount={paginationCount}
-            selectedDate={selectedDate}
+            selectedData={selectedData}
             paginationModel={paginationModel}
             rows={rows}
             pageChange={pageChange}

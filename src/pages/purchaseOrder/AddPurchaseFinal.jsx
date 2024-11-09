@@ -1,15 +1,7 @@
-// import { Button } from '@mui/material'
-// import { ThemeProvider } from '@emotion/react'
-import axios from 'axios';
 import {
   Alert,
   Autocomplete,
-  Box,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
   Container,
   Dialog,
   DialogActions,
@@ -24,24 +16,17 @@ import {
   Radio,
   RadioGroup,
   Select,
-  Slide,
   Snackbar,
   Stack,
-  TextField,
-  Typography
+  TextField
 } from '@mui/material';
 import { client } from '../../api/client';
 import React, { useEffect, useState } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DeleteFilled, DeleteOutlined, DeleteTwoTone } from '@ant-design/icons';
-// import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import ProductTable from 'pages/dashboard/ProductTable';
 import dayjs from 'dayjs';
-import { title } from 'process';
-import { padding } from '@mui/system';
 import { prodCatagoryArr, gstPercArr } from 'static';
 import LottieAnimation from 'components/loaderDog';
 
@@ -77,36 +62,7 @@ export default function AddPurchase() {
   const [prodTotalPrice, setProdTotalPrice] = React.useState('');
   const [prodTotalPriceWithGST, setProdTotalPriceWithGST] = React.useState('');
   const [modeOfPayment, setModeofPayment] = useState('');
-  const [stockData, setStockData] = React.useState([
-    // {
-    //   prodName: 'abc',
-    //   prodQty: '10',
-    //   prodCatagory: 'XYZ',
-    //   prodPurcahsePrice: 1,
-    //   prodMrpPrice: 5,
-    //   prodBatch: 'uuuuuuu',
-    //   prodSGST: 5,
-    //   prodCGST: 5,
-    //   prodAmountWithoutGst: 10,
-    //   prodExpDate: '2029-01-10',
-    //   prodHsn: '234567890',
-    //   prodAmountWithGst: 11
-    // },
-    // {
-    //   prodName: 'jjjfkdkl',
-    //   prodQty: '10',
-    //   prodCatagory: 'XYZ',
-    //   prodPurcahsePrice: 1,
-    //   prodMrpPrice: 5,
-    //   prodBatch: 'uuuuuuu',
-    //   prodSGST: 5,
-    //   prodCGST: 5,
-    //   prodAmountWithoutGst: 10,
-    //   prodExpDate: '2029-01-10',
-    //   prodHsn: '234567890',
-    //   prodAmountWithGst: 11
-    // }
-  ]);
+  const [stockData, setStockData] = React.useState([]);
   // console.clear();
   // console.log(stockData);
   const [prodName, setProdName] = React.useState('');
@@ -657,6 +613,17 @@ export default function AddPurchase() {
           stockBody
         })
         .then((res) => {
+          setOrderNumber('');
+          setSupplierName('');
+          setSupplierId('');
+          setPurchaseDate('');
+          setPurchaseDate(dayjs().format('YYYY-MM-DD'));
+          setTotalSGSTAmount(0);
+          setTotalCGSTAmount(0);
+          setTotalAmount(0);
+          setPaidAmount(0);
+          setCreditAmount(0);
+          setStockData([]);
           setError({ err: false, message: res.data.message });
           setLoading(true);
         })

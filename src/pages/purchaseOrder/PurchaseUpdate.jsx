@@ -10,8 +10,10 @@ import {
   Alert,
   Chip,
   Divider,
+  FormControlLabel,
   Slide,
   Snackbar,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -48,6 +50,7 @@ export default function PurchaseUpdate({ open, handleClose, selectedData }) {
     __v: '',
     _id: ''
   });
+  const [fullPaid, setFullPaid] = useState(false);
   // console.log(purchaseUpdateForm.paidAmount);
   const [prodValue, setProdValue] = useState([]);
   useEffect(() => {
@@ -138,6 +141,16 @@ export default function PurchaseUpdate({ open, handleClose, selectedData }) {
   };
   let vertical = 'top';
   let horizontal = 'center';
+  let handleChangeFullPaid = () => {
+    let newArr = { ...purchaseUpdateForm };
+    if (!fullPaid) {
+      newArr.paidAmount = newArr.cerditAmount;
+    } else {
+      newArr.paidAmount = 0;
+    }
+    setPurchaseUpdateForm(newArr);
+    setFullPaid(!fullPaid);
+  };
   return (
     <>
       {/* {console.log('data', data)} */}
@@ -254,17 +267,23 @@ export default function PurchaseUpdate({ open, handleClose, selectedData }) {
           /> */}
 
           {purchaseUpdateForm.cerditAmount > 0 ? (
-            <TextField
-              margin="normal"
-              id="paidAmount"
-              name="paidAmount"
-              label="Paid Amount"
-              type="text"
-              onChange={(e) => setPurchaseUpdateForm({ ...purchaseUpdateForm, paidAmount: e.target.value })}
-              value={purchaseUpdateForm.paidAmount}
-              fullWidth
-              variant="outlined"
-            />
+            <>
+              <FormControlLabel
+                control={<Switch checked={fullPaid} onChange={handleChangeFullPaid} aria-label="Full Paid" />}
+                label="Full Paid"
+              />
+              <TextField
+                margin="normal"
+                id="paidAmount"
+                name="paidAmount"
+                label="Paid Amount"
+                type="text"
+                onChange={(e) => setPurchaseUpdateForm({ ...purchaseUpdateForm, paidAmount: e.target.value })}
+                value={purchaseUpdateForm.paidAmount}
+                fullWidth
+                variant="outlined"
+              />
+            </>
           ) : (
             ''
           )}

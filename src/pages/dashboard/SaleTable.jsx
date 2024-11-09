@@ -1,7 +1,6 @@
 import React from 'react';
 import { DataGrid, GridToolbar, gridClasses } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import CustomerUpdate from 'pages/customer/CustomerUpdate';
 import { Pagination } from '@mui/material';
 import { Stack } from '@mui/system';
 import SaleUpdate from 'pages/sales/SaleUpdate';
@@ -14,7 +13,7 @@ import SaleUpdate from 'pages/sales/SaleUpdate';
 
 export default function SaleTable({
   paginationCount,
-  selectedDate,
+  selectedData,
   paginationModel,
   pageChange,
   rows,
@@ -23,6 +22,7 @@ export default function SaleTable({
   handleClickOpen,
   handleClose
 }) {
+  console.log(selectedData);
   return (
     <Box
       sx={{
@@ -37,12 +37,6 @@ export default function SaleTable({
         },
         '& .super-app-theme--header': {
           backgroundColor: '#c8c8c8'
-        },
-        '& .Paid': {
-          Color: 'rgba(157, 255, 118, 0.49)'
-        },
-        '& .Due': {
-          Color: 'rgba(157, 255, 118, 0.49)'
         }
       }}
     >
@@ -69,7 +63,7 @@ export default function SaleTable({
       <Stack justifyContent="center" alignItems="end" marginBottom={3}>
         <Pagination count={paginationCount} color="primary" onChange={(event, page) => pageChange(page)} />
       </Stack>
-      <SaleUpdate open={open} selectedDate={selectedDate} handleClose={handleClose} />
+      <SaleUpdate open={open} selectedData={selectedData} handleClose={handleClose} />
     </Box>
   );
 }

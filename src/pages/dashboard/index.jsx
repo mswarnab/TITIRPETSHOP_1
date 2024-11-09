@@ -133,7 +133,7 @@ export default function DashboardDefault() {
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           title="Total sales in current month"
-          count={`₹${totalSales.amount}`}
+          count={`₹${totalSales.amount || 0}`}
           // percentage={percentage}
           extraLabel={''}
           extra={totalSales.count + ` sales made since last month`}

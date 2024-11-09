@@ -1,90 +1,21 @@
 // material-ui
 import React, { useEffect, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 
 // project import
 import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import MonthlyBarChart from '../dashboard/MonthlyBarChart';
-import ReportAreaChart from '../dashboard/ReportAreaChart';
-import UniqueVisitorCard from '../dashboard/UniqueVisitorCard';
-import SaleReportCard from '../dashboard/SaleReportCard';
-import OrdersTable from '../dashboard/OrdersTable';
 
-// assets
-import GiftOutlined from '@ant-design/icons/GiftOutlined';
-import MessageOutlined from '@ant-design/icons/MessageOutlined';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
-import avatar1 from 'assets/images/users/avatar-1.png';
-import avatar2 from 'assets/images/users/avatar-2.png';
-import avatar3 from 'assets/images/users/avatar-3.png';
-import avatar4 from 'assets/images/users/avatar-4.png';
-import {
-  ButtonGroup,
-  Chip,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Input,
-  InputLabel,
-  Stack,
-  Switch,
-  TextField,
-  useTheme
-} from '@mui/material';
-import getColors from 'utils/getColors';
+import { Alert, Autocomplete, Chip, Divider, FormControlLabel, Snackbar, Stack, Switch, TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import FullScreenDialog from 'components/FullScreenModal';
 import OnSearchItemBox from 'components/OnSearchItemBox';
-
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: '1rem'
-};
-
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-  transform: 'none'
-};
-
-const data = {
-  sales: {
-    totalSale: 250000,
-    percentage: 29,
-    extraSale: 2000
-  },
-  stock: {
-    expiredProducts: 299,
-    expiryDate: 2024 - 10
-  },
-  customer: {
-    totalCustomer: 280,
-    totalCreditInMarket: 29000
-  },
-  purchaseOrder: {
-    totalOrders: 188
-  },
-  supplier: {
-    totalDue: 19999,
-    totalSuppliers: 6
-  }
-};
+import { client } from 'api/client';
+import LottieAnimation from 'components/loaderDog';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -98,12 +29,13 @@ export default function AddSale() {
     billNumber: '',
     customerName: '',
     customerId: '',
-    billDate: '',
+    billDate: dayjs().format('YYYY-MM-DD'),
     dueDate: '',
     billPaidAmount: 0,
     billDueAmount: 0,
     billTotalAmount: 0
   });
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -112,8 +44,8 @@ export default function AddSale() {
     setAddedProduct(newArray);
   };
   const handleAddItemSale = (selectedProducts, quantityArray, sellingPrice) => {
-    console.log(quantityArray);
-    console.log(selectedProducts);
+    // console.log(quantityArray);
+    // console.log(selectedProducts);
     let newDataArr = [...addedProduct];
     selectedProducts.map((e, i) => {
       if (quantityArray.find((el) => e._id == el._id)) {
@@ -126,7 +58,8 @@ export default function AddSale() {
           mrp: e.mrp,
           rate: e.rate,
           expDate: dayjs(e.expDate).format('YYYY-MM-DD'),
-          sellingPrice: sellingPrice
+          sellingPrice: sellingPrice,
+          productId: e._id
         };
         newDataArr = [...newDataArr, newDataArray];
       }
@@ -141,13 +74,13 @@ export default function AddSale() {
       addedProduct.map((e) => {
         totalBillAmount += parseFloat(e.quantity * e.sellingPrice);
       });
-      newArr.billTotalAmount = totalBillAmount;
+      newArr.billTotalAmount = totalBillAmount.toFixed(2);
       if (fullPaid) {
         newArr.billPaidAmount = totalBillAmount;
         newArr.billDueAmount = 0;
       } else {
-        newArr.billPaidAmount = 0;
-        newArr.billDueAmount = totalBillAmount;
+        // newArr.billPaidAmount = 0;
+        newArr.billDueAmount = parseFloat(totalBillAmount - newArr.billPaidAmount).toFixed(2);
       }
     } else {
       newArr.billPaidAmount = 0;
@@ -155,9 +88,9 @@ export default function AddSale() {
       newArr.billTotalAmount = 0;
     }
     setBillDtls(newArr);
-  }, [addedProduct]);
+  }, [addedProduct, billDtls.billPaidAmount]);
   let handleChangeBillDtls = (event) => {
-    // console.log(event);
+    // console.log(event.target);
     let eventName = event.target.name;
     let eventValue = event.target.value;
     let newArr = { ...billDtls };
@@ -187,9 +120,163 @@ export default function AddSale() {
     newArr.dueDate = dayjs(data).format('YYYYMMDD');
     setBillDtls(newArr);
   };
+  let [customerSearch, setCustomerSearch] = React.useState([]);
+  const [customerSearchParm, setCustomerSearchParm] = useState('');
+  useEffect(() => {
+    (async () => {
+      const getData = setTimeout(async () => {
+        // console.log(supplierName);
+        let strLength = customerSearchParm.length;
+        // console.log(strLength);
+        if (strLength >= 3) {
+          // alert(strLength);
+          client
+            .get('/customer/search', {
+              params: { pattern: customerSearchParm }
+            })
+            .then((res) => {
+              // console.log(res.data.result.result);
+              // setSupplierSearch([]);
+              let top100Films = [];
+              let dataResultArr = res.data.result.result;
+              dataResultArr.forEach((element) => {
+                // console.log(element.customerContactNo);
+                top100Films = [
+                  ...top100Films,
+                  {
+                    customerContactNo: element.customerContactNo,
+                    customerName: element.customerName,
+                    id: element._id
+                  }
+                ];
+              });
+              // if (!top100Films.length) {
+              //   top100Films = [
+              //     {
+              //       customerName: 'NO DATA FOUND'
+              //     }
+              //   ];
+              // }
+              setCustomerSearch(top100Films);
+            })
+            .catch(() => {
+              // let top100Films = [
+              //   {
+              //     customerName: 'NO DATA FOUND'
+              //   }
+              // ];
+              // setCustomerSearch(top100Films);
+            });
+        }
+      }, 300);
+      return () => clearTimeout(getData);
+    })();
+  }, [customerSearchParm]);
+  let changeCustomerId = (e) => {
+    let name = e;
+    // console.log(name);
+    let split_name = name.split('--');
+    //console.log(split_name);
+    let custName = split_name[0];
+    let phNo = split_name[1];
+    //console.log(name + '----' + supName + '----' + phNo);
+    customerSearch.forEach((value) => {
+      if (value.customerName == custName && value.customerContactNo == phNo) {
+        let newArr = { ...billDtls };
+        newArr.customerId = value.id;
+        newArr.customerName = e;
+        // setSupplierId(value.id);
+        setCustomerPhoneNumber(value.customerContactNo);
+        setBillDtls(newArr);
+      }
+    });
+  };
+  let onloader = () => {
+    setLoading(true);
+  };
+  let offloader = () => {
+    setLoading(false);
+  };
+  let submitSaleBill = () => {
+    let msg = '';
+    if (billDtls.billDueAmount > 0) {
+      if (billDtls.customerName == '' && billDtls.customerId == '') {
+        msg = 'Please enter customer name.';
+      } else if (customerPhoneNumber == '' && billDtls.customerId == '') {
+        msg = 'Please enter customer contact number.';
+      } else if (customerPhoneNumber.length < 10 && billDtls.customerId == '') {
+        msg = 'Please enter 10 digit contact number';
+      } else if (isNaN(customerPhoneNumber) && billDtls.customerId == '') {
+        msg = 'Contact number must be number.';
+      } else if (customerAddress == '' && billDtls.customerId == '') {
+        msg = 'Please enter customer address.';
+      }
+    } else if (addedProduct?.length == 0) {
+      msg = 'Please atleast sale one item.';
+    }
+    if (msg == '') {
+      let customerNameSplit = billDtls.customerName.split('--');
+      let dueDate = billDtls.dueDate ? dayjs(billDtls.dueDate).format('YYYYMMDD') : dayjs(billDtls.billDate).format('YYYYMMDD');
+      // addedProduct.map()
+      // addedProduct._id(productId);
+      let postData = {
+        billNumber: billDtls.billNumber,
+        customerId: billDtls.customerId,
+        customerMobileNo: customerPhoneNumber,
+        customerName: customerNameSplit[0],
+        customerAddress: customerAddress,
+        dateOfSale: dayjs(billDtls.billDate).format('YYYYMMDD'),
+        products: addedProduct,
+        cgst: '0',
+        sgst: '0',
+        paidAmount: billDtls.billPaidAmount,
+        dueDate: dueDate
+      };
+      // console.log(postData);
+      onloader();
+      client
+        .post('/sales', postData)
+        .then((res) => {
+          setError({ err: false, message: res.data.message });
+        })
+        .catch((err) => {
+          setError({ err: true, message: err.response.data.errorMessage });
+        })
+        .finally(() => offloader());
+    } else {
+      setError({ err: true, message: msg });
+      offloader();
+    }
+  };
+  const [error, setError] = useState('');
+  let handleCloseSnackBar = () => {
+    setError('');
+  };
+  let vertical = 'top';
+  let horizontal = 'center';
+  const [loading, setLoading] = useState(false);
+  // console.log(rows);
+  if (loading) {
+    return <LottieAnimation />;
+  }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {console.log(billDtls)}
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={error ? true : false}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackBar}
+        // action={action}
+        key={vertical + horizontal}
+      >
+        {error && (
+          <Alert severity={error && error.err ? 'error' : 'success'} variant="filled" sx={{ width: '100%' }}>
+            {error.message}
+          </Alert>
+        )}
+      </Snackbar>
+      {/* {console.log(billDtls)} */}
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
       <Grid item xs={12} md={12} lg={12}>
         <Grid item />
@@ -215,7 +302,41 @@ export default function AddSale() {
               value={billDtls.billNumber}
               onChange={handleChangeBillDtls}
             />
-            <TextField
+            <Autocomplete
+              id="free-solo-demo"
+              freeSolo
+              options={customerSearch.map((option) => option.customerName + '--' + option.customerContactNo)}
+              value={billDtls.customerName}
+              name="customerName"
+              disableClearable="true"
+              size="small"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Customer Name / Mobile No .Search"
+                  variant="outlined"
+                  fullWidth
+                  autoComplete="off"
+                  onChange={(event) => {
+                    //console.log('name : ' + value);
+                    // setSupplierName(event.target.value);
+                    // handleChangeBillDtls(event);
+                    setBillDtls({ ...billDtls, customerName: event.target.value });
+                  }}
+                  onKeyUp={(event) => setCustomerSearchParm(event.target.value)}
+                />
+              )}
+              onChange={(event, value) => {
+                // console.log('name : ' + value);
+                // setSupplierName(value);
+                // handleChangeBillDtls(event);
+                // let newArr = { ...billDtls, customerName: value };
+                // console.log('hello');
+                // setBillDtls({ ...billDtls, customerName: value });
+                changeCustomerId(value);
+              }}
+            />
+            {/* <TextField
               required
               id="customerName"
               name="customerName"
@@ -225,7 +346,7 @@ export default function AddSale() {
               variant="outlined"
               value={billDtls.customerName}
               onChange={handleChangeBillDtls}
-            />
+            /> */}
             <TextField
               required={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? true : false}
               disabled={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? false : true}
@@ -236,6 +357,7 @@ export default function AddSale() {
               type="text"
               fullWidth
               variant="outlined"
+              onChange={(event) => setCustomerPhoneNumber(event.target.value)}
             />
             <TextField
               required={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? true : false}
@@ -247,6 +369,7 @@ export default function AddSale() {
               type="text"
               fullWidth
               variant="outlined"
+              onChange={(event) => setCustomerAddress(event.target.value)}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
@@ -308,9 +431,15 @@ export default function AddSale() {
               disabled
             />
           </Stack>
-          <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => setOpen(true)}>
-            Add Items
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => setOpen(true)}>
+              Add Items
+            </Button>
+            <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => submitSaleBill()}>
+              Submit
+            </Button>
+          </Stack>
+
           {addedProduct?.length ? (
             <Divider textAlign="left" style={{ margin: '20px 0px 20px 0px' }}>
               <Chip label="Selected Products" size="small" />

@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert, Slide, Snackbar, Typography } from '@mui/material';
+import { Alert, Slide, Snackbar } from '@mui/material';
 import LottieAnimation from 'components/loaderDog';
 import { client } from 'api/client';
 

@@ -67,9 +67,9 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
   };
 
   useEffect(() => {
-    console.clear();
+    // console.clear();
 
-    productNameSearch?.length &&
+    productNameSearch?.length > 2 &&
       (async () =>
         client
           .get('/stock/searchfullproduct?pattern=' + productNameSearch)
