@@ -6,11 +6,12 @@ import Box from '@mui/material/Box';
 
 // assets
 import SearchOutlined from '@ant-design/icons/SearchOutlined';
+import { width } from '@mui/system';
 
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
 export default function Search() {
-  return <></>;
+  return <div style={{ width: '100px' }}></div>;
   return (
     <Box sx={{ width: '100%', ml: { xs: 0, md: 1 } }}>
       <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
