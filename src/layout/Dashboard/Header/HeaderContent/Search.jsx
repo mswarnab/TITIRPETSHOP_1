@@ -11,7 +11,7 @@ import { width } from '@mui/system';
 // ==============================|| HEADER CONTENT - SEARCH ||============================== //
 
 export default function Search() {
-  return <div style={{ width: '100px' }}></div>;
+  return <div style={{ width: '100%' }}></div>;
   return (
     <Box sx={{ width: '100%', ml: { xs: 0, md: 1 } }}>
       <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
