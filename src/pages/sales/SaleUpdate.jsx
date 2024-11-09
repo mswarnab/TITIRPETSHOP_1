@@ -171,7 +171,7 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
                 name="paidAmount"
                 label="Paid Amount"
                 type="text"
-                onChange={(e) => setSaleUpdateForm({ ...saleUpdateForm, paidAmount: parseFloat(e.target.value) })}
+                onChange={(e) => setSaleUpdateForm({ ...saleUpdateForm, paidAmount: e.target.value })}
                 value={saleUpdateForm.paidAmount}
                 fullWidth
                 variant="outlined"

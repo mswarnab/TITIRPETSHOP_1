@@ -42,6 +42,8 @@ export default function DashboardLayout() {
   useEffect(() => {
     if (!loggedIn) {
       return navigate('/login');
+    } else {
+      return navigate(window.location.pathname);
     }
   }, [loggedIn]);
   useEffect(() => {

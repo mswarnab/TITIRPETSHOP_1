@@ -31,18 +31,22 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
   const [productData, setProductData] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [quantityArray, setQuantityArray] = useState([]);
-
+  const [discount, setDiscount] = useState(0);
   useEffect(() => {
     let quantityArr = [];
     let availableQuantity = parseInt(quantity);
+    let discount = 0;
     selectedProducts.map((e) => {
       if (e.quantity >= availableQuantity) {
+        discount = parseFloat(parseFloat(discount) + parseFloat((e.mrp - sellingPrice) * availableQuantity)).toFixed(2);
         quantityArr = [...quantityArr, { _id: e._id, quantity: availableQuantity }];
       } else {
+        discount = parseFloat(parseFloat(discount) + parseFloat((e.mrp - sellingPrice) * e.quantity)).toFixed(2);
         quantityArr = [...quantityArr, { _id: e._id, quantity: e.quantity }];
         availableQuantity -= e.quantity;
       }
     });
+    setDiscount(discount);
     setQuantityArray(quantityArr);
   }, [selectedProducts]);
   const handleSelectedProductDelete = (id) => {
@@ -122,6 +126,7 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
       setProductData([]);
       setSelectedProducts([]);
       setQuantityArray([]);
+      setDiscount(0);
     } else {
       setError({ err: true, message });
     }
@@ -192,7 +197,7 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
             <Stack direction={'row'}>
               <Typography variant="h5">Discount:</Typography>
               <Typography style={{ marginLeft: '10px' }} variant="h5" color={'peru'}>
-                ₹20
+                ₹{discount || 0}
               </Typography>
             </Stack>
             <Typography variant="h5" marginTop={'20px'} marginBottom={'20px'}>

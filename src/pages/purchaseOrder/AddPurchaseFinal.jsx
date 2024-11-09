@@ -257,8 +257,8 @@ export default function AddPurchase() {
     let totSgstAmount = 0;
     let totCgstAmount = 0;
     stockData.map((e) => {
-      totSgstAmount = parseFloat(totCgstAmount + parseFloat(e.prodAmountWithoutGst * (e.prodSGST / 100)).toFixed(2));
-      totCgstAmount = parseFloat(totCgstAmount + parseFloat(e.prodAmountWithoutGst * (e.prodCGST / 100)).toFixed(2));
+      totSgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * (e.prodSGST / 100)).toFixed(2));
+      totCgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * (e.prodCGST / 100)).toFixed(2));
     });
     setTotalSGSTAmount(totSgstAmount);
     setTotalCGSTAmount(totCgstAmount);
