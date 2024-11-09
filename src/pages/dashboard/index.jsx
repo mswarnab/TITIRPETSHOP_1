@@ -172,7 +172,7 @@ export default function DashboardDefault() {
           <Box sx={{ p: 3, pb: 0 }}>
             <Stack spacing={2}>
               <Typography variant="h6" color="text.secondary">
-                last 7 days Sales report
+                Last 7 days Sales report
               </Typography>
               <Typography variant="h3">₹{weeklyTotalSales || 0}</Typography>
             </Stack>
