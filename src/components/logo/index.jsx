@@ -18,7 +18,7 @@ const LogoSection = ({ sx, to }) => {
     <ButtonBase disableRipple component={Link} to={'/'} sx={sx} style={{ marginTop: '50px', marginBottom: '50px' }}>
       <Stack direction="column" spacing={1} alignItems="center">
         <Logo />
-        <span style={{ fontFamily: 'fantasy', fontSize: 30 }}>TITIR'S PET STORE</span>
+        <span style={{ fontFamily: 'fantasy', fontSize: 30 }}>TITIR PET SHOP</span>
       </Stack>
     </ButtonBase>
   );

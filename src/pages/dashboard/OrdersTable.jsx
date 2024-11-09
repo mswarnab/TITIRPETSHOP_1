@@ -10,8 +10,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import axios from 'axios';
-
 // third-party
 import { NumericFormat } from 'react-number-format';
 
@@ -19,24 +17,11 @@ import { NumericFormat } from 'react-number-format';
 import Dot from 'components/@extended/Dot';
 import { useEffect, useState } from 'react';
 import { client } from 'api/client';
+import dayjs from 'dayjs';
 
 function createData(tracking_no, name, mobile, fat, carbs, protein) {
   return { tracking_no, name, mobile, fat, carbs, protein };
 }
-
-// const rows = [
-//   createData(84564564, 'Pintu da', '8240828075', 40, 2, 40570),
-//   createData(98764564, 'Prashanta da', '8240828075', 300, 2, 180139),
-//   createData(98756325, 'Samir Da', '8240828075', 355, 2, 90989),
-//   createData(98652366, 'Swarnab Majumder', '780988075', 50, 2, 10239),
-//   createData(13286564, 'Supratim Sarkar', '8240828075', 100, 2, 83348),
-//   createData(86739658, 'Bipul Majumder', '8240828075', 99, 2, 410780),
-//   createData(13256498, 'Sandeep Ghosh', '8240828075', 125, 2, 70999),
-//   createData(98753263, 'Sayan Gowswami', '8240828075', 89, 2, 10570),
-//   createData(98751263, 'Bhabesh Kathari', '8240828075', 89, 2, 10570)
-// ];
-
-// let rows = [];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -165,7 +150,17 @@ export default function OrderTable() {
 
   useEffect(() => {
     salesArray.forEach((e) => {
-      setRows([...rows, createData(e.billNumber, e.customerMobileNo, e.grandTotalAmount, e.paidAmount, e.cerditAmount, e.dateOfSale)]);
+      setRows([
+        ...rows,
+        createData(
+          e.billNumber,
+          e.customerMobileNo,
+          e.grandTotalAmount,
+          e.paidAmount,
+          e.cerditAmount,
+          dayjs(e.dateOfSale).format('YYYY-MM-DD')
+        )
+      ]);
     });
   }, [salesArray]);
 
