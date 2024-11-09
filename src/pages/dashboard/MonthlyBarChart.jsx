@@ -90,7 +90,7 @@ export default function MonthlyBarChart({ onTotalSaleChange }) {
           resultArray = [...resultArray, e.result];
           sumSales += parseFloat(e.result);
         });
-        console.log(dateArray);
+        // console.log(dateArray);
         barChartOptions.xaxis.categories = dateArray;
         setOptions(barChartOptions);
         onTotalSaleChange(sumSales);

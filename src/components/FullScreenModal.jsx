@@ -75,37 +75,34 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
 
     productNameSearch?.length > 2 &&
       (async () =>
-        client
-          .get('/stock/searchfullproduct?pattern=' + productNameSearch)
-          .then((res) => {
-            const { result } = res.data.result;
-            if (selectedLots?.length) {
-              console.log(result);
-              let newArray = [];
-              // const newArray = result.filter((e) => {
-              //   const tempObj = selectedLots.find((el) => el._id == e._id);
-              //   console.log(e._id, tempObj?._id);
-              //   if(new)
-              //   return e._id != tempObj?._id || e.quantity != tempObj?.quantity;
-              // });
+        client.get('/stock/searchfullproduct?pattern=' + productNameSearch).then((res) => {
+          const { result } = res.data.result;
+          if (selectedLots?.length) {
+            // console.log(result);
+            let newArray = [];
+            // const newArray = result.filter((e) => {
+            //   const tempObj = selectedLots.find((el) => el._id == e._id);
+            //   console.log(e._id, tempObj?._id);
+            //   if(new)
+            //   return e._id != tempObj?._id || e.quantity != tempObj?.quantity;
+            // });
 
-              result.map((e) => {
-                const tempObj = selectedLots.find((el) => el._id == e._id);
-                if (tempObj) {
-                  if (parseInt(e.quantity - tempObj.quantity) != 0) {
-                    newArray = [...newArray, { ...tempObj, quantity: e.quantity - tempObj.quantity }];
-                  }
-                } else {
-                  newArray = [...newArray, e];
+            result.map((e) => {
+              const tempObj = selectedLots.find((el) => el._id == e._id);
+              if (tempObj) {
+                if (parseInt(e.quantity - tempObj.quantity) != 0) {
+                  newArray = [...newArray, { ...tempObj, quantity: e.quantity - tempObj.quantity }];
                 }
-              });
+              } else {
+                newArray = [...newArray, e];
+              }
+            });
 
-              setProductData(newArray);
-            } else {
-              setProductData(result);
-            }
-          })
-          .catch((err) => console.log(err)))();
+            setProductData(newArray);
+          } else {
+            setProductData(result);
+          }
+        }))();
     return () => null;
   }, [productNameSearch, open]);
 

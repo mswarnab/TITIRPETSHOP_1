@@ -38,7 +38,7 @@ function getComparator(order, orderBy) {
 }
 
 function stableSort(array, comparator) {
-  console.log(array);
+  // console.log(array);
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -175,7 +175,7 @@ export default function OrderTable() {
           }
         })
         .then((res) => {
-          console.log(res.data.result.result);
+          // console.log(res.data.result.result);
           setSalesArray(res.data.result.result);
         });
     })();
@@ -200,7 +200,7 @@ export default function OrderTable() {
           <TableBody>
             {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
-              console.log(row);
+              // console.log(row);
               return (
                 <TableRow
                   hover

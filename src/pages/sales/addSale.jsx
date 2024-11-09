@@ -272,7 +272,7 @@ export default function AddSale() {
   }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-      {console.log(billDtls)}
+      {/* {console.log(billDtls)} */}
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={error ? true : false}

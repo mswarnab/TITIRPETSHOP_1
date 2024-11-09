@@ -34,7 +34,7 @@ const actionSX = {
 function createData(id, productName, category, batchNumber, hsnCode, mfrCode, quantity, rate, mrp, expDate, sgst, cgst, supplierName) {
   // console.log(expDate);
   expDate = dayjs(expDate).format('YYYY-MM-DD');
-  console.log(expDate);
+  // console.log(expDate);
   return { id, productName, category, batchNumber, hsnCode, mfrCode, quantity, rate, mrp, expDate, sgst, cgst, supplierName };
 }
 
@@ -155,7 +155,7 @@ export default function ManageStock() {
     client
       .get('/stock/?page=' + page)
       .then((res) => {
-        console.log(res.data.result.result);
+        // console.log(res.data.result.result);
         let count = res.data.result.count;
         let pagiCount = Math.ceil(count / pageSize);
         setPaginationCount(pagiCount);

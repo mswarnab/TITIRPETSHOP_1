@@ -136,7 +136,7 @@ export default function ManagePurchaseOrder() {
     client
       .get('/purchaseorder?page=' + page)
       .then((res) => {
-        console.log(res.data.result.result);
+        // console.log(res.data.result.result);
         let count = res.data.result.count;
         let pagiCount = Math.ceil(count / pageSize);
         setPaginationCount(pagiCount);

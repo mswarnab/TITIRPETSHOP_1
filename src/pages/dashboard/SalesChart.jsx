@@ -238,8 +238,8 @@ export default function SalesChart({ duration }) {
   }, [primary, secondary, line, warning, primaryMain, successDark, income, cos, xsDown]);
   useEffect(() => {
     (async () => {
-      console.clear();
-      console.log('duration', duration);
+      // console.clear();
+      // console.log('duration', duration);
       client.get('/sales/profit?duration=' + duration).then((res) => {
         let date = '';
         let tempProfitArray = [];

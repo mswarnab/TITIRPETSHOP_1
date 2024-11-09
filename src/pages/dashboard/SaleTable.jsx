@@ -22,7 +22,7 @@ export default function SaleTable({
   handleClickOpen,
   handleClose
 }) {
-  console.log(selectedData);
+  // console.log(selectedData);
   return (
     <Box
       sx={{

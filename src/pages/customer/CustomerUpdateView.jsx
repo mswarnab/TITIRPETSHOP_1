@@ -76,7 +76,7 @@ export default function ManageCustomer() {
     client
       .get('/customer?page=' + page)
       .then((res) => {
-        console.log(res.data.result.result);
+        // console.log(res.data.result.result);
         let count = res.data.result.count;
         let pagiCount = Math.ceil(count / pageSize);
         setPaginationCount(pagiCount);

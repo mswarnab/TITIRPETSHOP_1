@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function CustomerUpdate({ open, selectedDate, handleClose }) {
-  console.log(selectedDate);
+  // console.log(selectedDate);
   const [formData, setFormData] = useState({
     customerName: '',
     customerAddress: '',
@@ -129,7 +129,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
             const email = formJson.email;
-            console.log(email);
+            // console.log(email);
             handleClose();
           }
         }}
