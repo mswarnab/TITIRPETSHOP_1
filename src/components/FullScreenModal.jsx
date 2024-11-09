@@ -48,7 +48,7 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
     });
     setDiscount(discount);
     setQuantityArray(quantityArr);
-  }, [selectedProducts]);
+  }, [selectedProducts, sellingPrice, quantity]);
   const handleSelectedProductDelete = (id) => {
     const newArray = selectedProducts.filter((e) => e._id != id);
     setSelectedProducts(newArray);
