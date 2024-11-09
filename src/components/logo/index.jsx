@@ -15,7 +15,7 @@ import Typography from 'themes/typography';
 
 const LogoSection = ({ sx, to }) => {
   return (
-    <ButtonBase disableRipple component={Link} to={'/'} sx={sx} style={{ marginTop: '50px', marginBottom: '50px' }}>
+    <ButtonBase disableRipple component={Link} to={'/'} sx={sx} style={{ marginTop: '70px', marginBottom: '50px', marginLeft: '17px' }}>
       <Stack direction="column" spacing={1} alignItems="center">
         <Logo />
         <span style={{ fontFamily: 'fantasy', fontSize: 30 }}>TITIR PET SHOP</span>
