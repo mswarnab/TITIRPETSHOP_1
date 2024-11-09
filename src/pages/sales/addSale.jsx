@@ -237,6 +237,17 @@ export default function AddSale() {
       client
         .post('/sales', postData)
         .then((res) => {
+          setAddedProduct([]);
+          setBillDtls({
+            billNumber: '',
+            customerName: '',
+            customerId: '',
+            billDate: dayjs().format('YYYY-MM-DD'),
+            dueDate: '',
+            billPaidAmount: 0,
+            billDueAmount: 0,
+            billTotalAmount: 0
+          });
           setError({ err: false, message: res.data.message });
         })
         .catch((err) => {
