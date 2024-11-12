@@ -28,8 +28,8 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     mfr: '',
     qty: '',
     mrp: '',
-    sgstperc: '',
-    cgstPerc: '',
+    sgstperc: 0,
+    cgstPerc: 0,
     expDate: '',
     prodPurchasePrice: '',
     totalPrice: '',
@@ -62,26 +62,27 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     let objValue = event.target.value;
     // console.log(event.target);
     let oldData = { ...formData };
-    if (oldData['id'] == '') {
-      oldData['id'] = rowData.id;
-    } else {
-      if (oldData['id'] != rowData.id) {
-        oldData['id'] = rowData.id;
-      }
-    }
+    // if (oldData['id'] == '') {
+    //   oldData['id'] = rowData.id;
+    // } else {
+    //   if (oldData['id'] != rowData.id) {
+    //     oldData['id'] = rowData.id;
+    //   }
+    // }
 
-    if (oldData['prodPurchasePrice'] == '') {
-      oldData['prodPurchasePrice'] = rowData.purchaseRate;
-    }
-    if (oldData['sgstperc'] == '') {
-      oldData['sgstperc'] = rowData.sgstPerc;
-    }
-    if (oldData['cgstPerc'] == '') {
-      oldData['cgstPerc'] = rowData.cgstPerc;
-    }
-    if (oldData['qty'] == '') {
-      oldData['qty'] = rowData.qty;
-    }
+    // if (oldData['prodPurchasePrice'] == '') {
+    //   oldData['prodPurchasePrice'] = rowData.purchaseRate;
+    // }
+    // if (oldData['sgstperc'] <= 0) {
+    //   alert('here');
+    //   oldData['sgstperc'] = rowData.sgstPerc;
+    // }
+    // if (oldData['cgstPerc'] <= 0) {
+    //   oldData['cgstPerc'] = rowData.cgstPerc;
+    // }
+    // if (oldData['qty'] == '') {
+    //   oldData['qty'] = rowData.qty;
+    // }
 
     if (objName == 'qty') {
       // console.log(oldData['prodPurchasePrice']);
