@@ -53,8 +53,8 @@ export default function AddPurchase() {
 
   const [paidAmount, setPaidAmount] = React.useState(0);
   const [creditAmount, setCreditAmount] = React.useState(0);
-  const [sgstPerc, setSgstPerc] = React.useState('');
-  const [cgstPerc, setCgstPerc] = React.useState('');
+  const [sgstPerc, setSgstPerc] = React.useState(0);
+  const [cgstPerc, setCgstPerc] = React.useState(0);
   const [prodBatch, setProdBatch] = React.useState('');
   const [prodHsn, setProdHsn] = React.useState('');
   const [prodExpDate, setProdExpDate] = React.useState(null);
@@ -237,8 +237,8 @@ export default function AddPurchase() {
       setProdPurcahsePrice('');
       setProdMrpPrice('');
       setProdMfr('');
-      setSgstPerc('');
-      setCgstPerc('');
+      setSgstPerc(0);
+      setCgstPerc(0);
       setProdBatch('');
       setProdHsn('');
       setProdExpDate(null);
