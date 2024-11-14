@@ -11,7 +11,7 @@ import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
 
 // let id = 0;
-function createData(id, billNumber, sellTotalAmount, dateOfBilling, paidAmount, dueAmount, _id, value) {
+function createData(id, billNumber, customerName, customerMobileNo, sellTotalAmount, dateOfBilling, paidAmount, dueAmount, _id, value) {
   // id = id + 1;
   let billStatus = '';
   if (sellTotalAmount == paidAmount) {
@@ -20,7 +20,7 @@ function createData(id, billNumber, sellTotalAmount, dateOfBilling, paidAmount, 
     billStatus = 'Due';
   }
 
-  return { id, billNumber, sellTotalAmount, dateOfBilling, billStatus, paidAmount, dueAmount, _id, value };
+  return { id, billNumber, customerName, customerMobileNo, sellTotalAmount, dateOfBilling, billStatus, paidAmount, dueAmount, _id, value };
 }
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
@@ -43,22 +43,29 @@ export default function ManageSaleView() {
 
   const columns = [
     { field: 'id', headerName: 'Sl No.', width: 100, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    { field: 'billNumber', headerName: 'Bill Number', width: 300, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    // { field: 'supplierName', headerName: 'Supplier Name', width: 250, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    { field: 'billNumber', headerName: 'Bill Number', width: 120, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    { field: 'customerName', headerName: 'Customer Name', width: 220, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    {
+      field: 'customerMobileNo',
+      headerName: 'Customer Mobile',
+      width: 180,
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center'
+    },
     {
       field: 'sellTotalAmount',
       headerName: 'Total Sell Amount',
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 120
     },
     {
       field: 'dateOfBilling',
       headerName: 'Date Of Billing',
       //   description: 'This column has a value getter and is not sortable.',
       sortable: true,
-      width: 160,
+      width: 120,
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center'
       //   valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
@@ -69,7 +76,7 @@ export default function ManageSaleView() {
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 80
     },
     {
       field: 'paidAmount',
@@ -77,7 +84,7 @@ export default function ManageSaleView() {
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 120
     },
     {
       field: 'dueAmount',
@@ -85,7 +92,7 @@ export default function ManageSaleView() {
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 120
     }
   ];
   let pageChange = (page) => {
@@ -121,6 +128,8 @@ export default function ManageSaleView() {
           let createdData = createData(
             id,
             value.billNumber,
+            value.customerName,
+            value.customerMobileNo,
             value.grandTotalAmount,
             dayjs(value.dateOfSale).format('YYYY-MM-DD'),
             value.paidAmount,

@@ -9,11 +9,13 @@ import dayjs from 'dayjs';
 import PurchaseTable from 'pages/dashboard/PurchaseTable';
 import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
+import ChipsArray from 'components/ChipsArray';
 
 // let id = 0;
 function createData(
   id,
   invoiceNumber,
+  supplierName,
   grandTotalAmount,
   dateOfPruchase,
   cerditAmount,
@@ -34,6 +36,7 @@ function createData(
   return {
     id,
     invoiceNumber,
+    supplierName,
     grandTotalAmount,
     dateOfPruchase,
     cerditAmount,
@@ -72,15 +75,15 @@ export default function ManagePurchaseOrder() {
 
   const columns = [
     { field: 'id', headerName: 'Sl No.', width: 100, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    { field: 'invoiceNumber', headerName: 'invoice Number', width: 300, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    // { field: 'supplierName', headerName: 'Supplier Name', width: 250, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    { field: 'invoiceNumber', headerName: 'invoice Number', width: 150, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    { field: 'supplierName', headerName: 'Supplier Name', width: 220, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
     {
       field: 'grandTotalAmount',
       headerName: 'Total Amount',
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 120
     },
     {
       field: 'dateOfPruchase',
@@ -98,7 +101,7 @@ export default function ManagePurchaseOrder() {
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 120
     },
     {
       field: 'modeOfPayment',
@@ -114,7 +117,7 @@ export default function ManagePurchaseOrder() {
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
       //   type: 'number',
-      width: 160
+      width: 135
     }
   ];
   let pageChange = (page) => {
@@ -150,6 +153,7 @@ export default function ManagePurchaseOrder() {
           let createdData = createData(
             id,
             value.invoiceNumber,
+            value.supplierName,
             value.grandTotalAmount,
             dayjs(value.dateOfPruchase).format('YYYY-MM-DD'),
             value.cerditAmount,
@@ -182,6 +186,7 @@ export default function ManagePurchaseOrder() {
       return null;
     };
   }, []);
+
   const [loading, setLoading] = useState(true);
   // console.log(rows);
   if (loading) {
@@ -197,14 +202,23 @@ export default function ManagePurchaseOrder() {
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
-        <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%' }}>
+        <Grid
+          container
+          direction={'row'}
+          alignItems="center"
+          justifyContent="space-between"
+          style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          <Grid lg={5}>
             <Typography variant="h5">{rows.length} Purchase Orders found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+          {/* <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">
               Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
             </Typography>
+          </Grid> */}
+          <Grid md={12} lg={7} style={{ marginRight: 0 }}>
+            <ChipsArray />
           </Grid>
           <Grid item />
         </Grid>

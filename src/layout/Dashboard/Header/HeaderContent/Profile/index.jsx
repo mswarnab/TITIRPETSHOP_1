@@ -88,7 +88,7 @@ export default function Profile() {
   const handleLogout = () => {
     client.post('/auth/logout').then((res) => {
       setApiStatus({ error: false, loading: true, message: 'Logged out successfully!' });
-      return navigate('/login');
+      // return navigate('/login');
     });
   };
 

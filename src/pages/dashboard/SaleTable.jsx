@@ -29,10 +29,13 @@ export default function SaleTable({
         width: '100%',
         paddingRight: '20px',
         [`.${gridClasses.cell}.cold`]: {
-          backgroundColor: 'white'
+          backgroundColor: 'white',
+          borderRadius: 3,
+          border: '1px solid #f5f5f5'
         },
         [`.${gridClasses.cell}.hot`]: {
-          borderRadius: 3,
+          backgroundColor: '#e27c7c',
+          color: 'white',
           border: '1px solid #f5f5f5'
         },
         '& .super-app-theme--header': {
@@ -52,7 +55,8 @@ export default function SaleTable({
         hideFooterPagination
         sx={{ m: 2 }}
         getCellClassName={(params) => {
-          return 'hot';
+          if (parseFloat(params.row.dueAmount) > 0) return 'hot';
+          else return 'cold';
         }}
         slots={{
           toolbar: GridToolbar

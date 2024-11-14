@@ -1,8 +1,10 @@
 import Lottie from 'lottie-react';
 import animationData from 'assets/loader.json';
+import animationData2 from 'assets/loader2.json';
+
 import { Typography } from '@mui/material';
 
-const LottieAnimation = () => {
+const LottieAnimation = ({ login = false }) => {
   return (
     <div
       style={{
@@ -21,7 +23,7 @@ const LottieAnimation = () => {
       }}
     >
       <Lottie
-        animationData={animationData}
+        animationData={login ? animationData2 : animationData}
         loop={true}
         autoplay={true}
         style={{ width: 300, height: 300 }} // Set your desired size

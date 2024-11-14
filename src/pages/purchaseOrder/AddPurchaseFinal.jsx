@@ -12,12 +12,14 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  Grid,
   MenuItem,
   Radio,
   RadioGroup,
   Select,
   Snackbar,
   Stack,
+  Switch,
   TextField
 } from '@mui/material';
 import { client } from '../../api/client';
@@ -442,6 +444,8 @@ export default function AddPurchase() {
   };
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState('');
+  const [fullPaid, setFullPaid] = useState(false);
+
   const handleCloseUpdate = () => {
     setOpenUpdate(false);
   };
@@ -755,13 +759,27 @@ export default function AddPurchase() {
       }
     });
   };
+
+  useEffect(() => {
+    if (fullPaid) {
+      return setPaidAmount(totalAmount);
+    }
+
+    return () => null;
+  }, [fullPaid, totalAmount, paidAmount]);
+
+  useEffect(() => {
+    setCreditAmount((parseFloat(totalAmount) - parseFloat(paidAmount)).toFixed(2));
+    return () => null;
+  }, [paidAmount, totalAmount]);
+
   const [loading, setLoading] = useState(false);
   // console.log(rows);
   if (loading) {
     return <LottieAnimation />;
   }
   return (
-    <Container style={{ padding: 0, margin: 0 }}>
+    <Grid item style={{ padding: 0, margin: 0 }}>
       {/* <h3 className='ColorPrimary'>Purchase Order</h3> */}
       {/* {error && <Alert severity={error && error.err ? 'error' : 'success'}>{error.message}</Alert>} */}
       {/* <Stack spacing={2} sx={{ maxWidth: 1000 }}> */}
@@ -830,12 +848,29 @@ export default function AddPurchase() {
             onChange={(date) => setPurchaseDateFunction(date)}
           />
         </LocalizationProvider>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={fullPaid}
+              onChange={() => {
+                if (modeOfPayment == 'CREDIT') {
+                  setFullPaid(false);
+                } else {
+                  setFullPaid(!fullPaid);
+                }
+              }}
+              aria-label="Full Paid"
+            />
+          }
+          label="Full payment done"
+        />
         <TextField
           id="outlined-basic"
           label="Paid Amount"
           variant="outlined"
           autoComplete="off"
           fullWidth
+          disabled={modeOfPayment == 'CREDIT' || fullPaid ? true : false}
           value={paidAmount}
           onChange={(event) => changePaidAmount(event)}
         />
@@ -861,6 +896,16 @@ export default function AddPurchase() {
               control={<Radio size="small" />}
               label="ONLINE"
               onClick={(event) => setModeofPayment(event.target.value)}
+            />
+            <FormControlLabel
+              value="CREDIT"
+              control={<Radio size="small" />}
+              label="CREDIT"
+              onClick={(event) => {
+                setFullPaid(false);
+                setPaidAmount(0);
+                setModeofPayment(event.target.value);
+              }}
             />
           </RadioGroup>
         </FormControl>
@@ -1121,6 +1166,6 @@ export default function AddPurchase() {
       )}
       {/* <DataGridDemo rows={dataRows} columns={dataColumns} />  */}
       {/* </div> */}
-    </Container>
+    </Grid>
   );
 }

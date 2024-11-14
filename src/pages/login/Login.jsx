@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'assets/images/icons/logo/Titir Pet Logo.png';
 import { client } from 'api/client';
 import { redirect, useNavigate } from 'react-router-dom';
+import LottieAnimation from 'components/loaderDog';
 
 function AlertMessage({ open, severity, message, handleClose }) {
   return (
@@ -25,6 +26,7 @@ function Login() {
   const [loginStatus, setLoginStatus] = useState(' ');
   const [width, setWidth] = useState(window.innerWidth);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setWidth(navigator.userAgent.toString().toLocaleLowerCase().includes('windows'));
@@ -33,7 +35,7 @@ function Login() {
   useEffect(() => {
     (async () => {
       await client.get('/auth');
-      navigate('/');
+      // navigate('/');
       return () => {
         return null;
       };
@@ -46,20 +48,26 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     client
       .post('/auth/login', { user: userData }, { withCredentials: true })
       .then((res) => {
         setLoginStatus('SUCCESS');
-        return navigate('/');
+        // return navigate('/');
 
         return null;
       })
-      .catch((err) => setLoginStatus('FAILED'));
+      .catch((err) => setLoginStatus('FAILED'))
+      .finally(() => setLoading(false));
   };
 
   const handleClose = () => {
     setLoginStatus(' ');
   };
+
+  if (loading) {
+    return <LottieAnimation login={true} />;
+  }
 
   return (
     <div
