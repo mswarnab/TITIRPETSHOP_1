@@ -52,11 +52,10 @@ export default function AddPurchase() {
   const [totalCGSTAmount, setTotalCGSTAmount] = React.useState(0);
   const [totalAmount, setTotalAmount] = React.useState(0);
   // console.log(dayjs(purchaseDate).format('YYYYMMDD'));
-
   const [paidAmount, setPaidAmount] = React.useState(0);
   const [creditAmount, setCreditAmount] = React.useState(0);
-  const [sgstPerc, setSgstPerc] = React.useState('');
-  const [cgstPerc, setCgstPerc] = React.useState('');
+  const [sgstPerc, setSgstPerc] = React.useState(0);
+  const [cgstPerc, setCgstPerc] = React.useState(0);
   const [prodBatch, setProdBatch] = React.useState('');
   const [prodHsn, setProdHsn] = React.useState('');
   const [prodExpDate, setProdExpDate] = React.useState(null);
@@ -239,8 +238,8 @@ export default function AddPurchase() {
       setProdPurcahsePrice('');
       setProdMrpPrice('');
       setProdMfr('');
-      setSgstPerc('');
-      setCgstPerc('');
+      setSgstPerc(0);
+      setCgstPerc(0);
       setProdBatch('');
       setProdHsn('');
       setProdExpDate(null);
@@ -258,13 +257,29 @@ export default function AddPurchase() {
   useEffect(() => {
     let totSgstAmount = 0;
     let totCgstAmount = 0;
+    let totalAmount = 0;
+    let totalDueAmount = 0;
     stockData.map((e) => {
       totSgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * (e.prodSGST / 100)).toFixed(2));
       totCgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * (e.prodCGST / 100)).toFixed(2));
+      totalAmount = parseFloat(
+        parseFloat(totalAmount) +
+          parseFloat(
+            parseFloat(e.prodAmountWithoutGst) +
+              parseFloat(parseFloat(e.prodAmountWithoutGst * (e.prodSGST / 100)) + parseFloat(e.prodAmountWithoutGst * (e.prodCGST / 100)))
+          )
+      ).toFixed(2);
     });
+    totalDueAmount = parseFloat(parseFloat(totalAmount) - parseFloat(paidAmount)).toFixed(2);
+    if (totalDueAmount < 0) {
+      totalDueAmount = 0;
+    }
     setTotalSGSTAmount(totSgstAmount);
     setTotalCGSTAmount(totCgstAmount);
+    setTotalAmount(totalAmount);
+    setCreditAmount(totalDueAmount);
   }, [stockData]);
+  // console.log(stockData);
   // let orderNumberOnchange=(e)=>{
   //   const result = e.target.value.replace(/\D/g, '');
 
@@ -461,49 +476,51 @@ export default function AddPurchase() {
 
     if (findId >= 0) {
       let newData = [...stockData];
-      let name = newData[findId].prodName;
-      let qty = newData[findId].prodQty;
-      let catagory = newData[findId]['prodCatagory'];
-      let prodPurchasePrice = newData[findId]['prodPurcahsePrice'];
-      let mfr = newData[findId]['prodMfr'];
-      let mrp = newData[findId]['prodMrpPrice'];
-      let batch = newData[findId]['prodBatch'];
-      let sgstperc = newData[findId]['prodSGST'];
-      let cgstPerc = newData[findId]['prodCGST'];
-      let totalPrice = newData[findId]['prodAmountWithoutGst'];
-      let expDate = newData[findId]['prodExpDate'];
-      let hsn = newData[findId]['prodHsn'];
-      let totalPriceWithGst = newData[findId]['prodAmountWithGst'];
-      if (formData.name != '') {
-        name = formData.name;
-      }
-      if (formData.mfr != '') {
-        mfr = formData.mfr;
-      }
-      if (formData.qty != '') {
-        qty = formData.qty;
-      }
-      if (formData.catagory != '') {
-        catagory = formData.catagory;
-      }
-      if (formData.prodPurchasePrice != '') {
-        prodPurchasePrice = formData.prodPurchasePrice;
-      }
-      if (formData.mrp != '') {
-        mrp = formData.mrp;
-      }
-      if (formData.batch != '') {
-        batch = formData.batch;
-      }
-      if (formData.sgstperc != '') {
-        sgstperc = formData.sgstperc;
-      }
-      if (formData.cgstPerc != '') {
-        cgstPerc = formData.cgstPerc;
-      }
-      if (formData.totalPrice != '') {
-        totalPrice = formData.totalPrice;
-      }
+      // console.log(newData);
+      let expDate;
+      // let name = newData[findId].prodName;
+      // let qty = newData[findId].prodQty;
+      // let catagory = newData[findId]['prodCatagory'];
+      // let prodPurchasePrice = newData[findId]['prodPurcahsePrice'];
+      // let mfr = newData[findId]['prodMfr'];
+      // let mrp = newData[findId]['prodMrpPrice'];
+      // let batch = newData[findId]['prodBatch'];
+      // let sgstperc = newData[findId]['prodSGST'];
+      // let cgstPerc = newData[findId]['prodCGST'];
+      // let totalPrice = newData[findId]['prodAmountWithoutGst'];
+      // let expDate = newData[findId]['prodExpDate'];
+      // let hsn = newData[findId]['prodHsn'];
+      // let totalPriceWithGst = newData[findId]['prodAmountWithGst'];
+      // if (formData.name != '') {
+      //   name = formData.name;
+      // }
+      // if (formData.mfr != '') {
+      //   mfr = formData.mfr;
+      // }
+      // if (formData.qty != '') {
+      //   qty = formData.qty;
+      // }
+      // if (formData.catagory != '') {
+      //   catagory = formData.catagory;
+      // }
+      // if (formData.prodPurchasePrice != '') {
+      //   prodPurchasePrice = formData.prodPurchasePrice;
+      // }
+      // if (formData.mrp != '') {
+      //   mrp = formData.mrp;
+      // }
+      // if (formData.batch != '') {
+      //   batch = formData.batch;
+      // }
+      // if (formData.sgstperc != '') {
+      //   sgstperc = formData.sgstperc;
+      // }
+      // if (formData.cgstPerc != '') {
+      //   cgstPerc = formData.cgstPerc;
+      // }
+      // if (formData.totalPrice != '') {
+      //   totalPrice = formData.totalPrice;
+      // }
       if (formData.expDate != '') {
         let newDate = new Date(formData.expDate);
         // console.log(newDate);
@@ -517,27 +534,27 @@ export default function AddPurchase() {
         let newDateData = yy + '-' + mm + '-' + dd;
         expDate = newDateData;
       }
-      if (formData.hsn != '') {
-        hsn = formData.hsn;
-      }
-      if (formData.totalPriceWithGst != '') {
-        totalPriceWithGst = formData.totalPriceWithGst;
-      }
+      // if (formData.hsn != '') {
+      //   hsn = formData.hsn;
+      // }
+      // if (formData.totalPriceWithGst != '') {
+      //   totalPriceWithGst = formData.totalPriceWithGst;
+      // }
 
       newData[findId] = {
-        prodName: name,
-        prodQty: qty,
-        prodCatagory: catagory,
-        prodPurcahsePrice: prodPurchasePrice,
-        prodMfr: mfr,
-        prodMrpPrice: mrp,
-        prodBatch: batch,
-        prodSGST: sgstperc,
-        prodCGST: cgstPerc,
-        prodAmountWithoutGst: totalPrice,
+        prodName: formData.name,
+        prodQty: formData.qty,
+        prodCatagory: formData.catagory,
+        prodPurcahsePrice: formData.prodPurchasePrice,
+        prodMfr: formData.mfr,
+        prodMrpPrice: formData.mrp,
+        prodBatch: formData.batch,
+        prodSGST: formData.sgstperc,
+        prodCGST: formData.cgstPerc,
+        prodAmountWithoutGst: formData.totalPrice,
         prodExpDate: expDate,
-        prodHsn: hsn,
-        prodAmountWithGst: totalPriceWithGst
+        prodHsn: formData.hsn,
+        prodAmountWithGst: formData.totalPriceWithGst
       };
       // }
       // console.log(newData);
