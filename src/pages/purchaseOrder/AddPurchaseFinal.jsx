@@ -427,13 +427,12 @@ export default function AddPurchase() {
     setProdExpDate(yy + '-' + mm + '-' + dd);
   };
   let changePaidAmount = (event) => {
+    let regex = /^-?\d*\.?\d*$/;
     let newPaidAmount = event.target.value;
-    if (newPaidAmount < 0 || newPaidAmount == '') {
-      newPaidAmount = 0;
-    } else {
-      newPaidAmount = parseFloat(newPaidAmount);
+    if (regex.test(newPaidAmount)) {
+      // newPaidAmount = parseFloat(newPaidAmount);
+      setPaidAmount(newPaidAmount);
     }
-    setPaidAmount(newPaidAmount);
     let newCreditAmount = parseFloat(totalAmount).toFixed(2);
     if (newPaidAmount > 0) {
       newCreditAmount = (parseFloat(totalAmount) - parseFloat(newPaidAmount)).toFixed(2);
@@ -443,6 +442,7 @@ export default function AddPurchase() {
     }
     setCreditAmount(newCreditAmount);
   };
+
   let handleDelete = (e) => {
     e = e - 1;
     // alert('hello');
