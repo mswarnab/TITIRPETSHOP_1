@@ -18,7 +18,7 @@ const LottieAnimation = ({ login = false }) => {
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'auto',
-        backgroundColor: 'rgba(0,0,0,0.4);',
+        backgroundColor: login ? 'white' : 'rgba(0,0,0,0.4);',
         flexDirection: 'column'
       }}
     >

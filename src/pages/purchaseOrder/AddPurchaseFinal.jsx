@@ -2,6 +2,7 @@ import {
   Alert,
   Autocomplete,
   Button,
+  Chip,
   Container,
   Dialog,
   DialogActions,
@@ -17,6 +18,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Slide,
   Snackbar,
   Stack,
   Switch,
@@ -34,6 +36,9 @@ import LottieAnimation from 'components/loaderDog';
 
 // import './Css/AddPurchase.css'
 // import AddStockDiv from '../relationComponents/AddStockDiv';
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function AddPurchase() {
   // dayjs.tz.setDefault("Asia/Kolkata");
@@ -232,26 +237,26 @@ export default function AddPurchase() {
         prodAmountWithGst: prodTotalPriceWithGST
       };
       setStockData([...stockData, newDataForm]);
-      setProdName('');
-      setProdQty('');
-      setProdCatagory('');
-      setProdPurcahsePrice('');
-      setProdMrpPrice('');
-      setProdMfr('');
-      setSgstPerc(0);
-      setCgstPerc(0);
-      setProdBatch('');
-      setProdHsn('');
-      setProdExpDate(null);
-      setProdTotalPriceWithGST('');
-      setProdTotalPrice('');
-      setEmptyProdTotalPriceWithGstCheck('');
-      setEmptyProdTotalPriceWithoutGstCheck('');
-      setEmptyProdNameCheck('');
-      setEmptyProdCategoryCheck('');
-      setEmptyProdQtyCheck('');
-      setEmptyProdPurchasePriceCheck('');
-      setEmptyProdMrpCheck('');
+      // setProdName('');
+      // setProdQty('');
+      // setProdCatagory('');
+      // setProdPurcahsePrice('');
+      // setProdMrpPrice('');
+      // setProdMfr('');
+      // setSgstPerc(0);
+      // setCgstPerc(0);
+      // setProdBatch('');
+      // setProdHsn('');
+      // setProdExpDate(null);
+      // setProdTotalPriceWithGST('');
+      // setProdTotalPrice('');
+      // setEmptyProdTotalPriceWithGstCheck('');
+      // setEmptyProdTotalPriceWithoutGstCheck('');
+      // setEmptyProdNameCheck('');
+      // setEmptyProdCategoryCheck('');
+      // setEmptyProdQtyCheck('');
+      // setEmptyProdPurchasePriceCheck('');
+      // setEmptyProdMrpCheck('');
     }
   };
   useEffect(() => {
@@ -478,49 +483,7 @@ export default function AddPurchase() {
       let newData = [...stockData];
       // console.log(newData);
       let expDate;
-      // let name = newData[findId].prodName;
-      // let qty = newData[findId].prodQty;
-      // let catagory = newData[findId]['prodCatagory'];
-      // let prodPurchasePrice = newData[findId]['prodPurcahsePrice'];
-      // let mfr = newData[findId]['prodMfr'];
-      // let mrp = newData[findId]['prodMrpPrice'];
-      // let batch = newData[findId]['prodBatch'];
-      // let sgstperc = newData[findId]['prodSGST'];
-      // let cgstPerc = newData[findId]['prodCGST'];
-      // let totalPrice = newData[findId]['prodAmountWithoutGst'];
-      // let expDate = newData[findId]['prodExpDate'];
-      // let hsn = newData[findId]['prodHsn'];
-      // let totalPriceWithGst = newData[findId]['prodAmountWithGst'];
-      // if (formData.name != '') {
-      //   name = formData.name;
-      // }
-      // if (formData.mfr != '') {
-      //   mfr = formData.mfr;
-      // }
-      // if (formData.qty != '') {
-      //   qty = formData.qty;
-      // }
-      // if (formData.catagory != '') {
-      //   catagory = formData.catagory;
-      // }
-      // if (formData.prodPurchasePrice != '') {
-      //   prodPurchasePrice = formData.prodPurchasePrice;
-      // }
-      // if (formData.mrp != '') {
-      //   mrp = formData.mrp;
-      // }
-      // if (formData.batch != '') {
-      //   batch = formData.batch;
-      // }
-      // if (formData.sgstperc != '') {
-      //   sgstperc = formData.sgstperc;
-      // }
-      // if (formData.cgstPerc != '') {
-      //   cgstPerc = formData.cgstPerc;
-      // }
-      // if (formData.totalPrice != '') {
-      //   totalPrice = formData.totalPrice;
-      // }
+
       if (formData.expDate != '') {
         let newDate = new Date(formData.expDate);
         // console.log(newDate);
@@ -601,7 +564,7 @@ export default function AddPurchase() {
             productName: e.prodName,
             category: e.prodCatagory,
             supplierName: splitSupplierName[0],
-            mfrCode: e.prodMfr,
+            mfrCode: 'N/A',
             hsnCode: e.prodHsn,
             mfgDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
             expDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
@@ -948,14 +911,20 @@ export default function AddPurchase() {
           Submit
         </Button>
       </Stack>
-      <Dialog open={open} fullWidth maxWidth="lg">
-        <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
+      <Dialog open={open} fullScreen={true} maxWidth="xl" TransitionComponent={Transition}>
+        <DialogTitle variant="h4" style={{ padding: '40px 30px', paddingBottom: '20px' }}>
           Add Stock
         </DialogTitle>
 
-        <DialogContent>
-          <DialogContentText></DialogContentText>
-          <Stack spacing={2}>
+        <DialogContentText></DialogContentText>
+        <div style={{ margin: '10px 30px 10px 30px' }}>
+          <Stack
+            spacing={0.5}
+            padding={2}
+            paddingBottom={1}
+            direction="row"
+            style={{ overflow: 'auto', borderRadius: '5px', border: '1px solid #cccccc' }}
+          >
             <Select
               labelId="sgstLavel"
               id="prodCat"
@@ -967,7 +936,7 @@ export default function AddPurchase() {
               onClick={() => setEmptyProdCategoryCheck('')}
             >
               <MenuItem value="" disabled>
-                <em>Select Product Catagory</em>
+                <em>Catagory</em>
               </MenuItem>
               {prodCatagoryArr.map((element) => (
                 // console.log(element);
@@ -986,6 +955,7 @@ export default function AddPurchase() {
               name="prodName"
               disableClearable="true"
               size="small"
+              style={{ width: 280 }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -1004,18 +974,19 @@ export default function AddPurchase() {
               }}
             />
 
-            <TextField
+            {/* <TextField
               id="outlined-basic"
               label="Mfr"
               variant="outlined"
-              fullWidth
+              // fullWidth
               autoComplete="off"
+              style={{ width: 280 }}
               value={prodMfr}
               onChange={(event) => {
                 // fetchSupplier();
                 setProdMfr(event.target.value);
-              }}
-            />
+                }}
+                /> */}
             <TextField
               id="outlined-basic"
               label="Batch"
@@ -1023,6 +994,7 @@ export default function AddPurchase() {
               autoComplete="off"
               name="prodBatch"
               value={prodBatch}
+              style={{ width: 100 }}
               onChange={(event) => setProdBatch(event.target.value)}
             ></TextField>
             <TextField
@@ -1031,6 +1003,7 @@ export default function AddPurchase() {
               variant="outlined"
               autoComplete="off"
               name="hsn"
+              style={{ width: 100 }}
               value={prodHsn}
               onChange={(event) => setProdHsn(event.target.value)}
             ></TextField>
@@ -1050,11 +1023,12 @@ export default function AddPurchase() {
               error={emptyProdQtyCheck}
               helperText={emptyProdQtyCheck ? emptyProdQtyCheck : ''}
               type="text"
-              label="Quantity"
+              label="QTY"
               variant="outlined"
               autoComplete="off"
               name="prodQuantity"
               value={prodQty}
+              style={{ width: 80 }}
               onChange={onProductQtyChagne}
               onClick={() => setEmptyProdQtyCheck('')}
             ></TextField>
@@ -1063,10 +1037,11 @@ export default function AddPurchase() {
               error={emptyProdPurchasePriceCheck}
               helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
               type="text"
-              label="Purchase Price"
+              label="Rate"
               variant="outlined"
               autoComplete="off"
               name="prodPur"
+              style={{ width: 90 }}
               value={prodPurcahsePrice}
               onChange={onProductPurchasePriceChange}
               onClick={() => setEmptyProdPurchasePriceCheck('')}
@@ -1080,12 +1055,27 @@ export default function AddPurchase() {
               variant="outlined"
               autoComplete="off"
               name="prodMrp"
+              style={{ width: 90 }}
               value={prodMrpPrice}
               onChange={(event) => setProdMrpPrice(event.target.value)}
               onClick={() => setEmptyProdMrpCheck('')}
             ></TextField>
+            {/* <TextField
+              id="outlined-basic"
+              error={emptyProdMrpCheck}
+              helperText={emptyProdMrpCheck ? emptyProdMrpCheck : ''}
+              type="text"
+              label="Discount"
+              variant="outlined"
+              autoComplete="off"
+              name="prodMrp"
+              style={{ width: 90 }}
+              value={prodMrpPrice}
+              onChange={(event) => setProdMrpPrice(event.target.value)}
+              onClick={() => setEmptyProdMrpCheck('')}
+            ></TextField> */}
 
-            <TextField
+            {/* <TextField
               id="outlined-basic"
               error={emptyProdTotalPriceWithoutGstCheck && prodTotalPrice == '' ? true : false}
               helperText={emptyProdTotalPriceWithoutGstCheck && prodTotalPrice == '' ? emptyProdTotalPriceWithoutGstCheck : ''}
@@ -1094,9 +1084,10 @@ export default function AddPurchase() {
               variant="outlined"
               name="prodTotalPrice"
               value={prodTotalPrice}
+              style={{ width: 120 }}
               aria-readonly="true"
               onClick={() => setEmptyProdTotalPriceWithoutGstCheck('')}
-            ></TextField>
+              ></TextField> */}
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
@@ -1142,16 +1133,14 @@ export default function AddPurchase() {
               label="Total Price With GST"
               disabled
               variant="outlined"
+              style={{ width: 120 }}
               name="prodTotalPriceWithGST"
               value={prodTotalPriceWithGST}
               aria-readonly="true"
               onClick={() => setEmptyProdTotalPriceWithGstCheck('')}
             ></TextField>
           </Stack>
-        </DialogContent>
-
-        <DialogActions>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '30px 0 0 0' }}>
             <Button variant="contained" color="secondary" onClick={handleClose} style={{ margin: '0 10px 0 0' }}>
               Cancel
             </Button>
@@ -1159,12 +1148,34 @@ export default function AddPurchase() {
               Add
             </Button>
           </div>
-        </DialogActions>
+
+          <DialogActions></DialogActions>
+          <Divider textAlign="center">
+            <Chip label="Added Products" size="small" />
+          </Divider>
+          <DialogContent>
+            <div style={{ height: 380 }}>
+              {dataRows.length ? (
+                <ProductTable
+                  handleClose={handleCloseUpdate}
+                  selectedRowData={selectedRowData}
+                  prodCatagoryArr={prodCatagoryArr}
+                  open={openUpdate}
+                  row={dataRows}
+                  column={dataColumns}
+                  // htmlData={htmlDataStockView}
+                  handleClickOpen={handleClickOpenUpdate}
+                  handleDelete={handleDelete}
+                  handleUpdate={handleUpdate}
+                />
+              ) : (
+                ''
+              )}
+            </div>
+          </DialogContent>
+        </div>
       </Dialog>
       <Divider style={{ margin: '20px 0px 20px 0px' }}></Divider>
-
-      {/* <div style={stockData.length? {display:"flex", flexWrap:"wrap",justifyContent:"center",maxHeight:"500px",overflow:"scroll"} : {}}> */}
-
       {dataRows.length ? (
         <ProductTable
           handleClose={handleCloseUpdate}
@@ -1181,6 +1192,9 @@ export default function AddPurchase() {
       ) : (
         ''
       )}
+
+      {/* <div style={stockData.length? {display:"flex", flexWrap:"wrap",justifyContent:"center",maxHeight:"500px",overflow:"scroll"} : {}}> */}
+
       {/* <DataGridDemo rows={dataRows} columns={dataColumns} />  */}
       {/* </div> */}
     </Grid>
