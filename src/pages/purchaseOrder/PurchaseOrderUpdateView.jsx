@@ -217,9 +217,9 @@ export default function ManagePurchaseOrder() {
               Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
             </Typography>
           </Grid> */}
-          <Grid md={12} lg={7} style={{ marginRight: 0 }}>
+          {/* <Grid md={12} lg={7} style={{ marginRight: 0 }}>
             <ChipsArray />
-          </Grid>
+          </Grid> */}
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
