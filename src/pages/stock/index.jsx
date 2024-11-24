@@ -31,11 +31,41 @@ const actionSX = {
 };
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
-function createData(id, productName, category, batchNumber, hsnCode, mfrCode, quantity, rate, mrp, expDate, sgst, cgst, supplierName) {
+function createData(
+  id,
+  productName,
+  invoiceNumber,
+  category,
+  batchNumber,
+  hsnCode,
+  mfrCode,
+  quantity,
+  rate,
+  mrp,
+  expDate,
+  sgst,
+  cgst,
+  supplierName
+) {
   // console.log(expDate);
   expDate = dayjs(expDate).format('YYYY-MM-DD');
   // console.log(expDate);
-  return { id, productName, category, batchNumber, hsnCode, mfrCode, quantity, rate, mrp, expDate, sgst, cgst, supplierName };
+  return {
+    id,
+    productName,
+    invoiceNumber,
+    category,
+    batchNumber,
+    hsnCode,
+    mfrCode,
+    quantity,
+    rate,
+    mrp,
+    expDate,
+    sgst,
+    cgst,
+    supplierName
+  };
 }
 
 export default function ManageStock() {
@@ -50,6 +80,12 @@ export default function ManageStock() {
     {
       field: 'productName',
       headerName: 'Product Name',
+      width: 250
+      // editable: true
+    },
+    {
+      field: 'invoiceNumber',
+      headerName: 'Invoice No.',
       width: 250
       // editable: true
     },
@@ -167,6 +203,7 @@ export default function ManageStock() {
           let createdData = createData(
             id,
             value.productName,
+            value.invoiceNumber,
             value.category,
             value.batchNumber,
             value.hsnCode,
