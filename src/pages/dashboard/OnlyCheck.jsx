@@ -15,10 +15,8 @@ export default function OnlyCheck() {
   const navigate = useNavigate();
   useEffect(() => {
     (async () => {
-      client
-        .get('/login', { withCredentials: true })
-        .then((res) => setLoggedIn(res.data.status == '200' ? true : false))
-        .catch((err) => navigate('/login'));
+      client.get('/login', { withCredentials: true }).then((res) => setLoggedIn(res.data.status == '200' ? true : false));
+      // .catch((err) => navigate('/login'));
     })();
   }, []);
   return () => {

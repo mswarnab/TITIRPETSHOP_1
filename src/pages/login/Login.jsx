@@ -35,7 +35,7 @@ function Login() {
   useEffect(() => {
     (async () => {
       await client.get('/auth');
-      navigate('/');
+      // navigate('/');
       return () => {
         return null;
       };
