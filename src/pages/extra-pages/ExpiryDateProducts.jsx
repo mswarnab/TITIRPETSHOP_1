@@ -37,11 +37,44 @@ const actionSX = {
 };
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
-function createData(id, productName, category, batchNumber, hsnCode, mfrCode, quantity, rate, mrp, expDate, sgst, cgst, supplierName) {
+function createData(
+  id,
+  productName,
+  category,
+  batchNumber,
+  // hsnCode,
+  // mfrCode,
+  invoiceNumber,
+  quantity,
+  rate,
+  mrp,
+  expDate,
+  // sgst,
+  // cgst,
+  supplierName,
+  dateOfPruchase
+) {
   // console.log(expDate);
   expDate = dayjs(expDate).format('YYYY-MM-DD');
+  dateOfPruchase = dayjs(dateOfPruchase).format('YYYY-MM-DD');
   // console.log(expDate);
-  return { id, productName, category, batchNumber, hsnCode, mfrCode, quantity, rate, mrp, expDate, sgst, cgst, supplierName };
+  return {
+    id,
+    productName,
+    category,
+    batchNumber,
+    // hsnCode,
+    // mfrCode,
+    invoiceNumber,
+    quantity,
+    rate,
+    mrp,
+    expDate,
+    // sgst,
+    // cgst,
+    supplierName,
+    dateOfPruchase
+  };
 }
 
 export default function ExpiryDateProducts() {
@@ -60,10 +93,26 @@ export default function ExpiryDateProducts() {
       // editable: true
     },
     {
+      field: 'expDate',
+      headerName: 'Expiry Date',
+      width: 160
+    },
+    {
       field: 'category',
       headerName: 'Product Categroy',
       width: 150
       // editable: true
+    },
+    {
+      field: 'invoiceNumber',
+      headerName: 'Invoice No',
+      width: 160
+    },
+
+    {
+      field: 'supplierName',
+      headerName: 'Supplier Name',
+      width: 250
     },
 
     {
@@ -71,16 +120,16 @@ export default function ExpiryDateProducts() {
       headerName: 'Batch No.',
       width: 160
     },
-    {
-      field: 'hsnCode',
-      headerName: 'Hsn',
-      width: 160
-    },
-    {
-      field: 'mfrCode',
-      headerName: 'Mfr',
-      width: 160
-    },
+    // {
+    //   field: 'hsnCode',
+    //   headerName: 'Hsn',
+    //   width: 160
+    // },
+    // {
+    //   field: 'mfrCode',
+    //   headerName: 'Mfr',
+    //   width: 160
+    // },
 
     {
       field: 'quantity',
@@ -102,27 +151,22 @@ export default function ExpiryDateProducts() {
       // editable: true
     },
     {
-      field: 'expDate',
-      headerName: 'Expiry Date',
-      width: 160
-    },
-
-    {
-      field: 'sgst',
-      headerName: 'SGST/PROD',
-      width: 160
-    },
-    {
-      field: 'cgst',
-      headerName: 'CGST/PROD',
-      width: 160
-    },
-
-    {
-      field: 'supplierName',
-      headerName: 'Supplier Name',
-      width: 250
+      field: 'dateOfPruchase',
+      headerName: 'Purchase Date',
+      width: 100
+      // editable: true
     }
+
+    // {
+    //   field: 'sgst',
+    //   headerName: 'SGST/PROD',
+    //   width: 160
+    // },
+    // {
+    //   field: 'cgst',
+    //   headerName: 'CGST/PROD',
+    //   width: 160
+    // },
   ];
 
   const handleCloseUpdate = () => {
@@ -175,15 +219,17 @@ export default function ExpiryDateProducts() {
             value.productName,
             value.category,
             value.batchNumber,
-            value.hsnCode,
-            value.mfrCode,
+            // value.hsnCode,
+            // value.mfrCode,
+            value.invoiceNumber,
             value.quantity,
             value.rate,
             value.mrp,
             value.expDate,
-            value.sgst,
-            value.cgst,
-            value.supplierName
+            // value.sgst,
+            // value.cgst,
+            value.supplierName,
+            value.dateOfPruchase
           );
 
           // console;
