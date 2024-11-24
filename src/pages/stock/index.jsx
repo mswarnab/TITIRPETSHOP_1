@@ -75,6 +75,8 @@ export default function ManageStock() {
   const [selectedRowData, setSelectedRowData] = React.useState('');
   const [paginationCount, setPaginationCount] = useState(0);
   const [dataRows, setDataRows] = useState([]);
+  const [productCount, setProductCOunt] = useState(0);
+
   const dataColumns = [
     { field: 'id', headerName: 'Sl No.', width: 90 },
     {
@@ -197,6 +199,7 @@ export default function ManageStock() {
         setPaginationCount(pagiCount);
         let newData = [];
         let result = [...res.data.result.result];
+        setProductCOunt(res.data.result.count);
         // console.log(result);
         let id = parseInt(parseInt(page * 20) + 1);
         result.map((value) => {
@@ -250,7 +253,7 @@ export default function ManageStock() {
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
           <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{dataRows.length} Products found</Typography>
+            <Typography variant="h5">{productCount} Products found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">

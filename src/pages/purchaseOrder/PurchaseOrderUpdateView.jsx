@@ -62,6 +62,7 @@ export default function ManagePurchaseOrder() {
   // let paginationCount = (50/;
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
+  const [productCount, setProductCOunt] = useState(0);
   const handleClickOpen = (value) => {
     // console.log(value);
     setSelectedData(value.row);
@@ -147,7 +148,7 @@ export default function ManagePurchaseOrder() {
         let result = [...res.data.result.result];
         // console.log(result);
         // /createData(id, invoiceNumber, supplierName, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount) {
-
+        setProductCOunt(res.data.result.count);
         let id = parseInt(parseInt(page * 20) + 1);
         result.map((value) => {
           let createdData = createData(
@@ -210,7 +211,7 @@ export default function ManagePurchaseOrder() {
           style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
         >
           <Grid lg={5}>
-            <Typography variant="h5">{rows.length} Purchase Orders found</Typography>
+            <Typography variant="h5">{productCount} Purchase Orders found</Typography>
           </Grid>
           {/* <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">

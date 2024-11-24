@@ -80,6 +80,8 @@ function createData(
 export default function ExpiryDateProducts() {
   const typeView = 'view';
   const pageSize = 20;
+  const [productCount, setProductCOunt] = useState(0);
+
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState('');
   const [paginationCount, setPaginationCount] = useState(0);
@@ -211,6 +213,8 @@ export default function ExpiryDateProducts() {
         setPaginationCount(pagiCount);
         let newData = [];
         let result = [...res.data.result.result];
+        setProductCOunt(res.data.result.count);
+
         // console.log(result);
         let id = parseInt(parseInt(page * 20) + 1);
         result.map((value) => {
@@ -270,7 +274,7 @@ export default function ExpiryDateProducts() {
         </Grid>
         <Grid container alignItems="flex-start" justifyContent="space-between">
           <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{dataRows.length} Product(s) found</Typography>
+            <Typography variant="h5">{productCount} Product(s) found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">
