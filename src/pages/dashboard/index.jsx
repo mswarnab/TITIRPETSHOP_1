@@ -219,7 +219,7 @@ export default function DashboardDefault() {
             }}
           >
             {purchaseOrdersWithAmountDue.length
-              ? purchaseOrdersWithAmountDue.map((e) => {
+              ? purchaseOrdersWithAmountDue.map((e, i) => {
                   const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
                   if (i > 5) {
                     return null;
