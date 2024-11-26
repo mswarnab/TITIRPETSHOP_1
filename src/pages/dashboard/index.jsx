@@ -133,16 +133,16 @@ export default function DashboardDefault() {
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           title="Total sales in current month"
-          count={`₹${totalSales.amount || 0}`}
+          count={`₹${parseFloat(totalSales.amount).toFixed(2) || 0}`}
           // percentage={percentage}
           extraLabel={''}
-          extra={totalSales.count + ` sales made since last month`}
+          extra={(totalSales.count || 0) + ` sales made since last month`}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           title="Total due to suppliers"
-          count={'₹' + (totalSupplierDue.amount || 0)}
+          count={'₹' + (parseFloat(totalSupplierDue.amount).toFixed(2) || 0)}
           isLoss
           color="warning"
           extraLabel={'Total amount due'}
@@ -219,9 +219,11 @@ export default function DashboardDefault() {
             }}
           >
             {purchaseOrdersWithAmountDue.length
-              ? purchaseOrdersWithAmountDue.map((e, i) => {
+              ? purchaseOrdersWithAmountDue.map((e) => {
                   const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
-                  if (i > 7) return null;
+                  if (i > 5) {
+                    return null;
+                  }
                   return (
                     <ListItemButton divider>
                       <ListItemAvatar>
