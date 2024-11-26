@@ -91,7 +91,7 @@ export default function DashboardDefault() {
         .catch((err) => setError({ err: true, message: null }));
 
       client.get('/sales/totalsale').then((res) => {
-        setTotalSales({ count: res.data.result.count, amount: res.data.result.result[0].totalSales });
+        setTotalSales({ count: res.data.result.count, amount: res.data.result.result[0].totalSales || 0 });
       });
 
       client.get('/supplier/totaldue').then((res) => {
