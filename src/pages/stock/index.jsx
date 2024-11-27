@@ -179,7 +179,7 @@ export default function ManageStock() {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page']);
+    fetchRowData(newdata['page'], searchParm);
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
