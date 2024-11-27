@@ -3,15 +3,17 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { prodCatagoryArr } from 'static';
 
 // project import
 import MainCard from 'components/MainCard';
-import { Pagination } from '@mui/material';
+import { Button, IconButton, MenuItem, Pagination, Select, TextField } from '@mui/material';
 import ProductTable from 'pages/dashboard/ProductTable';
 import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
 import { client } from 'api/client';
 import dayjs from 'dayjs';
+import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
 
 // avatar style
 const avatarSX = {
@@ -188,10 +190,28 @@ export default function ManageStock() {
     fetchRowData(page);
     setOpen(false);
   };
-  let fetchRowData = (page) => {
+  const [searchParm, setSearchParm] = useState('');
+  let createUrl = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    let value = '&' + searchType + '=' + searchValue;
+    setSearchParm(value);
+  };
+  let crearAllFilter = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    setSearchType('0');
+    setSearchParm('');
+  };
+  let fetchRowData = (page, url) => {
+    console.log('/stock/?page=' + page + url);
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/stock/?page=' + page)
+      .get('/stock?page=' + page + url)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -219,7 +239,6 @@ export default function ManageStock() {
             value.cgst,
             value.supplierName
           );
-
           // console;
           newData = [...newData, createdData];
           id = parseInt(id) + 1;
@@ -228,21 +247,27 @@ export default function ManageStock() {
         setDataRows(newData);
         setLoading(false);
       })
-      .catch((err) => setLoading(false));
+      .catch((err) => {
+        setLoading(false);
+        setDataRows([]);
+        setProductCOunt(0);
+      });
   };
   useEffect(() => {
-    fetchRowData(paginationModel.page);
+    fetchRowData(paginationModel.page, searchParm);
     return () => {
       return null;
     };
-  }, []);
+  }, [searchParm]);
   const [loading, setLoading] = useState(true);
+  const [searchType, setSearchType] = useState('0');
+  const [searchValue, setSearchValue] = useState('');
   // console.log(dataRows);
   if (loading) {
     return <LottieAnimation />;
   }
   if (!loading && !dataRows.length) {
-    return <NoDataFoundAnimation />;
+    // return <NoDataFoundAnimation />;
   }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -252,13 +277,76 @@ export default function ManageStock() {
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%' }}>
+          <Grid style={{ width: '50%', marginTop: '10px' }}>
             <Typography variant="h5">{productCount} Products found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
-            <Typography color={'teal'} variant="button">
+            <Stack direction="row" spacing={1}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={searchType}
+                // sx={{ height: '45px' }}
+                // label="Age"
+                onChange={(event) => {
+                  setSearchType(event.target.value);
+                  if (event.target.value == 'filterByCategory') {
+                    setSearchValue(0);
+                  }
+                }}
+              >
+                <MenuItem value="0">Search Type</MenuItem>
+                <MenuItem value="filterByProductName">Product Name</MenuItem>
+                <MenuItem value="filterByCategory">Category</MenuItem>
+                <MenuItem value="filterByInvoiceNumber">Invoice No.</MenuItem>
+                <MenuItem value="filterBySupplierName">Supplier</MenuItem>
+                <MenuItem value="filterByHsnCode">Hsn Code</MenuItem>
+              </Select>
+              {searchType == 'filterByCategory' ? (
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={searchValue}
+                  // sx={{ height: '45px' }}
+                  // label="Age"
+                  onChange={(event) => setSearchValue(event.target.value)}
+                >
+                  <MenuItem value="0">Search Catagory</MenuItem>
+                  {prodCatagoryArr.map((element) => (
+                    <MenuItem value={element}>{element}</MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <TextField
+                  disabled={searchType == 0 ? true : false}
+                  value={searchValue}
+                  id="outlined-search"
+                  label="Search field"
+                  type="search"
+                  // size="medium"
+                  // sx={{ height: '45px' }}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
+              )}
+              <IconButton aria-label="delete" size="large" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+                <SearchOutlined />
+              </IconButton>
+              <IconButton aria-label="" size="large" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+                <ClearOutlined />
+              </IconButton>
+              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
+                Search
+              </Button> */}
+            </Stack>
+          </Grid>
+          <Grid item />
+        </Grid>
+        <Grid container alignItems="flex-start" justifyContent="space-between" marginTop={3}>
+          <Grid style={{ width: '50%' }}>{/* <Typography variant="h5">{productCount} Products found</Typography> */}</Grid>
+          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+            {/* <Typography color={'teal'} variant="button">
               Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
-            </Typography>
+            </Typography> */}
           </Grid>
           <Grid item />
         </Grid>
