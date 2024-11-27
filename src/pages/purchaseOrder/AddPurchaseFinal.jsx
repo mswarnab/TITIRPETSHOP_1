@@ -947,6 +947,20 @@ export default function AddPurchase() {
               <MenuItem value={12}>SGST 12%</MenuItem>
               <MenuItem value={18}>SGST 18%</MenuItem> */}
             </Select>
+            <TextField
+              id="outlined-basic"
+              error={emptyProdQtyCheck}
+              helperText={emptyProdQtyCheck ? emptyProdQtyCheck : ''}
+              type="text"
+              label="QTY"
+              variant="outlined"
+              autoComplete="off"
+              name="prodQuantity"
+              value={prodQty}
+              style={{ width: 80 }}
+              onChange={onProductQtyChagne}
+              onClick={() => setEmptyProdQtyCheck('')}
+            ></TextField>
             <Autocomplete
               id="free-solo-demo"
               freeSolo
@@ -989,6 +1003,20 @@ export default function AddPurchase() {
                 /> */}
             <TextField
               id="outlined-basic"
+              error={emptyProdMrpCheck}
+              helperText={emptyProdMrpCheck ? emptyProdMrpCheck : ''}
+              type="text"
+              label="MRP"
+              variant="outlined"
+              autoComplete="off"
+              name="prodMrp"
+              style={{ width: 90 }}
+              value={prodMrpPrice}
+              onChange={(event) => setProdMrpPrice(event.target.value)}
+              onClick={() => setEmptyProdMrpCheck('')}
+            ></TextField>
+            <TextField
+              id="outlined-basic"
               label="Batch"
               variant="outlined"
               autoComplete="off"
@@ -996,16 +1024,6 @@ export default function AddPurchase() {
               value={prodBatch}
               style={{ width: 100 }}
               onChange={(event) => setProdBatch(event.target.value)}
-            ></TextField>
-            <TextField
-              id="outlined-basic"
-              label="HSN"
-              variant="outlined"
-              autoComplete="off"
-              name="hsn"
-              style={{ width: 100 }}
-              value={prodHsn}
-              onChange={(event) => setProdHsn(event.target.value)}
             ></TextField>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
@@ -1020,17 +1038,13 @@ export default function AddPurchase() {
             </LocalizationProvider>
             <TextField
               id="outlined-basic"
-              error={emptyProdQtyCheck}
-              helperText={emptyProdQtyCheck ? emptyProdQtyCheck : ''}
-              type="text"
-              label="QTY"
+              label="HSN"
               variant="outlined"
               autoComplete="off"
-              name="prodQuantity"
-              value={prodQty}
-              style={{ width: 80 }}
-              onChange={onProductQtyChagne}
-              onClick={() => setEmptyProdQtyCheck('')}
+              name="hsn"
+              style={{ width: 100 }}
+              value={prodHsn}
+              onChange={(event) => setProdHsn(event.target.value)}
             ></TextField>
             <TextField
               id="outlined-basic"
@@ -1046,20 +1060,7 @@ export default function AddPurchase() {
               onChange={onProductPurchasePriceChange}
               onClick={() => setEmptyProdPurchasePriceCheck('')}
             ></TextField>
-            <TextField
-              id="outlined-basic"
-              error={emptyProdMrpCheck}
-              helperText={emptyProdMrpCheck ? emptyProdMrpCheck : ''}
-              type="text"
-              label="MRP"
-              variant="outlined"
-              autoComplete="off"
-              name="prodMrp"
-              style={{ width: 90 }}
-              value={prodMrpPrice}
-              onChange={(event) => setProdMrpPrice(event.target.value)}
-              onClick={() => setEmptyProdMrpCheck('')}
-            ></TextField>
+
             {/* <TextField
               id="outlined-basic"
               error={emptyProdMrpCheck}
