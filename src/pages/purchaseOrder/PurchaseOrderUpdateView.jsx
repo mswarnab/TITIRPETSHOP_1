@@ -10,6 +10,8 @@ import PurchaseTable from 'pages/dashboard/PurchaseTable';
 import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
 import ChipsArray from 'components/ChipsArray';
+import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
 
 // let id = 0;
 function createData(
@@ -126,7 +128,25 @@ export default function ManagePurchaseOrder() {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page']);
+    fetchRowData(newdata['page'], searchParm);
+  };
+  const [searchParm, setSearchParm] = useState('');
+  let createUrl = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    let value = '&' + searchType + '=' + searchValue;
+    setSearchParm(value);
+  };
+  let crearAllFilter = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    setSearchType('0');
+    setSearchValue('');
+    setSearchParm('');
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -135,10 +155,10 @@ export default function ManagePurchaseOrder() {
   const [rows, setRows] = useState([]);
   const [paginationCount, setPaginationCount] = useState(0);
   ////// call apito get data in every page change
-  let fetchRowData = async (page) => {
+  let fetchRowData = async (page, url) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/purchaseorder?page=' + page)
+      .get('/purchaseorder?page=' + page + url)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -182,13 +202,15 @@ export default function ManagePurchaseOrder() {
   };
   // console.log(paginationCount);
   useEffect(() => {
-    (async () => await fetchRowData(paginationModel.page))();
+    (async () => await fetchRowData(paginationModel.page, searchParm))();
     return () => {
       return null;
     };
-  }, []);
+  }, [searchParm]);
 
   const [loading, setLoading] = useState(true);
+  const [searchType, setSearchType] = useState('0');
+  const [searchValue, setSearchValue] = useState('');
   // console.log(rows);
   if (loading) {
     return <LottieAnimation />;
@@ -212,6 +234,55 @@ export default function ManagePurchaseOrder() {
         >
           <Grid lg={5}>
             <Typography variant="h5">{productCount} Purchase Orders found</Typography>
+          </Grid>
+          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+            <Stack direction="row" spacing={1}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={searchType}
+                // sx={{ height: '45px' }}
+                // label="Age"
+                onChange={(event) => {
+                  setSearchType(event.target.value);
+                  if (event.target.value == 'filterByCategory') {
+                    setSearchValue(0);
+                  } else if (event.target.value == 'filterByOnlyDue') {
+                    setSearchValue(1);
+                  }
+                }}
+              >
+                <MenuItem value="0">Search Type</MenuItem>
+                {/* <MenuItem value="filterByProductName">Product Name</MenuItem> */}
+                {/* <MenuItem value="filterByCategory">Category</MenuItem> */}
+                <MenuItem value="filterByInvoice">Invoice No.</MenuItem>
+                <MenuItem value="filterBySupplierName">Supplier</MenuItem>
+                <MenuItem value="filterByOnlyDue">Only Due</MenuItem>
+              </Select>
+              {searchType == 'filterByOnlyDue' ? (
+                ''
+              ) : (
+                <TextField
+                  disabled={searchType == 0 ? true : false}
+                  value={searchValue}
+                  id="outlined-search"
+                  label="Search field"
+                  type="search"
+                  // size="medium"
+                  // sx={{ height: '45px' }}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
+              )}
+              <IconButton aria-label="delete" size="large" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+                <SearchOutlined />
+              </IconButton>
+              <IconButton aria-label="" size="large" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+                <ClearOutlined />
+              </IconButton>
+              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
+                Search
+              </Button> */}
+            </Stack>
           </Grid>
           {/* <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">

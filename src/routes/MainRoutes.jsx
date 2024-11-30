@@ -17,6 +17,7 @@ import PageNotFoundAnimation from '../../src/components/pageNotFound';
 import ExpiryDateProducts from 'pages/extra-pages/ExpiryDateProducts';
 import ManagePurchaseOrder from 'pages/purchaseOrder/PurchaseOrderUpdateView';
 import ManageSaleView from 'pages/sales/SaleUpdateView';
+import CustomerBillGenarate from 'pages/customer/CustomerBillGenarate';
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
 const Shadow = Loadable(lazy(() => import('pages/component-overview/shadows')));
@@ -79,6 +80,10 @@ const MainRoutes = {
     {
       path: '/',
       element: <DashboardDefault />
+    },
+    {
+      path: '/customerbill/:id',
+      element: <CustomerBillGenarate />
     },
 
     {

@@ -205,6 +205,7 @@ export default function ManageStock() {
     // newdata['pageSize'] = 20;
     setPaginationModel(newdata);
     setSearchType('0');
+    setSearchValue('');
     setSearchParm('');
   };
   let fetchRowData = (page, url) => {

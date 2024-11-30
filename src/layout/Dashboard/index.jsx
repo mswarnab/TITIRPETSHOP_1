@@ -19,6 +19,7 @@ import { client } from 'api/client';
 // ==============================|| MAIN LAYOUT ||============================== //
 
 export default function DashboardLayout() {
+  const avoidMenuAndHeaderFromSuchPages = ['customerbill', 'login'];
   const { menuMasterLoading } = useGetMenuMaster();
   const downXL = useMediaQuery((theme) => theme.breakpoints.down('xl'));
   const [loggedIn, setLoggedIn] = useState(false);
@@ -52,16 +53,25 @@ export default function DashboardLayout() {
   }, [downXL]);
 
   if (menuMasterLoading) return <Loader />;
-
+  const currentPath = window.location.pathname;
+  let urlArr = currentPath.split('/');
+  let page = urlArr[1];
+  let avoidMenuAndHeaderFromSuchPagesexists = avoidMenuAndHeaderFromSuchPages.indexOf(page) !== -1;
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
-      <Header />
-      <Drawer />
-      <Box component="main" sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
-        <Toolbar />
-        <Breadcrumbs navigation={navigation} title />
+      {avoidMenuAndHeaderFromSuchPagesexists ? (
         <Outlet />
-      </Box>
+      ) : (
+        <>
+          <Header />
+          <Drawer />
+          <Box component="main" sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
+            <Toolbar />
+            <Breadcrumbs navigation={navigation} title />
+            <Outlet />
+          </Box>
+        </>
+      )}
     </Box>
   );
 }
