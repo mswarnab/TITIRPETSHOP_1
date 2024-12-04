@@ -185,7 +185,7 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
               />
               <TextField
                 variant="standard"
-                label="Selling Price"
+                label="Selling Price per Unit"
                 style={{ width: '300px', margin: '20px 0px' }}
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
