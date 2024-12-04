@@ -63,7 +63,7 @@ const OnSearchItemBox = ({
         <Stack direction={'row'}>
           <Typography variant="h5">Price per Unit including GST:</Typography>
           <Typography variant="h5" color={'peru'} marginLeft={1}>
-            ₹{parseFloat(data.rate) + parseFloat(data.sgst) + parseFloat(data.cgst)}
+            ₹{parseFloat(parseFloat(data.rate) + parseFloat(data.sgst) + parseFloat(data.cgst)).toFixed(2)}
           </Typography>
         </Stack>
         <Stack direction={'row'}>
