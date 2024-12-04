@@ -85,6 +85,7 @@ export default function AddPurchase() {
   const [emptyProdMrpCheck, setEmptyProdMrpCheck] = React.useState('');
   const [emptyProdTotalPriceWithoutGstCheck, setEmptyProdTotalPriceWithoutGstCheck] = React.useState('');
   const [emptyProdTotalPriceWithGstCheck, setEmptyProdTotalPriceWithGstCheck] = React.useState('');
+  // const [emptyProdExpDate, setEmptyProdExpDate] = React.useState();
   /* all fucntion */
   let handleChange = (event) => {
     let sgstPercValue = event.target.value;
@@ -210,6 +211,10 @@ export default function AddPurchase() {
       }
       flag = 0;
     }
+    if (!dayjs(prodExpDate).isValid()) {
+      // setEmptyProdExpDate('Please enter valid Exp date.');
+      flag = 0;
+    }
 
     if (flag) {
       let newGrandTotal = (parseFloat(totalAmount) + parseFloat(prodTotalPriceWithGST)).toFixed(2);
@@ -247,7 +252,7 @@ export default function AddPurchase() {
       // setCgstPerc(0);
       // setProdBatch('');
       // setProdHsn('');
-      // setProdExpDate(null);
+      setProdExpDate(null);
       // setProdTotalPriceWithGST('');
       // setProdTotalPrice('');
       // setEmptyProdTotalPriceWithGstCheck('');
@@ -1033,6 +1038,7 @@ export default function AddPurchase() {
                 name="expDate"
                 value={dayjs(prodExpDate)}
                 // defaultValue={}
+
                 onChange={(date) => setExpDateFunction(date)}
               />
             </LocalizationProvider>
