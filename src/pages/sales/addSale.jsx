@@ -229,7 +229,7 @@ export default function AddSale() {
         products: addedProduct,
         cgst: '0',
         sgst: '0',
-        paidAmount: billDtls.billPaidAmount,
+        paidAmount: billDtls.billPaidAmount || 0,
         dueDate: dueDate
       };
       // console.log(postData);
