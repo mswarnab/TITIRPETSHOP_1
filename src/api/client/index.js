@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const client = axios.create({
-  baseURL: 'https://popo-backend-dev.onrender.com', //https://popo-backend-dev.onrender.com //https://popo-backend-1.onrender.com
+  baseURL: 'https://popo-backend-1.onrender.com',
   // baseURL: 'http://localhost:8000',
 
   headers: {
