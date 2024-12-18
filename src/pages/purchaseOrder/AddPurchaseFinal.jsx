@@ -160,12 +160,12 @@ export default function AddPurchase() {
       setEmptyProdPurchasePriceCheck('Please enter purchase rate.');
       flag = 0;
     }
-    if (prodPurcahsePrice <= 0) {
-      if (prodPurcahsePrice < 0) {
+    if (prodPurcahsePrice < 0) {
+      //if (prodPurcahsePrice < 0) {
         setEmptyProdPurchasePriceCheck('Purchase rate must be in positive figure.');
-      } else if (prodPurcahsePrice == 0) {
-        setEmptyProdPurchasePriceCheck("Purchase rate must be greater than '0'.");
-      }
+      // } else if (prodPurcahsePrice == 0) {
+      //   setEmptyProdPurchasePriceCheck("Purchase rate must be greater than '0'.");
+      // }
       flag = 0;
     }
     setEmptyProdTotalPriceWithoutGstCheck;
@@ -187,28 +187,28 @@ export default function AddPurchase() {
         flag = 0;
       }
     }
-    if (prodTotalPrice == '' || prodTotalPrice == 'undefined') {
+    if (prodTotalPrice == 'undefined') {
       setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
       flag = 0;
     }
-    if (prodTotalPrice <= 0) {
-      if (prodTotalPrice < 0) {
+    if (prodTotalPrice < 0) {
+      // if (prodTotalPrice < 0) {
         setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
-      } else if (prodTotalPrice == 0) {
-        setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
-      }
+      // } else if (prodTotalPrice == 0) {
+      //   setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
+      // }
       flag = 0;
     }
     if (prodTotalPriceWithGST == '' || prodTotalPriceWithGST == 'undefined') {
       setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity.');
       flag = 0;
     }
-    if (prodTotalPriceWithGST <= 0) {
-      if (prodTotalPriceWithGST < 0) {
+    if (prodTotalPriceWithGST < 0) {
+      // if (prodTotalPriceWithGST < 0) {
         setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity or GST.');
-      } else if (prodTotalPriceWithGST == 0) {
-        setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity or GST.');
-      }
+      // } else if (prodTotalPriceWithGST == 0) {
+      //   setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity or GST.');
+      // }
       flag = 0;
     }
     if (!dayjs(prodExpDate).isValid()) {
@@ -576,8 +576,8 @@ export default function AddPurchase() {
             quantity: e.prodQty,
             supplierId: supplierId,
             rate: e.prodPurcahsePrice,
-            sgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodSGST)) / 100).toFixed(2),
-            cgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodCGST)) / 100).toFixed(2),
+            sgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodSGST)) / 100),
+            cgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodCGST)) / 100),
             mrp: e.prodMrpPrice,
             batchNumber: e.prodBatch,
             discount: '0'

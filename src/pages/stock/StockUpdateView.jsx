@@ -97,7 +97,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
         oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
       }
     } else if (objName == 'prodPurchasePrice') {
-      if (objValue > 0) {
+      if (objValue >= 0) {
         oldData[objName] = objValue;
         let newTotalPrice = objValue * oldData['qty'];
         let newTotalPriceWithGst =
