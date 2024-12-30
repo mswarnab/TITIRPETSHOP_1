@@ -751,16 +751,17 @@ export default function AddPurchase() {
 
   useEffect(() => {
     if (fullPaid) {
-      return setPaidAmount(totalAmount);
+      return setPaidAmount(userInputTotalAmount || totalAmount);
     }
 
     return () => null;
-  }, [fullPaid, totalAmount, paidAmount]);
+  }, [fullPaid, totalAmount, paidAmount, userInputTotalAmount]);
 
   useEffect(() => {
-    setCreditAmount((parseFloat(totalAmount) - parseFloat(paidAmount)).toFixed(2));
+    let totAmount = userInputTotalAmount || totalAmount;
+    setCreditAmount((parseFloat(totAmount) - parseFloat(paidAmount)).toFixed(2));
     return () => null;
-  }, [paidAmount, totalAmount]);
+  }, [paidAmount, totalAmount, userInputTotalAmount]);
   let checkUserInputTotalvalue = (value) => {
     let regex = /^-?\d*\.?\d*$/;
     if (regex.test(value)) {
