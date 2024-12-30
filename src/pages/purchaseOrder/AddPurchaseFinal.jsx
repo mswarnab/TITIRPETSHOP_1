@@ -765,10 +765,8 @@ export default function AddPurchase() {
   let checkUserInputTotalvalue = (value) => {
     let regex = /^-?\d*\.?\d*$/;
     if (regex.test(value)) {
-      console.log('ok');
+      //console.log('ok');
       setUserInputTotalAmount(value);
-    } else {
-      console.log('not ok');
     }
   };
   console.log(userInputTotalAmount);
