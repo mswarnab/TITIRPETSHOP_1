@@ -72,7 +72,7 @@ export default function ManagePurchaseOrder() {
   };
 
   const handleClose = () => {
-    fetchRowData(paginationModel.page);
+    fetchRowData(paginationModel.page, searchParm);
     setOpen(false);
   };
 

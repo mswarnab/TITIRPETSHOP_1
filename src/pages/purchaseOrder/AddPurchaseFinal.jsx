@@ -33,6 +33,8 @@ import ProductTable from 'pages/dashboard/ProductTable';
 import dayjs from 'dayjs';
 import { prodCatagoryArr, gstPercArr } from 'static';
 import LottieAnimation from 'components/loaderDog';
+import { isNumber } from 'utils/password-validation';
+import { use } from 'react';
 
 // import './Css/AddPurchase.css'
 // import AddStockDiv from '../relationComponents/AddStockDiv';
@@ -69,6 +71,7 @@ export default function AddPurchase() {
   const [prodTotalPriceWithGST, setProdTotalPriceWithGST] = React.useState('');
   const [modeOfPayment, setModeofPayment] = useState('');
   const [stockData, setStockData] = React.useState([]);
+  const [userInputTotalAmount, setUserInputTotalAmount] = useState('');
   // console.clear();
   // console.log(stockData);
   const [prodName, setProdName] = React.useState('');
@@ -162,7 +165,7 @@ export default function AddPurchase() {
     }
     if (prodPurcahsePrice < 0) {
       //if (prodPurcahsePrice < 0) {
-        setEmptyProdPurchasePriceCheck('Purchase rate must be in positive figure.');
+      setEmptyProdPurchasePriceCheck('Purchase rate must be in positive figure.');
       // } else if (prodPurcahsePrice == 0) {
       //   setEmptyProdPurchasePriceCheck("Purchase rate must be greater than '0'.");
       // }
@@ -193,7 +196,7 @@ export default function AddPurchase() {
     }
     if (prodTotalPrice < 0) {
       // if (prodTotalPrice < 0) {
-        setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
+      setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
       // } else if (prodTotalPrice == 0) {
       //   setEmptyProdTotalPriceWithoutGstCheck('Please re-enter purchase rate or quantity.');
       // }
@@ -205,7 +208,7 @@ export default function AddPurchase() {
     }
     if (prodTotalPriceWithGST < 0) {
       // if (prodTotalPriceWithGST < 0) {
-        setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity or GST.');
+      setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity or GST.');
       // } else if (prodTotalPriceWithGST == 0) {
       //   setEmptyProdTotalPriceWithGstCheck('Please re-enter purchase rate or quantity or GST.');
       // }
@@ -592,7 +595,8 @@ export default function AddPurchase() {
         modeOfPayment,
         dueDate: '20241231',
         addLessAmount: 'NA',
-        crDrNote: 'NA'
+        crDrNote: 'NA',
+        finalAmount: userInputTotalAmount || totalAmount
       };
       onloader();
       // let baseURL = 'popo-backend-1.onrender.com';
@@ -757,7 +761,16 @@ export default function AddPurchase() {
     setCreditAmount((parseFloat(totalAmount) - parseFloat(paidAmount)).toFixed(2));
     return () => null;
   }, [paidAmount, totalAmount]);
-
+  let checkUserInputTotalvalue = (value) => {
+    let regex = /^-?\d*\.?\d*$/;
+    if (regex.test(value)) {
+      console.log('ok');
+      setUserInputTotalAmount(value);
+    } else {
+      console.log('not ok');
+    }
+  };
+  console.log(userInputTotalAmount);
   const [loading, setLoading] = useState(false);
   // console.log(rows);
   if (loading) {
@@ -897,7 +910,14 @@ export default function AddPurchase() {
         <TextField id="outlined-basic" label="Total SGST Amount" variant="outlined" fullWidth value={totalSGSTAmount} disabled />
         <TextField id="outlined-basic" label="Total CGST Amount" variant="outlined" fullWidth value={totalCGSTAmount} disabled />
         <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} disabled />
-
+        <TextField
+          id="outlined-basic"
+          label="Final Amount (If total amount not match)"
+          variant="outlined"
+          fullWidth
+          value={userInputTotalAmount}
+          onChange={(event) => checkUserInputTotalvalue(event.target.value)}
+        />
         <TextField id="outlined-basic" label="Credit Amount" variant="outlined" fullWidth value={creditAmount} disabled />
       </Stack>
       <Stack direction="row" spacing={2}>

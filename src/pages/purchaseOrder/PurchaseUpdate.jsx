@@ -173,7 +173,7 @@ export default function PurchaseUpdate({ open, handleClose, selectedData }) {
         open={open}
         fullWidth="true"
         maxWidth="lg"
-        onClose={() => handleClose()}
+        // onClose={() => handleClose()}
         TransitionComponent={Transition}
         PaperProps={{
           component: 'form'
@@ -355,12 +355,12 @@ function DenseTable({ productDtls = [] }) {
               </TableCell>
               <TableCell align="right">{row.category}</TableCell>
               <TableCell align="right">{dayjs(row.expDate).format('YYYY-MM-DD')}</TableCell>
-              <TableCell align="right">{row.purchaseQuantity}</TableCell>
-              <TableCell align="right">{row.quantity}</TableCell>
-              <TableCell align="right">{row.rate}</TableCell>
-              <TableCell align="right">{row.mrp}</TableCell>
-              <TableCell align="right">{row.sgst}</TableCell>
-              <TableCell align="right">{row.cgst}</TableCell>
+              <TableCell align="right">{parseFloat(row.purchaseQuantity).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.quantity).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.rate).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.mrp).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.sgst).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.cgst).toFixed(2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
