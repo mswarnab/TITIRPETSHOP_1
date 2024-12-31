@@ -270,6 +270,10 @@ export default function ManageStock() {
   if (!loading && !dataRows.length) {
     // return <NoDataFoundAnimation />;
   }
+  // const [width, setWidth] = useState(window.innerWidth);
+  // useEffect(() => {
+  //   setWidth(navigator.userAgent.toString().toLocaleLowerCase().includes('windows'));
+  // }, [navigator.userAgent]);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -281,7 +285,7 @@ export default function ManageStock() {
           <Grid style={{ width: '50%', marginTop: '10px' }}>
             <Typography variant="h5">{productCount} Products found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+          <Grid container justifyContent="flex-end">
             <Stack direction="row" spacing={1}>
               <Select
                 labelId="demo-simple-select-label"
@@ -329,10 +333,10 @@ export default function ManageStock() {
                   onChange={(event) => setSearchValue(event.target.value)}
                 />
               )}
-              <IconButton aria-label="delete" size="large" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+              <IconButton aria-label="delete" size="small" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
                 <SearchOutlined />
               </IconButton>
-              <IconButton aria-label="" size="large" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+              <IconButton aria-label="" size="small" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
                 <ClearOutlined />
               </IconButton>
               {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
