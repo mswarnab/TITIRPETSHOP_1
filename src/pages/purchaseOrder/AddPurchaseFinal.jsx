@@ -91,15 +91,17 @@ export default function AddPurchase() {
   // const [emptyProdExpDate, setEmptyProdExpDate] = React.useState();
   /* all fucntion */
   let handleChange = (event) => {
-    let sgstPercValue = event.target.value;
+    let sgstPercValue = event.target.value / 2;
     setSgstPerc(sgstPercValue);
-    totalProductPriceCal(prodQty, prodPurcahsePrice, cgstPerc, sgstPercValue);
-  };
-  let handleChangeCgst = (e) => {
-    let cgstPercAmount = e.target.value;
+    let cgstPercAmount = event.target.value / 2;
     setCgstPerc(cgstPercAmount);
-    totalProductPriceCal(prodQty, prodPurcahsePrice, cgstPercAmount, sgstPerc);
+    totalProductPriceCal(prodQty, prodPurcahsePrice, cgstPercAmount, sgstPercValue);
   };
+  // let handleChangeCgst = (e) => {
+  //   let cgstPercAmount = e.target.value;
+  //   setCgstPerc(cgstPercAmount);
+  //   totalProductPriceCal(prodQty, prodPurcahsePrice, cgstPercAmount, sgstPerc);
+  // };
   let onProductQtyChagne = (event) => {
     let productQuantity = event.target.value;
     // let productPrice = prodPurcahsePrice;
@@ -273,8 +275,15 @@ export default function AddPurchase() {
     let totalAmount = 0;
     let totalDueAmount = 0;
     stockData.map((e) => {
-      totSgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * (e.prodSGST / 100)).toFixed(2));
-      totCgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * (e.prodCGST / 100)).toFixed(2));
+      // console.log(e.prodAmountWithoutGst);
+      // console.log(e.prodAmountWithoutGst * (e.prodSGST / 100));
+      // console.log(e.prodCGST);
+
+      totSgstAmount = parseFloat(parseFloat(totSgstAmount) + parseFloat(e.prodAmountWithoutGst * parseFloat(e.prodSGST / 100)));
+      totCgstAmount = parseFloat(parseFloat(totCgstAmount) + parseFloat(e.prodAmountWithoutGst * parseFloat(e.prodCGST / 100)));
+      // console.log(totSgstAmount);
+      // console.log(totCgstAmount);
+      // console.log('done');
       totalAmount = parseFloat(
         parseFloat(totalAmount) +
           parseFloat(
@@ -287,8 +296,8 @@ export default function AddPurchase() {
     if (totalDueAmount < 0) {
       totalDueAmount = 0;
     }
-    setTotalSGSTAmount(totSgstAmount);
-    setTotalCGSTAmount(totCgstAmount);
+    setTotalSGSTAmount(totSgstAmount.toFixed(2));
+    setTotalCGSTAmount(totCgstAmount.toFixed(2));
     setTotalAmount(totalAmount);
     setCreditAmount(totalDueAmount);
   }, [stockData]);
@@ -769,7 +778,7 @@ export default function AddPurchase() {
       setUserInputTotalAmount(value);
     }
   };
-  console.log(userInputTotalAmount);
+  // console.log(userInputTotalAmount);
   const [loading, setLoading] = useState(false);
   // console.log(rows);
   if (loading) {
@@ -906,7 +915,7 @@ export default function AddPurchase() {
             />
           </RadioGroup>
         </FormControl>
-        <TextField id="outlined-basic" label="Total SGST Amount" variant="outlined" fullWidth value={totalSGSTAmount} disabled />
+        <TextField id="outlined-basic" label="Total GST Amount" variant="outlined" fullWidth value={totalSGSTAmount} disabled />
         <TextField id="outlined-basic" label="Total CGST Amount" variant="outlined" fullWidth value={totalCGSTAmount} disabled />
         <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} disabled />
         <TextField
@@ -1117,23 +1126,23 @@ export default function AddPurchase() {
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
-              value={sgstPerc}
+              value={sgstPerc * 2}
               displayEmpty
               // label="Select GST"
               onChange={handleChange}
             >
               <MenuItem value="" disabled>
-                <em>Select SGST</em>
+                <em>Select GST</em>
               </MenuItem>
               {gstPercArr.map((gstV) => (
-                <MenuItem value={gstV}>SGST {gstV}%</MenuItem>
+                <MenuItem value={gstV}>GST {gstV}%</MenuItem>
               ))}
               {/* <MenuItem value={0}>SGST 0%</MenuItem>
               <MenuItem value={5}>SGST 5%</MenuItem>
               <MenuItem value={12}>SGST 12%</MenuItem>
               <MenuItem value={18}>SGST 18%</MenuItem> */}
             </Select>
-            <Select
+            {/* <Select
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               value={cgstPerc}
@@ -1143,15 +1152,13 @@ export default function AddPurchase() {
             >
               <MenuItem value="" disabled>
                 <em>Select CGST</em>
-              </MenuItem>
-              {gstPercArr.map((gstV) => (
-                <MenuItem value={gstV}>CGST {gstV}%</MenuItem>
-              ))}
-              {/* <MenuItem value={0}>CGST 0%</MenuItem>
+              </MenuItem> */}
+
+            {/* <MenuItem value={0}>CGST 0%</MenuItem>
               <MenuItem value={5}>CGST 5%</MenuItem>
               <MenuItem value={12}>CGST 12%</MenuItem>
               <MenuItem value={18}>CGST 18%</MenuItem> */}
-            </Select>
+            {/* </Select> */}
             <TextField
               id="outlined-basic"
               error={emptyProdTotalPriceWithGstCheck && prodTotalPrice == '' ? true : false}

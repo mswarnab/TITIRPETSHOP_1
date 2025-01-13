@@ -108,19 +108,20 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
         oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
       }
     } else if (objName == 'sgstperc') {
-      oldData[objName] = objValue;
+      oldData[objName] = objValue / 2;
+      // let newTotalPrice = oldData['totalPrice'];
+      oldData['cgstPerc'] = objValue / 2;
       let newTotalPrice = oldData['totalPrice'];
-      let newTotalPriceWithGst =
-        parseFloat(newTotalPrice) + parseFloat(newTotalPrice * objValue) / 100 + parseFloat(newTotalPrice * oldData['cgstPerc']) / 100;
+      let newTotalPriceWithGst = parseFloat(newTotalPrice) + parseFloat(newTotalPrice * objValue) / 100;
       // oldData['totalPrice']=newTotalPrice;
       oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
     } else if (objName == 'cgstPerc') {
-      oldData[objName] = objValue;
-      let newTotalPrice = oldData['totalPrice'];
-      let newTotalPriceWithGst =
-        parseFloat(newTotalPrice) + parseFloat(newTotalPrice * oldData['sgstperc']) / 100 + parseFloat(newTotalPrice * objValue) / 100;
-      // oldData['totalPrice']=newTotalPrice;
-      oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
+      // oldData[objName] = objValue;
+      // let newTotalPrice = oldData['totalPrice'];
+      // let newTotalPriceWithGst =
+      //   parseFloat(newTotalPrice) + parseFloat(newTotalPrice * oldData['sgstperc']) / 100 + parseFloat(newTotalPrice * objValue) / 100;
+      // // oldData['totalPrice']=newTotalPrice;
+      // oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
     } else {
       oldData[objName] = objValue;
     }
@@ -377,8 +378,8 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
-              value={formData.sgstperc}
-              defaultValue={rowData.sgstPerc}
+              value={formData.sgstperc * 2}
+              defaultValue={rowData.sgstPerc * 2}
               displayEmpty
               name="sgstperc"
               onChange={changeDataOnClick}
@@ -396,7 +397,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               <MenuItem value={12}>SGST 12%</MenuItem>
               <MenuItem value={18}>SGST 18%</MenuItem> */}
             </Select>
-            <Select
+            {/* <Select
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               value={formData.cgstPerc}
@@ -409,15 +410,13 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
             >
               <MenuItem value="" disabled>
                 <em>Select CGST</em>
-              </MenuItem>
-              {gstPercArr.map((gstv) => (
-                <MenuItem value={gstv}>CGST {gstv}%</MenuItem>
-              ))}
-              {/* <MenuItem value={0}>CGST 0%</MenuItem>
+              </MenuItem> */}
+
+            {/* <MenuItem value={0}>CGST 0%</MenuItem>
               <MenuItem value={5}>CGST 5%</MenuItem>
               <MenuItem value={12}>CGST 12%</MenuItem>
               <MenuItem value={18}>CGST 18%</MenuItem> */}
-            </Select>
+            {/* </Select> */}
             <TextField
               required
               margin="normal"
