@@ -54,6 +54,17 @@ export default function SupplierUpdate({ open, handleClose, data }) {
       })
       .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
   };
+  let deleteSupplier = () => {
+    let id = data._id;
+    client
+      .delete('/supplier/' + id)
+      .then((res) => {
+        // console.log(res);
+        setError({ err: false, message: res.data.message });
+        handleClose();
+      })
+      .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+  };
   const [error, setError] = React.useState('');
   let handleCloseSnackBar = () => {
     setError('');
@@ -157,6 +168,9 @@ export default function SupplierUpdate({ open, handleClose, data }) {
           </Button>
           <Button variant="contained" color="success" onClick={() => updateSupplier()}>
             Update
+          </Button>
+          <Button variant="contained" color="error" onClick={() => deleteSupplier()}>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
