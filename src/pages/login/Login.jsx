@@ -35,7 +35,7 @@ function Login() {
   useEffect(() => {
     (async () => {
       await client.get('/auth');
-      console.log(window.history.previous.href);
+      // console.log(window.history.previous.href);
       navigate('/');
       return () => {
         return null;
