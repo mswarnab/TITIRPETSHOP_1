@@ -9,6 +9,8 @@ import CustomerTable from 'pages/dashboard/CustomerTable';
 import { client } from 'api/client';
 import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
+import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
 
 // let id = 0;
 function createData(id, customerName, customerContactNo, customerAddress, totalCreditAmount, __v, _id, lastPurchaseDate) {
@@ -20,7 +22,6 @@ function createData(id, customerName, customerContactNo, customerAddress, totalC
 
 export default function ManageCustomer() {
   let pageSize = 20;
-  // let paginationCount = (50/;
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedData] = useState({});
   const handleClickOpen = (value) => {
@@ -31,7 +32,7 @@ export default function ManageCustomer() {
 
   const handleClose = () => {
     setOpen(false);
-    fetchRowData(paginationModel.page);
+    fetchRowData(paginationModel.page, searchParm);
   };
 
   const columns = [
@@ -62,7 +63,7 @@ export default function ManageCustomer() {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page']);
+    fetchRowData(newdata['page'], searchParm);
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -70,11 +71,29 @@ export default function ManageCustomer() {
   });
   const [rows, setRows] = useState([]);
   const [paginationCount, setPaginationCount] = useState(0);
+  const [searchParm, setSearchParm] = useState('');
+  let createUrl = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    let value = '&' + searchType + '=' + searchValue;
+    setSearchParm(value);
+  };
+  let crearAllFilter = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    setSearchType('0');
+    setSearchValue('');
+    setSearchParm('');
+  };
   ////// call apito get data in every page change
-  let fetchRowData = async (page) => {
+  let fetchRowData = async (page, url) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/customer?page=' + page)
+      .get('/customer?page=' + page + url)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -105,13 +124,20 @@ export default function ManageCustomer() {
       .catch((err) => setLoading(false));
   };
   // console.log(paginationCount);
+  // useEffect(() => {
+  //   (async () => await fetchRowData(paginationModel.page))();
+  //   return () => {
+  //     return null;
+  //   };
+  // }, []);
   useEffect(() => {
-    (async () => await fetchRowData(paginationModel.page))();
+    (async () => await fetchRowData(paginationModel.page, searchParm))();
     return () => {
       return null;
     };
-  }, []);
-
+  }, [searchParm]);
+  const [searchType, setSearchType] = useState('0');
+  const [searchValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(true);
   if (loading) {
     return <LottieAnimation />;
@@ -130,10 +156,43 @@ export default function ManageCustomer() {
           <Grid style={{ width: '50%' }}>
             <Typography variant="h5">{rows.length} Customers found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
-            <Typography color={'teal'} variant="button">
-              Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
-            </Typography>
+          <Grid container justifyContent="flex-end">
+            <Stack direction="row" spacing={1}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={searchType}
+                // sx={{ height: '45px' }}
+                // label="Age"
+                onChange={(event) => {
+                  setSearchType(event.target.value);
+                }}
+              >
+                <MenuItem value="0">Search Type</MenuItem>
+                <MenuItem value="filterByCustomerName">Customer</MenuItem>
+                <MenuItem value="filterByPhoneNumber">Phone No.</MenuItem>
+              </Select>
+
+              <TextField
+                disabled={searchType == 0 ? true : false}
+                value={searchValue}
+                id="outlined-search"
+                label="Search field"
+                type="search"
+                // size="medium"
+                // sx={{ height: '45px' }}
+                onChange={(event) => setSearchValue(event.target.value)}
+              />
+              <IconButton aria-label="delete" size="small" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+                <SearchOutlined />
+              </IconButton>
+              <IconButton aria-label="" size="small" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+                <ClearOutlined />
+              </IconButton>
+              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
+                Search
+              </Button> */}
+            </Stack>
           </Grid>
           <Grid item />
         </Grid>

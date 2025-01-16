@@ -52,7 +52,8 @@ const columns = [
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function SupplierTable({ handleRowData }) {
+export default function SupplierTable({ handleRowData, filterUrl }) {
+  // console.log(filterUrl);
   let pageSize = 20;
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState('');
@@ -68,7 +69,7 @@ export default function SupplierTable({ handleRowData }) {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page']);
+    fetchRowData(newdata['page'], filterUrl);
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -76,13 +77,13 @@ export default function SupplierTable({ handleRowData }) {
   });
   const handleClose = () => {
     let page = paginationModel.page;
-    fetchRowData(page);
+    fetchRowData(page, filterUrl);
     setOpen(false);
   };
-  let fetchRowData = async (page) => {
+  let fetchRowData = async (page, filterUrl) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/supplier?page=' + page)
+      .get('/supplier?page=' + page + filterUrl)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -121,6 +122,17 @@ export default function SupplierTable({ handleRowData }) {
       return null;
     };
   }, []);
+  useEffect(() => {
+    (async () => {
+      let newdata = { ...paginationModel };
+      newdata.page = 0;
+      setPaginationModel(newdata);
+      await fetchRowData(newdata.page, filterUrl);
+    })();
+    return () => {
+      return null;
+    };
+  }, [filterUrl]);
   const [loading, setLoading] = useState(true);
   // console.log(rows);
   if (loading) {

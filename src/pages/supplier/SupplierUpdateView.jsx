@@ -6,6 +6,9 @@ import Typography from '@mui/material/Typography';
 // project import
 import MainCard from 'components/MainCard';
 import SupplierTable from 'pages/dashboard/SupplierTable';
+import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
+// import React from 'react';
 
 // avatar style
 const avatarSX = {
@@ -54,6 +57,27 @@ export default function ManageSupplier() {
   const handleRowData = (data) => {
     setRowData(data);
   };
+  const [searchParm, setSearchParm] = useState('');
+  const [searchType, setSearchType] = useState('0');
+  const [searchValue, setSearchValue] = useState('');
+  let createUrl = () => {
+    // let newdata = { ...paginationModel };
+    // newdata.page = 0;
+    // // newdata['pageSize'] = 20;
+    // setPaginationModel(newdata);
+    let value = '&' + searchType + '=' + searchValue;
+    setSearchParm(value);
+  };
+  let crearAllFilter = () => {
+    // let newdata = { ...paginationModel };
+    // newdata.page = 0;
+    // // newdata['pageSize'] = 20;
+    // setPaginationModel(newdata);
+    setSearchType('0');
+    setSearchValue('');
+    setSearchParm('');
+  };
+  // console.log(searchParm);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
@@ -65,15 +89,49 @@ export default function ManageSupplier() {
           <Grid style={{ width: '50%' }}>
             <Typography variant="h5">{rowData} Suppliers found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
-            <Typography color={'teal'} variant="button">
-              Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
-            </Typography>
+          <Grid container justifyContent="flex-end">
+            <Stack direction="row" spacing={1}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={searchType}
+                // sx={{ height: '45px' }}
+                // label="Age"
+                onChange={(event) => {
+                  setSearchType(event.target.value);
+                }}
+              >
+                <MenuItem value="0">Search Type</MenuItem>
+                <MenuItem value="filterBySupplierName">Supplier Name</MenuItem>
+                <MenuItem value="filterByPhoneNumber">Phone No.</MenuItem>
+                {/* <MenuItem value="filterByGSTIN">GSTIN</MenuItem> */}
+              </Select>
+
+              <TextField
+                disabled={searchType == 0 ? true : false}
+                value={searchValue}
+                id="outlined-search"
+                label="Search field"
+                type="search"
+                // size="medium"
+                // sx={{ height: '45px' }}
+                onChange={(event) => setSearchValue(event.target.value)}
+              />
+              <IconButton aria-label="delete" size="small" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+                <SearchOutlined />
+              </IconButton>
+              <IconButton aria-label="" size="small" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+                <ClearOutlined />
+              </IconButton>
+              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
+                Search
+              </Button> */}
+            </Stack>
           </Grid>
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <SupplierTable handleRowData={handleRowData} />
+          <SupplierTable handleRowData={handleRowData} filterUrl={searchParm} />
         </MainCard>
       </Grid>
     </Grid>
