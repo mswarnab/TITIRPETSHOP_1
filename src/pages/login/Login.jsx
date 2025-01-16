@@ -35,6 +35,7 @@ function Login() {
   useEffect(() => {
     (async () => {
       await client.get('/auth');
+      console.log('hello here');
       navigate('/');
       return () => {
         return null;
