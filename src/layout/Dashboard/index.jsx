@@ -30,9 +30,11 @@ export default function DashboardLayout() {
         const response = await client.get('/auth', { withCredentials: true });
         if (response.data.status == '200') {
           setLoggedIn(true);
+          return navigate(window.location.pathname);
         }
       } catch (error) {
         setLoggedIn(false);
+        return navigate('/login');
       }
     })();
     return () => {
