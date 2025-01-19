@@ -91,6 +91,19 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
       // setLoading(false);
     }
   };
+
+  let deleteCustomer = () => {
+    let id = formData._id;
+    client
+      .delete('/customer/' + id)
+      .then((res) => {
+        // console.log(res);
+        setError({ err: false, message: res.data.message });
+        handleClose();
+      })
+      .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+  };
+
   const [error, setError] = React.useState('');
   let handleCloseSnackBar = () => {
     setError('');
@@ -196,6 +209,9 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
           </Button>
           <Button variant="contained" color="success" onClick={() => handleUpdate()}>
             Update
+          </Button>
+          <Button variant="contained" color="error" onClick={() => deleteCustomer()}>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

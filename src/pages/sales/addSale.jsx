@@ -25,6 +25,7 @@ export default function AddSale() {
   const [fullPaid, setFullPaid] = useState(false);
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerPhoneNumber, setCustomerPhoneNumber] = useState('');
+  const [customerPrevDueAmount, setCustomerPrevDueAmount] = useState(0);
   const [billDtls, setBillDtls] = useState({
     billNumber: '',
     customerName: '',
@@ -146,7 +147,8 @@ export default function AddSale() {
                   {
                     customerContactNo: element.customerContactNo,
                     customerName: element.customerName,
-                    id: element._id
+                    id: element._id,
+                    prevDue: element.totalCreditAmount
                   }
                 ];
               });
@@ -187,6 +189,7 @@ export default function AddSale() {
         newArr.customerName = e;
         // setSupplierId(value.id);
         setCustomerPhoneNumber(value.customerContactNo);
+        setCustomerPrevDueAmount(value.prevDue);
         setBillDtls(newArr);
       }
     });
@@ -425,6 +428,17 @@ export default function AddSale() {
               name="billTotalAmount"
               value={billDtls.billTotalAmount}
               label="Total Amount"
+              type="text"
+              fullWidth
+              variant="outlined"
+              disabled
+            />
+            <TextField
+              required
+              id="name"
+              name="billDueAmountPrev"
+              label="Previous Due"
+              value={customerPrevDueAmount}
               type="text"
               fullWidth
               variant="outlined"
