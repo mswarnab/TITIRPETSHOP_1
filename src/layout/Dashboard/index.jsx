@@ -42,13 +42,13 @@ export default function DashboardLayout() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!loggedIn) {
-      return navigate('/login');
-    } else {
-      return navigate(window.location.pathname);
-    }
-  }, [loggedIn]);
+  // useEffect(() => {
+  //   if (!loggedIn) {
+  //     return navigate('/login');
+  //   } else {
+  //     return navigate(window.location.pathname);
+  //   }
+  // }, [loggedIn]);
   useEffect(() => {
     handlerDrawerOpen(!downXL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
