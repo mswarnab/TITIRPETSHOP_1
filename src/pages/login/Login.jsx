@@ -36,7 +36,7 @@ function Login() {
     (async () => {
       await client.get('/auth');
       // console.log(window.history.previous.href);
-      navigate('/');
+      // navigate('/');
       return () => {
         return null;
       };
