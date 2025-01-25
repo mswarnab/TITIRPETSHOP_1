@@ -4,7 +4,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const OnSearchItemBox = ({
-  data = { productName: '', quantity: '', sgst: 0, cgst: 0, mrp: 0, expDate: '', sellingPrice: 0 },
+  data = { productName: '', quantity: '', sgst: 0, cgst: 0, mrp: 0, expDate: '', sellingPrice: 0, totalSellingPrice: 0 },
   result = true,
   selected = false,
   added = false,
@@ -79,6 +79,12 @@ const OnSearchItemBox = ({
             <Typography variant="h5">Selling Price per Unit:</Typography>
             <Typography variant="h5" color={'peru'} marginLeft={1}>
               ₹{parseFloat(data.sellingPrice)}
+            </Typography>
+          </Stack>
+          <Stack direction={'row'}>
+            <Typography variant="h5">Total Selling Price:</Typography>
+            <Typography variant="h5" color={'peru'} marginLeft={1}>
+              ₹{parseFloat(data.totalSellingPrice)}
             </Typography>
           </Stack>
         </Stack>

@@ -6,16 +6,54 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert, Slide, Snackbar } from '@mui/material';
 import LottieAnimation from 'components/loaderDog';
 import { client } from 'api/client';
+import {
+  Alert,
+  Slide,
+  Snackbar,
+  Grid,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@mui/material';
+import dayjs from 'dayjs';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CustomerUpdate({ open, selectedDate, handleClose }) {
-  // console.log(selectedDate);
+  const [totalSoldAmount, setTotalSoldAmount] = useState(0);
+  const [saleDetails, setSaleDetails] = useState([]);
+  const columns = [
+    { id: 'invoice', label: 'Invoice', minWidth: '20%' },
+    { id: 'sellingDate', label: 'Date of Sale', minWidth: '15%' },
+    {
+      id: 'grandTotal',
+      label: 'Total Amount',
+      minWidth: '25%'
+      // align: 'right',
+      // format: (value) => value.toLocaleString('en-US')
+    },
+    {
+      id: 'dueDate',
+      label: 'Due Date',
+      minWidth: '20%'
+    },
+    {
+      id: 'amountDue',
+      label: 'Amount Due',
+      minWidth: '15%'
+    }
+  ];
+
   const [formData, setFormData] = useState({
     customerName: '',
     customerAddress: '',
@@ -23,11 +61,10 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
     __v: '',
     totalCreditAmount: '',
     lastPurchaseDate: '',
-    customerContactNo: ''
+    customerContactNo: '',
+    paidAmount: '0'
   });
   useEffect(() => {
-    // console.log('in here');
-    // console.log(selectedDate?.length);
     if (selectedDate.customerName) {
       // console.log('in');
       setFormData({
@@ -38,33 +75,64 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
         totalCreditAmount: selectedDate.totalCreditAmount,
         __v: selectedDate.__v,
         lastPurchaseDate: selectedDate.lastPurchaseDate,
-        customerContactNo: selectedDate.customerContactNo.toString()
-        // _id: data._id
+        customerContactNo: selectedDate.customerContactNo.toString(),
+        paidAmount: '0'
       });
     }
     return () => {
-      // console.log('out');
       return null;
     };
   }, [selectedDate]);
+
+  useEffect(() => {
+    (async () => {
+      await client
+        .get('/customer/monthlybill/' + selectedDate._id)
+        .then((res) => {
+          let totalAmount = 0;
+          let tempSaleDetails = [];
+          res.data.result.saleDetails.result.map((e) => {
+            totalAmount += e.grandTotalAmount;
+            tempSaleDetails = [
+              ...tempSaleDetails,
+              {
+                invoice: e.billNumber,
+                sellingDate: e.dateOfSale,
+                grandTotal: e.grandTotalAmount,
+                dueDate: dayjs().endOf('month').format('DD/MM/YYYY'),
+                amountDue: e.cerditAmount
+              }
+            ];
+          });
+
+          setTotalSoldAmount(totalAmount);
+          setSaleDetails(tempSaleDetails);
+        })
+        .catch((err) => {
+          setTotalSoldAmount(0);
+        });
+    })();
+    return () => {
+      return null;
+    };
+  }, [open]);
+
   let changeValue = (event) => {
     let eventValue = event.target.value.toString();
     let eventName = event.target.name;
 
     let newData = { ...formData };
-    // console.log(newData);
     newData[eventName] = eventValue;
     setFormData(newData);
   };
   let handleUpdate = () => {
-    // setLoading(true);
     let msg = '';
     if (formData.customerName == '') {
       msg = "Customer Name can't be blank.";
     } else if (formData.customerContactNo == '') {
       msg = "Mobile No can't be blank.";
     }
-    // console.log(hello);
+
     if (msg == '') {
       if (
         formData.customerName == selectedDate.customerNam &&
@@ -135,6 +203,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
         open={open}
         onClose={() => handleClose()}
         TransitionComponent={Transition}
+        fullScreen
         PaperProps={{
           component: 'form',
           onSubmit: (event) => {
@@ -142,42 +211,41 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
             const email = formJson.email;
-            // console.log(email);
             handleClose();
           }
         }}
       >
-        <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
+        <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '20px' }}>
           Update Customer
-        </DialogTitle>
-        <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
-          <DialogContentText>Update Existing Customer</DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="normal"
-            id="customerName"
-            name="customerName"
-            label="Customer Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formData.customerName}
-            onChange={changeValue}
-          />
-          <TextField
-            required
-            margin="normal"
-            id="customerContactNo"
-            name="customerContactNo"
-            label="Mobile No."
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formData.customerContactNo}
-            onChange={changeValue}
-          />
-          {/* <TextField
+          <CustomerDetailsBox customerData={{ ...formData, totalSoldAmount }} />
+          <DialogContentText marginTop={4}>Update Existing Customer</DialogContentText>
+          <Stack direction={'row'} spacing={5} paddingBottom={4} paddingTop={4}>
+            <TextField
+              autoFocus
+              required
+              margin="normal"
+              id="customerName"
+              name="customerName"
+              label="Customer Name"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formData.customerName}
+              onChange={changeValue}
+            />
+            <TextField
+              required
+              margin="normal"
+              id="customerContactNo"
+              name="customerContactNo"
+              label="Mobile No."
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formData.customerContactNo}
+              onChange={changeValue}
+            />
+            {/* <TextField
             autoFocus
             required
             margin="normal"
@@ -189,19 +257,54 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
             variant="standard"
             value={formData.email ? formData.email : selectedDate.email}
             onChange={changeValue}
-          /> */}
-          <TextField
-            margin="normal"
-            id="customerAddress"
-            name="customerAddress"
-            label="Address"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={formData.customerAddress}
-            onChange={changeValue}
-          />
-          {/* <Typography variant='h5' sx={{pt:3}}>Total Due Amount:  ₹{15299}</Typography> */}
+            /> */}
+            <TextField
+              margin="normal"
+              id="customerAddress"
+              name="customerAddress"
+              label="Address"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formData.customerAddress}
+              onChange={changeValue}
+            />
+            <TextField
+              required
+              margin="normal"
+              id="paidAmount"
+              name="paidAmount"
+              label="Add Amount Paid"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={formData.paidAmount}
+              onChange={changeValue}
+              disabled
+            />
+          </Stack>
+          <Grid container>
+            <Grid xl={6}>
+              <Typography variant="h5" style={{ marginTop: 0 }}>
+                Sale Receipts of Last Month:
+              </Typography>
+            </Grid>
+            <Grid xl={6}>
+              <Typography variant="h5" style={{ marginLeft: 20 }}>
+                Payment History:
+              </Typography>
+            </Grid>
+          </Grid>
+        </DialogTitle>
+        <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
+          <Grid container sx={{ paddingTop: 0 }}>
+            <Grid xl={6}>
+              <DenseTable productDtls={saleDetails} columns={columns} />
+            </Grid>
+            <Grid xl={5.5} sx={{ marginLeft: '30px' }}>
+              <Typography>Will be available soon!</Typography>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions style={{ paddingBottom: '40px', paddingRight: '40px' }}>
           <Button variant="contained" color="secondary" onClick={() => handleClose()}>
@@ -218,3 +321,85 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
     </>
   );
 }
+
+function DenseTable({ productDtls = [], columns }) {
+  return (
+    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <TableContainer sx={{ maxHeight: 350 }}>
+        <Table aria-label="sticky table" size="small">
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column.id} align={column.align} style={{ width: column.minWidth }}>
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {productDtls.map((row) => (
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
+                <TableCell>{row.invoice}</TableCell>
+                <TableCell>{row.sellingDate}</TableCell>
+                <TableCell>{row.grandTotal}</TableCell>
+                <TableCell>{row.dueDate}</TableCell>
+                <TableCell>{row.amountDue}</TableCell>
+              </TableRow>
+              // invoice, sellingDate, grandTotal, dueDate, amountDue
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  );
+}
+
+const CustomerDetailsBox = ({ customerData }) => {
+  return (
+    <Grid
+      xl={12}
+      sx={{ borderRadius: '14px', backgroundColor: 'cornflowerblue', color: 'white' }}
+      paddingLeft={5}
+      paddingRight={5}
+      paddingTop={3}
+      paddingBottom={3}
+      marginTop={2}
+      marginBottom={2}
+    >
+      <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Grid>
+          <Typography variant="h6">Name: </Typography>
+          <Typography variant="h5" style={{ marginTop: 15 }}>
+            {customerData.customerName}
+          </Typography>
+        </Grid>
+        <Grid>
+          <Typography variant="h6">Mobile No:</Typography>
+          <Typography variant="h5" style={{ marginTop: 15 }}>
+            +91 {customerData.customerContactNo}
+          </Typography>{' '}
+        </Grid>
+        <Grid>
+          <Typography variant="h6">Address </Typography>
+          <Typography variant="h5" style={{ marginTop: 15 }}>
+            {customerData.customerAddress}
+          </Typography>{' '}
+        </Grid>
+        <Grid sx={{ height: '60px', width: '1px', backgroundColor: 'white' }}></Grid>
+
+        <Grid>
+          <Typography variant="h6">Total amount sold last month: </Typography>
+          <Typography variant="h5" style={{ marginTop: 15 }}>
+            ₹{customerData.totalSoldAmount}
+          </Typography>{' '}
+        </Grid>
+        <Grid>
+          <Typography variant="h6">Total amount Due: </Typography>
+          <Typography variant="h5" style={{ marginTop: 15 }}>
+            ₹{customerData.totalCreditAmount}
+          </Typography>{' '}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};

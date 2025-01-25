@@ -59,11 +59,13 @@ export default function AddSale() {
           mrp: e.mrp,
           rate: e.rate,
           expDate: dayjs(e.expDate).format('YYYY-MM-DD'),
-          sellingPrice: sellingPrice,
-          productId: e._id
+          sellingPrice: parseFloat(parseInt(sellingPrice) / quantityArray[i].quantity).toFixed(2),
+          productId: e._id,
+          totalSellingPrice: sellingPrice
         };
         newDataArr = [...newDataArr, newDataArray];
       }
+      console.log(newDataArr);
     });
     setAddedProduct(newDataArr);
     handleClose();
@@ -472,9 +474,10 @@ export default function AddSale() {
           ) : (
             ''
           )}
-          {addedProduct.map((e) => (
-            <OnSearchItemBox result={true} selected={true} added={true} data={e} onDelete={handleSelectedProductDelete} />
-          ))}
+          {addedProduct.map((e) => {
+            console.log(e);
+            return <OnSearchItemBox result={true} selected={true} added={true} data={e} onDelete={handleSelectedProductDelete} />;
+          })}
         </MainCard>
       </Grid>
       <FullScreenDialog open={open} handleClose={handleClose} handleAddItemSale={handleAddItemSale} selectedLots={addedProduct} />

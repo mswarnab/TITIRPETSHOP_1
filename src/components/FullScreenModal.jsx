@@ -32,20 +32,22 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [quantityArray, setQuantityArray] = useState([]);
   const [discount, setDiscount] = useState(0);
+  const [sellingPricePerUnit, setSellingPricePerUnit] = useState(0);
   useEffect(() => {
     let quantityArr = [];
     let availableQuantity = parseInt(quantity);
     let discount = 0;
     selectedProducts.map((e) => {
       if (e.quantity >= availableQuantity) {
-        discount = parseFloat(parseFloat(discount) + parseFloat((e.mrp - sellingPrice) * availableQuantity)).toFixed(2);
+        discount = parseFloat(parseFloat(discount) + parseFloat((e.mrp - sellingPrice / availableQuantity) * availableQuantity)).toFixed(2);
         quantityArr = [...quantityArr, { _id: e._id, quantity: availableQuantity }];
       } else {
-        discount = parseFloat(parseFloat(discount) + parseFloat((e.mrp - sellingPrice) * e.quantity)).toFixed(2);
+        discount = parseFloat(parseFloat(discount) + parseFloat((e.mrp - sellingPrice / e.quantity) * e.quantity)).toFixed(2);
         quantityArr = [...quantityArr, { _id: e._id, quantity: e.quantity }];
         availableQuantity -= e.quantity;
       }
     });
+    setSellingPricePerUnit(parseFloat(sellingPrice / parseInt(quantity)).toFixed(2));
     setDiscount(discount);
     setQuantityArray(quantityArr);
   }, [selectedProducts, sellingPrice, quantity]);
@@ -155,14 +157,14 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
 
         <AppBar sx={{ position: 'fixed' }} color="default" style={{ boxShadow: 'none' }}>
           <Toolbar style={{ justifyContent: 'space-between' }}>
-            <IconButton onClick={() => handleClose()}>
-              <CloseCircleFilled />
+            <IconButton color="error" sx={{ padding: '0px 60px', border: '1px soild red' }} onClick={() => handleClose()}>
+              <CloseCircleFilled /> <span style={{ marginLeft: 10 }}> EXIT</span>
             </IconButton>
             <Typography variant="h3" marginLeft={'25px'}>
               Add Items for Sale
             </Typography>
             <Button autoFocus color="success" variant="contained" onClick={() => addSaleItem()}>
-              Add
+              Add Item
             </Button>
           </Toolbar>
         </AppBar>
@@ -185,17 +187,43 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
               />
               <TextField
                 variant="standard"
-                label="Selling Price per Unit"
+                label="Selling Price"
                 style={{ width: '300px', margin: '20px 0px' }}
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
               />
             </Stack>
-            <Stack direction={'row'}>
-              <Typography variant="h5">Discount:</Typography>
-              <Typography style={{ marginLeft: '10px' }} variant="h5" color={'peru'}>
-                ₹{discount || 0}
-              </Typography>
+            <Stack direction={'row'} justifyContent={'space-between'}>
+              <Grid display={'flex'}>
+                <Typography variant="h5" style={{ paddingTop: '5px' }}>
+                  Discount:
+                </Typography>
+                <Typography style={{ marginLeft: '10px', paddingTop: '6px' }} variant="h5" color={'peru'}>
+                  ₹{discount || 0}
+                </Typography>
+              </Grid>
+              <Stack direction={'row'}>
+                <Button autoFocus color="success" variant="contained" onClick={() => addSaleItem()}>
+                  Add Item for Sale
+                </Button>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: 'cornflowerblue', marginLeft: 10 }}
+                  onClick={() => window.open('https://titirpetshop-1-ez7f.vercel.app/purchaseorder/add', '_blank')}
+                >
+                  Create new Stock
+                </Button>
+              </Stack>
+            </Stack>
+            <Stack direction={'row'} justifyContent={'space-between'}>
+              <Grid display={'flex'}>
+                <Typography variant="h5" style={{ paddingTop: '5px' }}>
+                  Selling price per unit:
+                </Typography>
+                <Typography style={{ marginLeft: '10px', paddingTop: '6px' }} variant="h5" color={'peru'}>
+                  ₹{sellingPricePerUnit || 0}
+                </Typography>
+              </Grid>
             </Stack>
             <Typography variant="h5" marginTop={'20px'} marginBottom={'20px'}>
               Selcted Lots:
