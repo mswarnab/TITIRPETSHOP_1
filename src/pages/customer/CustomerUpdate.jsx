@@ -110,6 +110,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
         })
         .catch((err) => {
           setTotalSoldAmount(0);
+          setSaleDetails([]);
         });
     })();
     return () => {
