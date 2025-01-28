@@ -209,7 +209,10 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
                 <Button
                   variant="contained"
                   style={{ backgroundColor: 'cornflowerblue', marginLeft: 10 }}
-                  onClick={() => window.open('https://titirpetshop-1-ez7f.vercel.app/purchaseorder/add', '_blank')}
+                  onClick={() => {
+                    setProductNameSearch('');
+                    window.open('https://titirpetshop-1-ez7f.vercel.app/purchaseorder/add', '_blank');
+                  }}
                 >
                   Create new Stock
                 </Button>

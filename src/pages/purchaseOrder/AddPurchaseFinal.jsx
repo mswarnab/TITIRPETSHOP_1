@@ -22,7 +22,8 @@ import {
   Snackbar,
   Stack,
   Switch,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
 import { client } from '../../api/client';
 import React, { useEffect, useState } from 'react';
@@ -51,6 +52,7 @@ export default function AddPurchase() {
   // today = dd + '/' + mm + '/' + yyyy;
   today = yyyy + '-' + mm + '-' + dd;
   // const prodCatagoryArr = ['FOOD', 'MEDICINE', 'ACCESSORIES'];
+  const [discountSelect, setDiscountSelect] = useState(0);
   const [orderNumber, setOrderNumber] = React.useState('');
   const [supplierName, setSupplierName] = React.useState('');
   const [supplierId, setSupplierId] = React.useState('');
@@ -88,6 +90,10 @@ export default function AddPurchase() {
   const [emptyProdMrpCheck, setEmptyProdMrpCheck] = React.useState('');
   const [emptyProdTotalPriceWithoutGstCheck, setEmptyProdTotalPriceWithoutGstCheck] = React.useState('');
   const [emptyProdTotalPriceWithGstCheck, setEmptyProdTotalPriceWithGstCheck] = React.useState('');
+  const [discountPerc, setDiscountPerc] = useState(0);
+  const [discountScheme, setDiscountScheme] = useState(0);
+  const [productPurchasePriceAfterDiscount, setProductPurchasePriceAfterDiscount] = useState(0);
+
   // const [emptyProdExpDate, setEmptyProdExpDate] = React.useState();
   /* all fucntion */
   let handleChange = (event) => {
@@ -95,8 +101,43 @@ export default function AddPurchase() {
     setSgstPerc(sgstPercValue);
     let cgstPercAmount = event.target.value / 2;
     setCgstPerc(cgstPercAmount);
-    totalProductPriceCal(prodQty, prodPurcahsePrice, cgstPercAmount, sgstPercValue);
+    totalProductPriceCal(prodQty, productPurchasePriceAfterDiscount, cgstPercAmount, sgstPercValue);
   };
+
+  useEffect(() => {
+    let tempProductPurchasePrice = 0;
+
+    switch (discountSelect) {
+      case 1:
+        tempProductPurchasePrice = parseFloat(prodPurcahsePrice) * (1 - parseFloat(discountPerc / 100));
+        if (discountScheme) {
+          tempProductPurchasePrice = tempProductPurchasePrice * (1 - parseFloat(discountScheme) / 100);
+          setProductPurchasePriceAfterDiscount(tempProductPurchasePrice);
+        } else {
+          setProductPurchasePriceAfterDiscount(tempProductPurchasePrice);
+        }
+
+        totalProductPriceCal(prodQty, tempProductPurchasePrice, cgstPerc, sgstPerc);
+
+        break;
+      // inactive
+      case 2:
+        tempProductPurchasePrice = parseFloat(prodMrpPrice).toFixed() * (1 - parseFloat(discountPerc / 100).toFixed(2));
+
+        if (discountScheme) {
+          tempProductPurchasePrice = (tempProductPurchasePrice * (1 - parseFloat(discountScheme).toFixed(2) / 100)).toFixed(2);
+          setProductPurchasePriceAfterDiscount(tempProductPurchasePrice);
+        } else {
+          setProductPurchasePriceAfterDiscount(tempProductPurchasePrice);
+        }
+        totalProductPriceCal(prodQty, tempProductPurchasePrice, cgstPerc, sgstPerc);
+        break;
+      default:
+        setProductPurchasePriceAfterDiscount(prodPurcahsePrice);
+
+        break;
+    }
+  }, [discountSelect, discountPerc, discountScheme, prodQty, prodMrpPrice, prodPurcahsePrice, sgstPerc, cgstPerc]);
   // let handleChangeCgst = (e) => {
   //   let cgstPercAmount = e.target.value;
   //   setCgstPerc(cgstPercAmount);
@@ -106,7 +147,7 @@ export default function AddPurchase() {
     let productQuantity = event.target.value;
     // let productPrice = prodPurcahsePrice;
     setProdQty(productQuantity);
-    totalProductPriceCal(productQuantity, prodPurcahsePrice, cgstPerc, sgstPerc);
+    totalProductPriceCal(productQuantity, productPurchasePriceAfterDiscount, cgstPerc, sgstPerc);
   };
   let onProductPurchasePriceChange = (event) => {
     // let productQuantity = prodQty;
@@ -250,16 +291,16 @@ export default function AddPurchase() {
       // setProdName('');
       // setProdQty('');
       // setProdCatagory('');
-      // setProdPurcahsePrice('');
+      setProdPurcahsePrice('');
       // setProdMrpPrice('');
       // setProdMfr('');
-      // setSgstPerc(0);
-      // setCgstPerc(0);
+      setSgstPerc(0);
+      setCgstPerc(0);
       // setProdBatch('');
       // setProdHsn('');
       setProdExpDate(null);
-      // setProdTotalPriceWithGST('');
-      // setProdTotalPrice('');
+      setProdTotalPriceWithGST('');
+      setProdTotalPrice('');
       // setEmptyProdTotalPriceWithGstCheck('');
       // setEmptyProdTotalPriceWithoutGstCheck('');
       // setEmptyProdNameCheck('');
@@ -301,12 +342,7 @@ export default function AddPurchase() {
     setTotalAmount(totalAmount);
     setCreditAmount(totalDueAmount);
   }, [stockData]);
-  // console.log(stockData);
-  // let orderNumberOnchange=(e)=>{
-  //   const result = e.target.value.replace(/\D/g, '');
 
-  //     setOrderNumber(result)
-  // }
   /* all fucntion */
   ///// table column
   const dataColumns = [
@@ -391,6 +427,16 @@ export default function AddPurchase() {
       field: 'cgstPerc',
       headerName: 'CGST %',
       width: 0
+    },
+    {
+      field: 'discountPerc',
+      headerName: 'Discount %',
+      width: 0
+    },
+    {
+      field: 'discountScheme',
+      headerName: 'Scheme Discount %',
+      width: 150
     }
   ];
   let count = 0;
@@ -419,7 +465,9 @@ export default function AddPurchase() {
       cgst: cgstAmount + ' (' + rowValues.prodCGST + '%)',
       amountWithgst: rowValues.prodAmountWithGst,
       sgstPerc: rowValues.prodSGST,
-      cgstPerc: rowValues.prodCGST
+      cgstPerc: rowValues.prodCGST,
+      discountPerc,
+      discountScheme
     };
     return data;
   }
@@ -575,6 +623,8 @@ export default function AddPurchase() {
       let stockBody = [];
       stockData.forEach((e) => {
         let splitSupplierName = supplierName.split('--');
+        let gstAmt = parseFloat(e.prodPurcahsePrice * (1 - discountPerc / 100) * (1 - discountScheme / 100));
+        gstAmt = (gstAmt * parseFloat(e.prodSGST)) / 100;
         stockBody = [
           ...stockBody,
           {
@@ -588,11 +638,12 @@ export default function AddPurchase() {
             quantity: e.prodQty,
             supplierId: supplierId,
             rate: e.prodPurcahsePrice,
-            sgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodSGST)) / 100),
-            cgst: parseFloat((e.prodPurcahsePrice * parseFloat(e.prodCGST)) / 100),
+            sgst: gstAmt,
+            cgst: gstAmt,
             mrp: e.prodMrpPrice,
             batchNumber: e.prodBatch,
-            discount: '0'
+            discount: discountPerc || 0,
+            schemeDiscount: discountScheme || 0
           }
         ];
       });
@@ -705,7 +756,6 @@ export default function AddPurchase() {
   }, [supplierSearchParm]);
   let [productSearch, setProductSearch] = useState([]);
   const [productSearchParm, setProductSearchParm] = useState('');
-  // console.log('prod : ' + prodName);
   useEffect(() => {
     (async () => {
       const getData = setTimeout(() => {
@@ -850,6 +900,7 @@ export default function AddPurchase() {
             label="Purchase Date"
             fullWidth
             name="purchaseDate"
+            format="DD-MM-YYYY"
             selected={purchaseDate}
             onChange={(date) => setPurchaseDateFunction(date)}
           />
@@ -920,7 +971,7 @@ export default function AddPurchase() {
         <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} disabled />
         <TextField
           id="outlined-basic"
-          label="Final Amount (If total amount not match)"
+          label="Final Amount (If total amount does not match)"
           variant="outlined"
           fullWidth
           value={userInputTotalAmount}
@@ -1002,7 +1053,7 @@ export default function AddPurchase() {
               name="prodName"
               disableClearable="true"
               size="small"
-              style={{ width: 280 }}
+              style={{ width: 250 }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -1061,7 +1112,7 @@ export default function AddPurchase() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Exp. Date"
-                fullWidth
+                sx={{ width: '180px' }}
                 views={['year', 'month']}
                 name="expDate"
                 value={dayjs(prodExpDate)}
@@ -1159,7 +1210,7 @@ export default function AddPurchase() {
               <MenuItem value={12}>CGST 12%</MenuItem>
               <MenuItem value={18}>CGST 18%</MenuItem> */}
             {/* </Select> */}
-            <TextField
+            {/* <TextField
               id="outlined-basic"
               error={emptyProdTotalPriceWithGstCheck && prodTotalPrice == '' ? true : false}
               helperText={emptyProdTotalPriceWithGstCheck && prodTotalPrice == '' ? emptyProdTotalPriceWithGstCheck : ''}
@@ -1171,16 +1222,122 @@ export default function AddPurchase() {
               value={prodTotalPriceWithGST}
               aria-readonly="true"
               onClick={() => setEmptyProdTotalPriceWithGstCheck('')}
+            ></TextField> */}
+            <Select
+              labelId="discountSelect"
+              id="demo-simple-select-helper"
+              value={discountSelect}
+              defaultValue={1}
+              displayEmpty
+              // label="Select GST"
+              onChange={(e) => setDiscountSelect(e.target.value)}
+            >
+              <MenuItem value="" disabled>
+                <em>Select field</em>
+              </MenuItem>
+              <MenuItem value={1}>D% - RATE</MenuItem>
+              <MenuItem value={2}>D% - MRP</MenuItem>
+            </Select>
+            <TextField
+              id="outlined-basic"
+              error={emptyProdPurchasePriceCheck}
+              helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
+              type="text"
+              label="D%"
+              variant="outlined"
+              autoComplete="off"
+              name="prodPur"
+              style={{ width: 70 }}
+              value={discountPerc}
+              onChange={(e) => setDiscountPerc(e.target.value)}
+              // onClick={() => setEmptyProdPurchasePriceCheck('')}
+            ></TextField>
+            <TextField
+              id="outlined-basic"
+              error={emptyProdPurchasePriceCheck}
+              helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
+              type="text"
+              label="Scheme D%"
+              variant="outlined"
+              autoComplete="off"
+              name="prodPur"
+              style={{ width: 120 }}
+              value={discountScheme}
+              onChange={(e) => setDiscountScheme(e.target.value)}
+              // onClick={() => setEmptyProdPurchasePriceCheck('')}
             ></TextField>
           </Stack>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '30px 0 0 0' }}>
-            <Button variant="contained" color="secondary" onClick={handleClose} style={{ margin: '0 10px 0 0' }}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="secondary" onClick={() => addStock()}>
-              Add
-            </Button>
-          </div>
+          <Grid container sx={{ paddingTop: 2 }} justifyContent={'space-between'}>
+            <Grid
+              display={'flex'}
+              sx={{
+                backgroundColor: 'cornflowerblue',
+                color: 'white',
+                width: '85%',
+                borderRadius: '18px',
+                height: '100px',
+                margin: 0,
+                justifyContent: 'space-between',
+                padding: '0px 50px'
+              }}
+            >
+              <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h5">Purchase Price after Discount</Typography>
+                <Typography variant="h4" sx={{ marginLeft: '20px' }} color={'lavender'}>
+                  ₹
+                  {parseFloat(productPurchasePriceAfterDiscount).toFixed(2) == 'NaN'
+                    ? 0.0
+                    : parseFloat(productPurchasePriceAfterDiscount).toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ height: 30, width: '1px', backgroundColor: 'white' }} />
+              </Grid>
+              <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h5">Discounted ₹</Typography>
+                <Typography variant="h4" sx={{ marginLeft: '20px' }} color={'lavender'}>
+                  ₹{parseFloat(prodPurcahsePrice) ? parseFloat(prodPurcahsePrice - productPurchasePriceAfterDiscount).toFixed(2) : 0}
+                </Typography>
+              </Grid>
+              <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ height: 30, width: '1px', backgroundColor: 'white' }} />
+              </Grid>
+              <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h5">GST ₹</Typography>
+                <Typography variant="h4" sx={{ marginLeft: '20px' }} color={'lavender'}>
+                  ₹{sgstPerc ? parseFloat((productPurchasePriceAfterDiscount * (sgstPerc * 2)) / 100).toFixed(2) : 0}
+                </Typography>
+              </Grid>
+              <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ height: 30, width: '1px', backgroundColor: 'white' }} />
+              </Grid>
+              <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h5">Total amount</Typography>
+                <Typography variant="h4" sx={{ marginLeft: '20px' }} color={'lavender'}>
+                  ₹{parseFloat(prodTotalPrice).toFixed(2) == 'NaN' ? 0.0 : parseFloat(prodTotalPrice).toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ height: 30, width: '1px', backgroundColor: 'white' }} />
+              </Grid>
+              <Grid sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h5">Total amount including GST</Typography>
+                <Typography variant="h4" sx={{ marginLeft: '20px' }}>
+                  ₹{parseFloat(prodTotalPriceWithGST).toFixed(2) == 'NaN' ? 0 : parseFloat(prodTotalPriceWithGST).toFixed(2)}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '0px 0 0 0' }}>
+                <Button variant="outlined" color="error" onClick={handleClose} style={{ margin: '0 10px 0 0' }}>
+                  Cancel
+                </Button>
+                <Button variant="outlined" color="success" onClick={() => addStock()}>
+                  Add
+                </Button>
+              </div>
+            </Grid>
+          </Grid>
 
           <DialogActions></DialogActions>
           <Divider textAlign="center">
@@ -1197,9 +1354,9 @@ export default function AddPurchase() {
                   row={dataRows}
                   column={dataColumns}
                   // htmlData={htmlDataStockView}
-                  handleClickOpen={handleClickOpenUpdate}
+                  // handleClickOpen={handleClickOpenUpdate}
                   handleDelete={handleDelete}
-                  handleUpdate={handleUpdate}
+                  // handleUpdate={handleUpdate}
                 />
               ) : (
                 ''
@@ -1218,9 +1375,9 @@ export default function AddPurchase() {
           row={dataRows}
           column={dataColumns}
           // htmlData={htmlDataStockView}
-          handleClickOpen={handleClickOpenUpdate}
+          // handleClickOpen={handleClickOpenUpdate}
           handleDelete={handleDelete}
-          handleUpdate={handleUpdate}
+          // handleUpdate={handleUpdate}
         />
       ) : (
         ''

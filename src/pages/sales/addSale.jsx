@@ -57,7 +57,7 @@ export default function AddSale() {
           sgst: e.sgst,
           cgst: e.cgst,
           mrp: e.mrp,
-          rate: e.rate,
+          purchasePrice: e.purchasePrice,
           expDate: dayjs(e.expDate).format('YYYY-MM-DD'),
           sellingPrice: parseFloat(parseInt(sellingPrice) / quantityArray[i].quantity).toFixed(2),
           productId: e._id,
@@ -65,7 +65,6 @@ export default function AddSale() {
         };
         newDataArr = [...newDataArr, newDataArray];
       }
-      console.log(newDataArr);
     });
     setAddedProduct(newDataArr);
     handleClose();

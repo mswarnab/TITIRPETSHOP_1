@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Autocomplete, Divider, MenuItem, Select, Slide, Stack } from '@mui/material';
+import { Autocomplete, Divider, Grid, MenuItem, Select, Slide, Stack, Typography } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -33,7 +33,9 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     expDate: '',
     prodPurchasePrice: '',
     totalPrice: '',
-    totalPriceWithGst: ''
+    totalPriceWithGst: '',
+    discountPerc: 0,
+    discountScheme: 0
   });
   useEffect(() => {
     setFormDate({
@@ -50,7 +52,9 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       expDate: rowData.expDate,
       prodPurchasePrice: rowData.purchaseRate,
       totalPrice: rowData.amount,
-      totalPriceWithGst: rowData.amountWithgst
+      totalPriceWithGst: rowData.amountWithgst,
+      discountPerc: rowData.discountPerc,
+      discountScheme: rowData.discountScheme
     });
     return () => {
       return null;
@@ -62,27 +66,6 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     let objValue = event.target.value;
     // console.log(event.target);
     let oldData = { ...formData };
-    // if (oldData['id'] == '') {
-    //   oldData['id'] = rowData.id;
-    // } else {
-    //   if (oldData['id'] != rowData.id) {
-    //     oldData['id'] = rowData.id;
-    //   }
-    // }
-
-    // if (oldData['prodPurchasePrice'] == '') {
-    //   oldData['prodPurchasePrice'] = rowData.purchaseRate;
-    // }
-    // if (oldData['sgstperc'] <= 0) {
-    //   alert('here');
-    //   oldData['sgstperc'] = rowData.sgstPerc;
-    // }
-    // if (oldData['cgstPerc'] <= 0) {
-    //   oldData['cgstPerc'] = rowData.cgstPerc;
-    // }
-    // if (oldData['qty'] == '') {
-    //   oldData['qty'] = rowData.qty;
-    // }
 
     if (objName == 'qty') {
       // console.log(oldData['prodPurchasePrice']);
@@ -115,13 +98,22 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       let newTotalPriceWithGst = parseFloat(newTotalPrice) + parseFloat(newTotalPrice * objValue) / 100;
       // oldData['totalPrice']=newTotalPrice;
       oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
-    } else if (objName == 'cgstPerc') {
-      // oldData[objName] = objValue;
-      // let newTotalPrice = oldData['totalPrice'];
-      // let newTotalPriceWithGst =
-      //   parseFloat(newTotalPrice) + parseFloat(newTotalPrice * oldData['sgstperc']) / 100 + parseFloat(newTotalPrice * objValue) / 100;
-      // // oldData['totalPrice']=newTotalPrice;
-      // oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
+    } else if (objName == 'discountPerc') {
+      oldData[objName] = objValue;
+      let purchasePrice = oldData['prodPurchasePrice'];
+      let newPurchasePrice = parseFloat(purchasePrice) * parseFloat(1 - oldData['discountPerc'] / 100);
+      let newTotalPrice = newPurchasePrice * parseFloat(1 - parseFloat(oldData['discountScheme'] / 100)) * oldData['qty'];
+      let newTotalPriceWithGst = newTotalPrice * parseFloat(1 + (oldData['cgstPerc'] * 2) / 100);
+      oldData['totalPrice'] = newTotalPrice.toFixed(2);
+      oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
+    } else if (objName == 'discountScheme') {
+      oldData[objName] = objValue;
+      let purchasePrice = oldData['prodPurchasePrice'];
+      let newPurchasePrice = parseFloat(purchasePrice) * parseFloat(1 - oldData['discountPerc'] / 100);
+      let newTotalPrice = newPurchasePrice * parseFloat(1 - parseFloat(oldData['discountScheme'] / 100)) * oldData['qty'];
+      let newTotalPriceWithGst = newTotalPrice * parseFloat(1 + (oldData['cgstPerc'] * 2) / 100);
+      oldData['totalPrice'] = newTotalPrice.toFixed(2);
+      oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
     } else {
       oldData[objName] = objValue;
     }
@@ -212,8 +204,30 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
           }
         }}
       >
-        <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
-          Update Stock
+        <DialogTitle variant="h3" style={{ padding: '20px 40px', paddingBottom: '20px' }}>
+          <Grid container justifyContent={'space-between'} alignItems={'center'}>
+            <Typography variant="h3">Update Stock</Typography>
+            <Grid
+              display={'flex'}
+              style={{
+                backgroundColor: 'cornflowerblue',
+                padding: '20px 80px',
+                marginRight: '15px',
+                borderRadius: '18px',
+                color: 'white'
+              }}
+            >
+              <Grid style={{ paddingRight: '50px' }}>
+                <Typography variant="h5">Total Amount:</Typography>
+                <Typography>₹{parseFloat(formData.totalPrice).toFixed(2)}</Typography>
+              </Grid>
+              <Grid style={{ height: '50px', width: '1px', backgroundColor: 'white' }}></Grid>
+              <Grid style={{ paddingLeft: '50px' }}>
+                <Typography variant="h5">Total Amount including GST:</Typography>
+                <Typography>₹{parseFloat(formData.totalPriceWithGst).toFixed(2)}</Typography>
+              </Grid>
+            </Grid>
+          </Grid>
         </DialogTitle>
         <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
           <DialogContentText>Update Existing Stocks</DialogContentText>
@@ -280,7 +294,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               }}
             />
 
-            <TextField
+            {/* <TextField
               margin="normal"
               id="prodBatch"
               name="mfr"
@@ -290,7 +304,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               variant="outlined"
               value={formData.mfr}
               onChange={changeDataOnClick}
-            />
+            /> */}
             <TextField
               required
               margin="normal"
@@ -362,7 +376,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               value={formData.mrp}
               onChange={changeDataOnClick}
             />
-            <TextField
+            {/* <TextField
               autoFocus
               required
               margin="normal"
@@ -374,7 +388,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               variant="outlined"
               value={formData.totalPrice > '0' ? formData.totalPrice : rowData.amount}
               disabled
-            />
+            /> */}
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
@@ -417,7 +431,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               <MenuItem value={12}>CGST 12%</MenuItem>
               <MenuItem value={18}>CGST 18%</MenuItem> */}
             {/* </Select> */}
-            <TextField
+            {/* <TextField
               required
               margin="normal"
               id="prodTotalPrice"
@@ -428,6 +442,30 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               variant="outlined"
               value={formData.totalPriceWithGst}
               disabled
+            /> */}
+            <TextField
+              required
+              margin="normal"
+              id="discountPerc"
+              name="discountPerc"
+              label="Discount%"
+              type="number"
+              fullWidth
+              variant="outlined"
+              value={formData.discountPerc}
+              onChange={changeDataOnClick}
+            />
+            <TextField
+              required
+              margin="normal"
+              id="discountScheme"
+              name="discountScheme"
+              label="Discount Scheme%"
+              type="number"
+              fullWidth
+              variant="outlined"
+              value={formData.discountScheme}
+              onChange={changeDataOnClick}
             />
           </Stack>
         </DialogContent>

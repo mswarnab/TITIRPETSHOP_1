@@ -38,16 +38,18 @@ function createData(
   productName,
   invoiceNumber,
   category,
-  batchNumber,
-  hsnCode,
-  mfrCode,
+  expDate,
   quantity,
   rate,
+  discount,
+  schemeDiscount,
+  purchasePrice,
   mrp,
-  expDate,
   sgst,
   cgst,
-  supplierName
+  supplierName,
+  batchNumber,
+  hsnCode
 ) {
   // console.log(expDate);
   expDate = dayjs(expDate).format('YYYY-MM-DD');
@@ -57,16 +59,18 @@ function createData(
     productName,
     invoiceNumber,
     category,
-    batchNumber,
-    hsnCode,
-    mfrCode,
+    expDate,
     quantity,
     rate,
+    discount,
+    schemeDiscount,
+    purchasePrice: parseFloat(purchasePrice + sgst + cgst).toFixed(2),
     mrp,
-    expDate,
+    supplierName,
     sgst,
     cgst,
-    supplierName
+    batchNumber,
+    hsnCode
   };
 }
 
@@ -80,82 +84,146 @@ export default function ManageStock() {
   const [productCount, setProductCOunt] = useState(0);
 
   const dataColumns = [
-    { field: 'id', headerName: 'Sl No.', width: 90 },
+    { field: 'id', headerAlign: 'center', headerName: 'Sl No.', headerClassName: 'super-app-theme--header', width: 90 },
     {
       field: 'productName',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+
       headerName: 'Product Name',
       width: 250
       // editable: true
     },
     {
       field: 'invoiceNumber',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+
       headerName: 'Invoice No.',
       width: 250
       // editable: true
     },
     {
       field: 'category',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+
       headerName: 'Product Categroy',
       width: 150
       // editable: true
     },
+    {
+      field: 'expDate',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
 
-    {
-      field: 'batchNumber',
-      headerName: 'Batch No.',
-      width: 160
-    },
-    {
-      field: 'hsnCode',
-      headerName: 'Hsn',
-      width: 160
-    },
-    {
-      field: 'mfrCode',
-      headerName: 'Mfr',
+      headerName: 'Expiry Date',
       width: 160
     },
 
     {
       field: 'quantity',
+      headerAlign: 'center',
+
       headerName: 'QTY',
+      headerClassName: 'super-app-theme--header',
+
       type: 'number',
       width: 90,
       editable: true
     },
     {
       field: 'rate',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
       headerName: 'Rate',
       width: 100
     },
     {
+      field: 'discount',
+      headerAlign: 'center',
+
+      headerName: 'Discount %',
+      headerClassName: 'super-app-theme--header',
+      //   type: 'number',
+      width: 135
+    },
+    {
+      field: 'schemeDiscount',
+      headerAlign: 'center',
+
+      headerName: 'Scheme Discount %',
+      headerClassName: 'super-app-theme--header',
+      //   type: 'number',
+      width: 155
+    },
+    {
+      field: 'purchasePrice',
+      headerAlign: 'center',
+
+      headerName: 'Purchase Price (Including GST)',
+      headerClassName: 'super-app-theme--header',
+      //   type: 'number',
+      width: 135
+    },
+
+    {
       field: 'mrp',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+
       headerName: 'MRP',
       type: 'number',
       width: 100
       // editable: true
     },
     {
-      field: 'expDate',
-      headerName: 'Expiry Date',
-      width: 160
+      field: 'supplierName',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+      headerName: 'Supplier Name',
+      width: 250
     },
 
     {
       field: 'sgst',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+
       headerName: 'SGST/PROD',
       width: 160
     },
     {
       field: 'cgst',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+
       headerName: 'CGST/PROD',
       width: 160
     },
 
     {
-      field: 'supplierName',
-      headerName: 'Supplier Name',
-      width: 250
+      field: 'batchNumber',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+
+      headerName: 'Batch No.',
+      width: 160
+    },
+    {
+      field: 'hsnCode',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+
+      headerName: 'Hsn',
+      width: 160
     }
   ];
 
@@ -229,16 +297,18 @@ export default function ManageStock() {
             value.productName,
             value.invoiceNumber,
             value.category,
-            value.batchNumber,
-            value.hsnCode,
-            value.mfrCode,
+            value.expDate,
             value.quantity,
             value.rate,
+            value.discount,
+            value.schemeDiscount,
+            value.purchasePrice,
             value.mrp,
-            value.expDate,
             value.sgst,
             value.cgst,
-            value.supplierName
+            value.supplierName,
+            value.batchNumber,
+            value.hsnCode
           );
           // console;
           newData = [...newData, createdData];
