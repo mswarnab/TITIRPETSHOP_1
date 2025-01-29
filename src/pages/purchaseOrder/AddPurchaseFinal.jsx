@@ -52,7 +52,7 @@ export default function AddPurchase() {
   // today = dd + '/' + mm + '/' + yyyy;
   today = yyyy + '-' + mm + '-' + dd;
   // const prodCatagoryArr = ['FOOD', 'MEDICINE', 'ACCESSORIES'];
-  const [discountSelect, setDiscountSelect] = useState(0);
+  const [discountSelect, setDiscountSelect] = useState(1);
   const [orderNumber, setOrderNumber] = React.useState('');
   const [supplierName, setSupplierName] = React.useState('');
   const [supplierId, setSupplierId] = React.useState('');
@@ -101,7 +101,7 @@ export default function AddPurchase() {
     setSgstPerc(sgstPercValue);
     let cgstPercAmount = event.target.value / 2;
     setCgstPerc(cgstPercAmount);
-    totalProductPriceCal(prodQty, productPurchasePriceAfterDiscount, cgstPercAmount, sgstPercValue);
+    // totalProductPriceCal(prodQty, productPurchasePriceAfterDiscount, cgstPercAmount, sgstPercValue);
   };
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export default function AddPurchase() {
     let productQuantity = event.target.value;
     // let productPrice = prodPurcahsePrice;
     setProdQty(productQuantity);
-    totalProductPriceCal(productQuantity, productPurchasePriceAfterDiscount, cgstPerc, sgstPerc);
+    // totalProductPriceCal(productQuantity, productPurchasePriceAfterDiscount, cgstPerc, sgstPerc);
   };
   let onProductPurchasePriceChange = (event) => {
     // let productQuantity = prodQty;
@@ -155,7 +155,7 @@ export default function AddPurchase() {
     // let cgstPerc = cgstPerc;
 
     setProdPurcahsePrice(productPrice);
-    totalProductPriceCal(prodQty, productPrice, cgstPerc, sgstPerc);
+    // totalProductPriceCal(prodQty, productPrice, cgstPerc, sgstPerc);
   };
   let totalProductPriceCal = (productQuantity, productPrice, cgstPerc, sgstPerc) => {
     if (productQuantity != '' && productPrice != '') {
@@ -285,7 +285,9 @@ export default function AddPurchase() {
         prodAmountWithoutGst: prodTotalPrice,
         prodExpDate: prodExpDate,
         prodHsn: prodHsn,
-        prodAmountWithGst: prodTotalPriceWithGST
+        prodAmountWithGst: prodTotalPriceWithGST,
+        prodDiscountPerc: discountPerc,
+        prodDiscountScheme: discountScheme
       };
       setStockData([...stockData, newDataForm]);
       // setProdName('');
@@ -458,16 +460,16 @@ export default function AddPurchase() {
       expDate: mmmm + ' ,' + yy,
       hsn: rowValues.prodHsn,
       qty: rowValues.prodQty,
-      purchaseRate: rowValues.prodPurcahsePrice,
+      purchaseRate: parseFloat(rowValues.prodPurcahsePrice).toFixed(2),
       mrp: rowValues.prodMrpPrice,
-      amount: rowValues.prodAmountWithoutGst,
-      sgst: sgstAmount + ' (' + rowValues.prodSGST + '%)',
-      cgst: cgstAmount + ' (' + rowValues.prodCGST + '%)',
-      amountWithgst: rowValues.prodAmountWithGst,
+      amount: parseFloat(rowValues.prodAmountWithoutGst).toFixed(2),
+      sgst: parseFloat(sgstAmount).toFixed(2) + ' (' + rowValues.prodSGST + '%)',
+      cgst: parseFloat(cgstAmount).toFixed(2) + ' (' + rowValues.prodCGST + '%)',
+      amountWithgst: parseFloat(rowValues.prodAmountWithGst).toFixed(2),
       sgstPerc: rowValues.prodSGST,
       cgstPerc: rowValues.prodCGST,
-      discountPerc,
-      discountScheme
+      discountPerc: rowValues.prodDiscountPerc,
+      discountScheme: rowValues.prodDiscountScheme
     };
     return data;
   }
@@ -568,27 +570,39 @@ export default function AddPurchase() {
       // if (formData.totalPriceWithGst != '') {
       //   totalPriceWithGst = formData.totalPriceWithGst;
       // }
-
-      newData[findId] = {
-        prodName: formData.name,
-        prodQty: formData.qty,
-        prodCatagory: formData.catagory,
-        prodPurcahsePrice: formData.prodPurchasePrice,
-        prodMfr: formData.mfr,
-        prodMrpPrice: formData.mrp,
-        prodBatch: formData.batch,
-        prodSGST: formData.sgstperc,
-        prodCGST: formData.cgstPerc,
-        prodAmountWithoutGst: formData.totalPrice,
-        prodExpDate: expDate,
-        prodHsn: formData.hsn,
-        prodAmountWithGst: formData.totalPriceWithGst
-      };
-      // }
-      // console.log(newData);
-      setStockData(newData);
+      let flag = true;
+      if (formData.qty <= 0) {
+        flag = false;
+      } else if (!formData.prodPurchasePrice) {
+        flag = false;
+      }
+      if (flag) {
+        newData[findId] = {
+          prodName: formData.name,
+          prodQty: formData.qty,
+          prodCatagory: formData.catagory,
+          prodPurcahsePrice: formData.prodPurchasePrice,
+          prodMfr: formData.mfr,
+          prodMrpPrice: formData.mrp,
+          prodBatch: formData.batch,
+          prodSGST: parseFloat(formData.sgstperc) / 2,
+          prodCGST: parseFloat(formData.sgstperc) / 2,
+          prodAmountWithoutGst: formData.totalPrice,
+          prodExpDate: expDate,
+          prodHsn: formData.hsn,
+          prodAmountWithGst: formData.totalPriceWithGst,
+          prodDiscountPerc: formData.discountPerc,
+          prodDiscountScheme: formData.discountScheme
+        };
+        // }
+        // console.log(newData);
+        setStockData(newData);
+        handleCloseUpdate();
+      }
+    } else {
+      handleCloseUpdate();
     }
-    handleCloseUpdate();
+
     // setStockData(newData);
   };
   let onloader = () => {
@@ -642,8 +656,8 @@ export default function AddPurchase() {
             cgst: gstAmt,
             mrp: e.prodMrpPrice,
             batchNumber: e.prodBatch,
-            discount: discountPerc || 0,
-            schemeDiscount: discountScheme || 0
+            discount: e.prodDiscountPerc || 0,
+            schemeDiscount: e.prodDiscountScheme || 0
           }
         ];
       });
@@ -1236,7 +1250,7 @@ export default function AddPurchase() {
                 <em>Select field</em>
               </MenuItem>
               <MenuItem value={1}>D% - RATE</MenuItem>
-              <MenuItem value={2}>D% - MRP</MenuItem>
+              {/* <MenuItem value={2}>D% - MRP</MenuItem> */}
             </Select>
             <TextField
               id="outlined-basic"
@@ -1354,9 +1368,9 @@ export default function AddPurchase() {
                   row={dataRows}
                   column={dataColumns}
                   // htmlData={htmlDataStockView}
-                  // handleClickOpen={handleClickOpenUpdate}
+                  handleClickOpen={handleClickOpenUpdate}
                   handleDelete={handleDelete}
-                  // handleUpdate={handleUpdate}
+                  handleUpdate={handleUpdate}
                 />
               ) : (
                 ''
@@ -1375,9 +1389,9 @@ export default function AddPurchase() {
           row={dataRows}
           column={dataColumns}
           // htmlData={htmlDataStockView}
-          // handleClickOpen={handleClickOpenUpdate}
+          handleClickOpen={handleClickOpenUpdate}
           handleDelete={handleDelete}
-          // handleUpdate={handleUpdate}
+          handleUpdate={handleUpdate}
         />
       ) : (
         ''

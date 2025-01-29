@@ -29,7 +29,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     qty: '',
     mrp: '',
     sgstperc: 0,
-    cgstPerc: 0,
+    // cgstPerc: 0,
     expDate: '',
     prodPurchasePrice: '',
     totalPrice: '',
@@ -47,8 +47,8 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       mfr: rowData.mfr,
       qty: rowData.qty,
       mrp: rowData.mrp,
-      sgstperc: rowData.sgstPerc,
-      cgstPerc: rowData.cgstPerc,
+      sgstperc: rowData.sgstPerc * 2,
+      // cgstPerc: rowData.cgstPerc,
       expDate: rowData.expDate,
       prodPurchasePrice: rowData.purchaseRate,
       totalPrice: rowData.amount,
@@ -60,6 +60,24 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       return null;
     };
   }, [rowData]);
+  useEffect(() => {
+    let newData = { ...formData };
+    let newPurchasePrice = newData.prodPurchasePrice;
+    if (newData.discountPerc > 0) {
+      newPurchasePrice = parseFloat(newPurchasePrice) * parseFloat(1 - newData.discountPerc / 100);
+    }
+    if (newData.discountScheme > 0) {
+      newPurchasePrice = parseFloat(newPurchasePrice) * parseFloat(1 - newData.discountScheme / 100);
+    }
+    let totalAmountData = parseFloat(newData.qty) * parseFloat(newPurchasePrice);
+    let totalAmountWithGst = parseFloat(totalAmountData) * parseFloat(1 + parseFloat(parseFloat(newData.sgstperc) / 100));
+    newData['totalPrice'] = totalAmountData;
+    newData['totalPriceWithGst'] = totalAmountWithGst;
+    setFormDate(newData);
+    return () => {
+      return null;
+    };
+  }, [formData.qty, formData.discountPerc, formData.discountScheme, formData.prodPurchasePrice, formData.sgstperc]);
 
   let changeDataOnClick = (event) => {
     let objName = event.target.name;
@@ -67,7 +85,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     // console.log(event.target);
     let oldData = { ...formData };
 
-    if (objName == 'qty') {
+    /*if (objName == 'qty') {
       // console.log(oldData['prodPurchasePrice']);
       if (objValue > 0) {
         oldData[objName] = objValue;
@@ -114,9 +132,9 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       let newTotalPriceWithGst = newTotalPrice * parseFloat(1 + (oldData['cgstPerc'] * 2) / 100);
       oldData['totalPrice'] = newTotalPrice.toFixed(2);
       oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
-    } else {
-      oldData[objName] = objValue;
-    }
+    } else { */
+    oldData[objName] = objValue;
+    // }
     setFormDate(oldData);
   };
   let setExpDateFunction = (date) => {
@@ -345,7 +363,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="name"
               name="qty"
               label="Product Quantity"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.qty}
@@ -357,7 +375,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="prodPurchasePrice"
               name="prodPurchasePrice"
               label="Purchase Price"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.prodPurchasePrice}
@@ -370,7 +388,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="prodMrp"
               name="mrp"
               label="MRP"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.mrp}
@@ -383,7 +401,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="prodTotalPrice"
               name="totalPrice"
               label="Total Price"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.totalPrice > '0' ? formData.totalPrice : rowData.amount}
@@ -392,8 +410,8 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
             <Select
               labelId="sgstLavel"
               id="demo-simple-select-helper"
-              value={formData.sgstperc * 2}
-              defaultValue={rowData.sgstPerc * 2}
+              value={formData.sgstperc}
+              defaultValue={rowData.sgstPerc}
               displayEmpty
               name="sgstperc"
               onChange={changeDataOnClick}
@@ -401,10 +419,10 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               // onChange={handleChange}
             >
               <MenuItem value="" disabled>
-                <em>Select SGST</em>
+                <em>Select GST</em>
               </MenuItem>
               {gstPercArr.map((gstv) => (
-                <MenuItem value={gstv}>SGST {gstv}%</MenuItem>
+                <MenuItem value={gstv}>GST {gstv}%</MenuItem>
               ))}
               {/* <MenuItem value={0}>SGST 0%</MenuItem>
               <MenuItem value={5}>SGST 5%</MenuItem>
@@ -437,7 +455,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="prodTotalPrice"
               name="totalPriceWithGst"
               label="Total Price With GST"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.totalPriceWithGst}
@@ -449,7 +467,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="discountPerc"
               name="discountPerc"
               label="Discount%"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.discountPerc}
@@ -461,7 +479,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               id="discountScheme"
               name="discountScheme"
               label="Discount Scheme%"
-              type="number"
+              type="text"
               fullWidth
               variant="outlined"
               value={formData.discountScheme}
