@@ -251,7 +251,7 @@ export default function ManageSaleView() {
           <Grid lg={5}>
             <Typography variant="h5">{rows.length} Sales bill found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+          <Grid container justifyContent="flex-end">
             <CustomSort screenType={{ ...screenType, SALE: true }} createSortParm={createSortParm} />
             <CustomerFilter
               screenType={{ ...screenType, SALE: true }}

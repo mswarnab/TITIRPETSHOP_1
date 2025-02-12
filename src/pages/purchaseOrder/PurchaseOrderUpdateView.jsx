@@ -286,7 +286,7 @@ export default function ManagePurchaseOrder() {
           <Grid lg={5}>
             <Typography variant="h5">{productCount} Purchase Orders found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+          <Grid container justifyContent="flex-end">
             <CustomSort screenType={{ ...screenType, PURCHASE: true }} createSortParm={createSortParm} />
             <CustomerFilter
               screenType={{ ...screenType, PURCHASE: true }}
