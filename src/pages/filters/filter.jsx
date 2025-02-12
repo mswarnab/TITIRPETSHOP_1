@@ -281,8 +281,8 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
                   variant="outlined"
                   color="warning"
                   size="small"
-                  onClick={() =>
-                    setSearchObject({
+                  onClick={() => {
+                    let newObj = {
                       searchBySupplierName: '',
                       searchByCustomerName: '',
                       searchByInvoiceNo: '',
@@ -291,8 +291,10 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
                       fromDate: '',
                       toDate: '',
                       dateFilter: ''
-                    })
-                  }
+                    };
+                    setSearchObject(newObj);
+                    createUrlFromFilter(newObj);
+                  }}
                 >
                   Reset
                 </Button>
