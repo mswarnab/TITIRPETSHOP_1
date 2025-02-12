@@ -128,7 +128,7 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
         }}
       >
         <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
-          Update Purchase order
+          Update Sale order
         </DialogTitle>
         <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
           <DialogContentText>Update Existing Purchase Order</DialogContentText>
@@ -232,12 +232,12 @@ function DenseTable({ productDtls = [] }) {
               <TableCell component="th" scope="row">
                 {row.productName}
               </TableCell>
-              <TableCell align="right">{row.purchasePriceWithGst}</TableCell>
+              <TableCell align="right">{parseFloat(row.purchasePriceWithGst).toFixed(2)}</TableCell>
               <TableCell align="right">{row.mrp}</TableCell>
               <TableCell align="right">{row.quantity}</TableCell>
-              <TableCell align="right">{row.sellingPrice}</TableCell>
-              <TableCell align="right">{row.quantity * row.sellingPrice}</TableCell>
-              <TableCell align="right">{row.discountedAmount}</TableCell>
+              <TableCell align="right">{parseFloat(row.sellingPrice).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.quantity * row.sellingPrice).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.discountedAmount).toFixed(2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

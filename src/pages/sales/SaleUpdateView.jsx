@@ -1,5 +1,6 @@
 // material-ui
 import React, { useEffect, useState } from 'react';
+import { a as screenType } from 'assets/static/screenType';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 // project import
@@ -9,6 +10,10 @@ import dayjs from 'dayjs';
 import SaleTable from 'pages/dashboard/SaleTable';
 import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
+import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
+import CustomSort from 'pages/filters/sort';
+import CustomerFilter from 'pages/filters/filter';
 
 // let id = 0;
 function createData(id, billNumber, customerName, customerMobileNo, sellTotalAmount, dateOfBilling, paidAmount, dueAmount, _id, value) {
@@ -30,6 +35,27 @@ export default function ManageSaleView() {
   // let paginationCount = (50/;
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
+  const [searchType, setSearchType] = useState('0');
+  const [searchValue, setSearchValue] = useState('');
+  const [searchParm, setSearchParm] = useState('');
+  const [sortPerm, setSortParm] = useState('');
+  let createUrl = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    let value = '&' + searchType + '=' + searchValue;
+    setSearchParm(value);
+  };
+  let crearAllFilter = () => {
+    let newdata = { ...paginationModel };
+    newdata.page = 0;
+    // newdata['pageSize'] = 20;
+    setPaginationModel(newdata);
+    setSearchType('0');
+    setSearchValue('');
+    setSearchParm('');
+  };
   const handleClickOpen = (value) => {
     // console.log(value);
     setSelectedData(value.row);
@@ -37,7 +63,7 @@ export default function ManageSaleView() {
   };
 
   const handleClose = () => {
-    fetchRowData(paginationModel.page);
+    fetchRowData(paginationModel.page, searchParm, sortPerm);
     setOpen(false);
   };
 
@@ -100,7 +126,7 @@ export default function ManageSaleView() {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page']);
+    fetchRowData(newdata['page'], searchParm, sortPerm);
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -109,10 +135,10 @@ export default function ManageSaleView() {
   const [rows, setRows] = useState([]);
   const [paginationCount, setPaginationCount] = useState(0);
   ////// call apito get data in every page change
-  let fetchRowData = async (page) => {
+  let fetchRowData = async (page, url, sorturl) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/sales?page=' + page)
+      .get('/sales?page=' + page + url + sorturl)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -130,10 +156,10 @@ export default function ManageSaleView() {
             value.billNumber,
             value.customerName,
             value.customerMobileNo,
-            value.grandTotalAmount,
+            parseFloat(value.grandTotalAmount).toFixed(2),
             dayjs(value.dateOfSale).format('YYYY-MM-DD'),
-            value.paidAmount,
-            value.cerditAmount,
+            parseFloat(value.paidAmount).toFixed(2),
+            parseFloat(value.cerditAmount).toFixed(2),
             value._id,
             value
           );
@@ -147,18 +173,64 @@ export default function ManageSaleView() {
       .finally(() => setLoading(false));
   };
   useEffect(() => {
-    (async () => await fetchRowData(paginationModel.page))();
+    (async () => await fetchRowData(paginationModel.page, searchParm, sortPerm))();
     return () => {
       return null;
     };
-  }, []);
+  }, [searchParm, sortPerm]);
   const [loading, setLoading] = useState(true);
+  const [searchFilterData, setSearchFilterData] = useState({
+    searchBySupplierName: '',
+    searchByCustomerName: '',
+    searchByInvoiceNo: '',
+    searchByBillNo: '',
+    onlyDue: 'N',
+    fromDate: '',
+    toDate: '',
+    dateFilter: ''
+  });
+  const createUrlFromFilter = (data) => {
+    let value = '';
+    if (data.searchBySupplierName) {
+      value += '&filterBySupplierName=' + data.searchBySupplierName;
+    }
+    if (data.searchByCustomerName) {
+      value += '&filterByCustomer=' + data.searchByCustomerName;
+    }
+    if (data.searchByInvoiceNo) {
+      value += '&filterByInvoiceNumber=' + data.searchByInvoiceNo;
+    }
+    if (data.searchByBillNo) {
+      value += '&filterByInvoiceNumber=' + data.searchByBillNo;
+    }
+    if (data.onlyDue == 'Y') {
+      value += '&filterByCreditAmount=' + data.onlyDue;
+    }
+    if (data.fromDate) {
+      value += '&filterByStartDate=' + dayjs(data.fromDate).format('YYYYMMDD');
+    }
+    if (data.toDate) {
+      value += '&filterByEndDate=' + dayjs(data.toDate).format('YYYYMMDD');
+    }
+    // if(data.searchBySupplierName){
+    //   value='&searchBySupplierName='+data.searchBySupplierName;
+    // }
+    setSearchParm(value);
+    setSearchFilterData(data);
+  };
+  let createSortParm = (sortType, sortValue) => {
+    let value = '';
+    if (sortType && sortValue) {
+      value = '&' + sortType + '=' + sortValue;
+    }
+    setSortParm(value);
+  };
   // console.log(rows);
   if (loading) {
     return <LottieAnimation />;
   }
   if (!loading && !rows.length) {
-    return <NoDataFoundAnimation />;
+    // return <NoDataFoundAnimation />;
   }
   // console.log(paginationCount);
 
@@ -169,15 +241,74 @@ export default function ManageSaleView() {
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
-        <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%' }}>
+        <Grid
+          container
+          direction={'row'}
+          alignItems="center"
+          justifyContent="space-between"
+          style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          <Grid lg={5}>
             <Typography variant="h5">{rows.length} Sales bill found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
+            <CustomSort screenType={{ ...screenType, SALE: true }} createSortParm={createSortParm} />
+            <CustomerFilter
+              screenType={{ ...screenType, SALE: true }}
+              createUrlFromFilter={createUrlFromFilter}
+              searchFilterData={searchFilterData}
+            />
+            {/* <Stack direction="row" spacing={1}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={searchType}
+                // sx={{ height: '45px' }}
+                // label="Age"
+                onChange={(event) => {
+                  setSearchType(event.target.value);
+                  if (event.target.value == 'filterByCategory') {
+                    setSearchValue(0);
+                  } else if (event.target.value == 'filterByOnlyDue') {
+                    setSearchValue(1);
+                  }
+                }}
+              >
+                <MenuItem value="0">Search Type</MenuItem>
+                <MenuItem value="filterByBillNumber">Invoice No.</MenuItem>
+                <MenuItem value="filterByCustomerName">Customer</MenuItem>
+                <MenuItem value="filterByOnlyDue">Only Due</MenuItem>
+              </Select>
+              {searchType == 'filterByOnlyDue' ? (
+                ''
+              ) : (
+                <TextField
+                  disabled={searchType == 0 ? true : false}
+                  value={searchValue}
+                  id="outlined-search"
+                  label="Search field"
+                  type="search"
+                  // size="medium"
+                  // sx={{ height: '45px' }}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
+              )}
+              <IconButton aria-label="delete" size="large" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+                <SearchOutlined />
+              </IconButton>
+              <IconButton aria-label="" size="large" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+                <ClearOutlined />
+              </IconButton>
+            </Stack> */}
+          </Grid>
+          {/* <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">
               Click on the below rows to <span style={{ backgroundColor: 'yellow' }}>UPDATE</span>
             </Typography>
-          </Grid>
+          </Grid> */}
+          {/* <Grid md={12} lg={7} style={{ marginRight: 0 }}>
+            <ChipsArray />
+          </Grid> */}
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>

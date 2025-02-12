@@ -1,5 +1,6 @@
 // material-ui
 import React, { useEffect, useState } from 'react';
+import { a as screenType } from 'assets/static/screenType';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 // project import
@@ -12,6 +13,8 @@ import NoDataFoundAnimation from 'components/nodatafound';
 import ChipsArray from 'components/ChipsArray';
 import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
+import CustomerFilter from 'pages/filters/filter';
+import CustomSort from 'pages/filters/sort';
 
 // let id = 0;
 function createData(
@@ -65,6 +68,7 @@ export default function ManagePurchaseOrder() {
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [productCount, setProductCOunt] = useState(0);
+  const [sortPerm, setSortParm] = useState('');
   const handleClickOpen = (value) => {
     // console.log(value);
     setSelectedData(value.row);
@@ -72,13 +76,13 @@ export default function ManagePurchaseOrder() {
   };
 
   const handleClose = () => {
-    fetchRowData(paginationModel.page, searchParm);
+    fetchRowData(paginationModel.page, searchParm, sortPerm);
     setOpen(false);
   };
 
   const columns = [
     { field: 'id', headerName: 'Sl No.', width: 100, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
-    { field: 'invoiceNumber', headerName: 'invoice Number', width: 150, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
+    { field: 'invoiceNumber', headerName: 'Invoice Number', width: 150, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
     { field: 'supplierName', headerName: 'Supplier Name', width: 220, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
     {
       field: 'grandTotalAmount',
@@ -128,7 +132,7 @@ export default function ManagePurchaseOrder() {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page'], searchParm);
+    fetchRowData(newdata['page'], searchParm, sortPerm);
   };
   const [searchParm, setSearchParm] = useState('');
   let createUrl = () => {
@@ -155,10 +159,10 @@ export default function ManagePurchaseOrder() {
   const [rows, setRows] = useState([]);
   const [paginationCount, setPaginationCount] = useState(0);
   ////// call apito get data in every page change
-  let fetchRowData = async (page, url) => {
+  let fetchRowData = async (page, url, sorturl) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/purchaseorder?page=' + page + url)
+      .get('/purchaseorder?page=' + page + url + sorturl)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -175,20 +179,20 @@ export default function ManagePurchaseOrder() {
             id,
             value.invoiceNumber,
             value.supplierName,
-            value.grandTotalAmount,
+            parseFloat(value.grandTotalAmount).toFixed(2),
             dayjs(value.dateOfPruchase).format('YYYY-MM-DD'),
-            value.cerditAmount,
-            value.paidAmount,
+            parseFloat(value.cerditAmount).toFixed(2),
+            parseFloat(value.paidAmount).toFixed(2),
             value.modeOfPayment,
             value._id,
             value.addLessAmount,
-            value.cgst,
+            parseFloat(value.cgst).toFixed(2),
             value.crDrNote,
-            value.discount,
+            parseFloat(value.discount).toFixed(2),
             value.dueDate,
-            value.sgst,
+            parseFloat(value.sgst).toFixed(2),
             value.supplierId,
-            value.totalAmount,
+            parseFloat(value.totalAmount).toFixed(2),
             value.__v
           );
           // console;
@@ -202,21 +206,68 @@ export default function ManagePurchaseOrder() {
   };
   // console.log(paginationCount);
   useEffect(() => {
-    (async () => await fetchRowData(paginationModel.page, searchParm))();
+    (async () => await fetchRowData(paginationModel.page, searchParm, sortPerm))();
     return () => {
       return null;
     };
-  }, [searchParm]);
+  }, [searchParm, sortPerm]);
 
   const [loading, setLoading] = useState(true);
   const [searchType, setSearchType] = useState('0');
   const [searchValue, setSearchValue] = useState('');
+  const [searchFilterData, setSearchFilterData] = useState({
+    searchBySupplierName: '',
+    searchByCustomerName: '',
+    searchByInvoiceNo: '',
+    searchByBillNo: '',
+    onlyDue: 'N',
+    fromDate: '',
+    toDate: '',
+    dateFilter: ''
+  });
+  const createUrlFromFilter = (data) => {
+    let value = '';
+    if (data.searchBySupplierName) {
+      value += '&filterBySupplierName=' + data.searchBySupplierName;
+    }
+    if (data.searchByCustomerName) {
+      value += '&filterByCustomer=' + data.searchByCustomerName;
+    }
+    if (data.searchByInvoiceNo) {
+      value += '&filterByInvoiceNo=' + data.searchByInvoiceNo;
+    }
+    if (data.searchByBillNo) {
+      value += '&filterByInvoiceNumber=' + data.searchByBillNo;
+    }
+    if (data.onlyDue == 'Y') {
+      value += '&filterByCreditAmount=' + data.onlyDue;
+    }
+    if (data.fromDate) {
+      value += '&filterByStartDate=' + dayjs(data.fromDate).format('YYYYMMDD');
+    }
+    if (data.toDate) {
+      value += '&filterByEndDate=' + dayjs(data.toDate).format('YYYYMMDD');
+    }
+    // if(data.searchBySupplierName){
+    //   value='&searchBySupplierName='+data.searchBySupplierName;
+    // }
+    setSearchParm(value);
+    setSearchFilterData(data);
+  };
+  let createSortParm = (sortType, sortValue) => {
+    let value = '';
+    if (sortType && sortValue) {
+      value = '&' + sortType + '=' + sortValue;
+    }
+
+    setSortParm(value);
+  };
   // console.log(rows);
   if (loading) {
     return <LottieAnimation />;
   }
   if (!loading && !rows.length) {
-    return <NoDataFoundAnimation />;
+    // return <NoDataFoundAnimation />;
   }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -236,7 +287,13 @@ export default function ManagePurchaseOrder() {
             <Typography variant="h5">{productCount} Purchase Orders found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
-            <Stack direction="row" spacing={1}>
+            <CustomSort screenType={{ ...screenType, PURCHASE: true }} createSortParm={createSortParm} />
+            <CustomerFilter
+              screenType={{ ...screenType, PURCHASE: true }}
+              createUrlFromFilter={createUrlFromFilter}
+              searchFilterData={searchFilterData}
+            />
+            {/* <Stack direction="row" spacing={1}>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -253,8 +310,6 @@ export default function ManagePurchaseOrder() {
                 }}
               >
                 <MenuItem value="0">Search Type</MenuItem>
-                {/* <MenuItem value="filterByProductName">Product Name</MenuItem> */}
-                {/* <MenuItem value="filterByCategory">Category</MenuItem> */}
                 <MenuItem value="filterByInvoice">Invoice No.</MenuItem>
                 <MenuItem value="filterBySupplierName">Supplier</MenuItem>
                 <MenuItem value="filterByOnlyDue">Only Due</MenuItem>
@@ -279,10 +334,7 @@ export default function ManagePurchaseOrder() {
               <IconButton aria-label="" size="large" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
                 <ClearOutlined />
               </IconButton>
-              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
-                Search
-              </Button> */}
-            </Stack>
+            </Stack> */}
           </Grid>
           {/* <Grid container justifyContent="flex-end" style={{ width: '50%' }}>
             <Typography color={'teal'} variant="button">

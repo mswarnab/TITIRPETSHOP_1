@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import dayjs from 'dayjs';
+// import ScreenType from 'assets/static/screenType';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -11,6 +13,9 @@ import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
 import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
+import CustomerFilter from 'pages/filters/filter';
+import { a as screenType } from 'assets/static/screenType';
+import CustomSort from 'pages/filters/sort';
 
 // let id = 0;
 function createData(id, customerName, customerContactNo, customerAddress, totalCreditAmount, __v, _id, lastPurchaseDate) {
@@ -24,6 +29,7 @@ export default function ManageCustomer() {
   let pageSize = 20;
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedData] = useState({});
+  const [sortPerm, setSortParm] = useState('');
   const handleClickOpen = (value) => {
     // console.log(value);
     setSelectedData(value.row);
@@ -32,7 +38,7 @@ export default function ManageCustomer() {
 
   const handleClose = () => {
     setOpen(false);
-    fetchRowData(paginationModel.page, searchParm);
+    fetchRowData(paginationModel.page, searchParm, sortPerm);
   };
 
   const columns = [
@@ -63,7 +69,7 @@ export default function ManageCustomer() {
     newdata['page'] = parseInt(page - 1);
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
-    fetchRowData(newdata['page'], searchParm);
+    fetchRowData(newdata['page'], searchParm, sortPerm);
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -90,10 +96,10 @@ export default function ManageCustomer() {
     setSearchParm('');
   };
   ////// call apito get data in every page change
-  let fetchRowData = async (page, url) => {
+  let fetchRowData = async (page, url, sortPerm) => {
     // console.log('Fetch page' + page + ' pageSize ' + pageSize);
     client
-      .get('/customer?page=' + page + url)
+      .get('/customer?page=' + page + url + sortPerm)
       .then((res) => {
         // console.log(res.data.result.result);
         let count = res.data.result.count;
@@ -109,7 +115,7 @@ export default function ManageCustomer() {
             value.customerName,
             value.customerContactNo,
             value.customerAddress,
-            value.totalCreditAmount,
+            parseFloat(value.totalCreditAmount).toFixed(2),
             value.__v,
             value._id,
             value.lastPurchaseDate
@@ -131,19 +137,67 @@ export default function ManageCustomer() {
   //   };
   // }, []);
   useEffect(() => {
-    (async () => await fetchRowData(paginationModel.page, searchParm))();
+    (async () => await fetchRowData(paginationModel.page, searchParm, sortPerm))();
     return () => {
       return null;
     };
-  }, [searchParm]);
+  }, [searchParm, sortPerm]);
   const [searchType, setSearchType] = useState('0');
   const [searchValue, setSearchValue] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const [searchFilterData, setSearchFilterData] = useState({
+    searchBySupplierName: '',
+    searchByCustomerName: '',
+    searchByInvoiceNo: '',
+    searchByBillNo: '',
+    onlyDue: 'N',
+    fromDate: '',
+    toDate: '',
+    dateFilter: ''
+  });
+  const createUrlFromFilter = (data) => {
+    let value = '';
+    if (data.searchBySupplierName) {
+      value += '&filterBySupplierName=' + data.searchBySupplierName;
+    }
+    if (data.searchByCustomerName) {
+      value += '&filterByCustomer=' + data.searchByCustomerName;
+    }
+    if (data.searchByInvoiceNo) {
+      value += '&filterByInvoiceNumber=' + data.searchByInvoiceNo;
+    }
+    if (data.searchByBillNo) {
+      value += '&filterByInvoiceNumber=' + data.searchByBillNo;
+    }
+    if (data.onlyDue == 'Y') {
+      value += '&filterByCreditAmount=' + data.onlyDue;
+    }
+    if (data.fromDate) {
+      value += '&filterByStartDate=' + dayjs(data.fromDate).format('YYYYMMDD');
+    }
+    if (data.toDate) {
+      value += '&filterByEndDate=' + dayjs(data.toDate).format('YYYYMMDD');
+    }
+    // if(data.searchBySupplierName){
+    //   value='&searchBySupplierName='+data.searchBySupplierName;
+    // }
+    setSearchParm(value);
+    setSearchFilterData(data);
+  };
+  let createSortParm = (sortType, sortValue) => {
+    let value = '';
+    if (sortType && sortValue) {
+      value = '&' + sortType + '=' + sortValue;
+    }
+    setSortParm(value);
+  };
+
   if (loading) {
     return <LottieAnimation />;
   }
   if (!loading && !rows.length) {
-    return <NoDataFoundAnimation />;
+    // return <NoDataFoundAnimation />;
   }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -157,7 +211,16 @@ export default function ManageCustomer() {
             <Typography variant="h5">{rows.length} Customers found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end">
-            <Stack direction="row" spacing={1}>
+            {/* console.log(SALE); */}
+            {/* <Grid display={'flex'}> */}
+            <CustomSort screenType={{ ...screenType, CUSTOMER: true }} createSortParm={createSortParm} />
+            <CustomerFilter
+              screenType={{ ...screenType, CUSTOMER: true }}
+              createUrlFromFilter={createUrlFromFilter}
+              searchFilterData={searchFilterData}
+            />
+            {/* </Grid> */}
+            {/* <Stack direction="row" spacing={1}>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -189,10 +252,7 @@ export default function ManageCustomer() {
               <IconButton aria-label="" size="small" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
                 <ClearOutlined />
               </IconButton>
-              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
-                Search
-              </Button> */}
-            </Stack>
+            </Stack> */}
           </Grid>
           <Grid item />
         </Grid>
