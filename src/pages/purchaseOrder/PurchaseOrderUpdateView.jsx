@@ -234,7 +234,7 @@ export default function ManagePurchaseOrder() {
       value += '&filterByCustomer=' + data.searchByCustomerName;
     }
     if (data.searchByInvoiceNo) {
-      value += '&filterByInvoiceNo=' + data.searchByInvoiceNo;
+      value += '&filterByInvoiceNumber=' + data.searchByInvoiceNo;
     }
     if (data.searchByBillNo) {
       value += '&filterByInvoiceNumber=' + data.searchByBillNo;
