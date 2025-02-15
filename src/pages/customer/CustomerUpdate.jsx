@@ -173,6 +173,28 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
       .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
   };
 
+  let handleMonthlyBill = () => {
+    let id = formData._id;
+    client
+      .get('/customer/monthlybill/' + id)
+      .then((res) => {
+        const tempSaleDetails = res.data.result.saleDetails.result || [];
+
+        if (!tempSaleDetails.length) {
+          return setError({ err: true, message: err.response.data.errorMessage });
+        }
+        setError({ err: false, message: res.data.message });
+        const width = window.innerWidth; // Get the full width of the screen
+        const height = window.innerHeight; // Get the full height of the screen
+        window.open(
+          'https://titirpetshop-1-ez7f.vercel.app/customerbill/' + formData._id,
+          '',
+          `width=${width},height=${height},top=0,left=0`
+        ); // You can specify a URL or leave it blank
+      })
+      .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+  };
+
   const [error, setError] = React.useState('');
   let handleCloseSnackBar = () => {
     setError('');
@@ -217,7 +239,13 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
         }}
       >
         <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '20px' }}>
-          Update Customer
+          <Grid container justifyContent={'space-between'}>
+            <Typography variant="h3">Customer Details</Typography>
+
+            <Button variant="outlined" color="secondary" onClick={() => handleMonthlyBill()}>
+              Generate Monthly bill
+            </Button>
+          </Grid>
           <CustomerDetailsBox customerData={{ ...formData, totalSoldAmount }} />
           <DialogContentText marginTop={4}>Update Existing Customer</DialogContentText>
           <Stack direction={'row'} spacing={5} paddingBottom={4} paddingTop={4}>
@@ -400,6 +428,7 @@ const CustomerDetailsBox = ({ customerData }) => {
             ₹{customerData.totalCreditAmount}
           </Typography>{' '}
         </Grid>
+        {/* <Grid sx={{ height: '60px', width: '1px', backgroundColor: 'white' }}></Grid> */}
       </Grid>
     </Grid>
   );
