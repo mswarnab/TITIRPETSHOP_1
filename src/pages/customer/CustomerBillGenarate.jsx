@@ -225,7 +225,7 @@ export default function CustomerBillGenarate() {
               Bill To : <span>{customerDetails.customerName}</span>
             </Typography>
             <Typography variant="body">
-              Mob: <span style={{ color: '#1677ff' }}>+91 {1212121212}</span>
+              Mob: <span style={{ color: '#1677ff' }}>+91 {customerDetails.customerContactNo}</span>
             </Typography>
           </Stack>
           <Stack paddingLeft={1.5}>
