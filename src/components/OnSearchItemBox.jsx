@@ -36,7 +36,7 @@ const OnSearchItemBox = ({
         <Stack direction={'row'}>
           <Typography variant="h5">Name:</Typography>
           <Typography variant="h5" color={'peru'} marginLeft={1}>
-            {data.productName} {data?._id}
+            {data.productName}
           </Typography>
         </Stack>
         {result && (
