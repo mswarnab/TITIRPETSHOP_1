@@ -37,7 +37,7 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
     paidAmount: 0
   });
   const editSale = () => {
-    window.open('http://localhost:5174/sale/edit/' + selectedData._id, '_blank');
+    window.open('https://titirpetshop-1-ez7f.vercel.app/sale/edit/' + selectedData._id, '_blank');
     handleClose();
   };
 
