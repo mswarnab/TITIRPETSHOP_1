@@ -26,6 +26,9 @@ export default function AddSale() {
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerPhoneNumber, setCustomerPhoneNumber] = useState('');
   const [customerPrevDueAmount, setCustomerPrevDueAmount] = useState(0);
+  const [saleId, setSaleId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
+  const [error, setError] = useState('');
+
   const [billDtls, setBillDtls] = useState({
     billNumber: '',
     customerName: '',
@@ -91,6 +94,51 @@ export default function AddSale() {
     }
     setBillDtls(newArr);
   }, [addedProduct, billDtls.billPaidAmount]);
+  useEffect(() => {
+    // console.log(saleId);
+    if (!saleId) {
+      return null;
+    }
+    client
+      .get('/sales/' + saleId)
+      .then((res) => {
+        const data = res.data.result.result;
+        if (data) {
+          setBillDtls({
+            billNumber: data.billNumber,
+            customerName: data.customerName,
+            customerId: data.customerId,
+            billDate: dayjs(data.dateOfSale).format('YYYY-MM-DD'),
+            dueDate: dayjs(data.dueDate).format('YYYY-MM-DD'),
+            billPaidAmount: parseFloat(data.paidAmount).toFixed(2),
+            billDueAmount: parseFloat(data.grandTotalAmount - data.paidAmount).toFixed(2),
+            billTotalAmount: parseFloat(data.grandTotalAmount).toFixed(2)
+          });
+          if (data.products && data.products.length) {
+            let prodArr = [];
+            data.products.map((e) => {
+              let newDataArray = {
+                _id: e._id,
+                productName: e.productName,
+                quantity: e.quantity,
+                sgst: 0,
+                cgst: 0,
+                mrp: e.mrp,
+                purchasePrice: e.purchasePriceWithGst,
+                expDate: '',
+                sellingPrice: e.sellingPrice,
+                productId: e.productId,
+                totalSellingPrice: e.quantity * e.sellingPrice
+              };
+              prodArr = [...prodArr, newDataArray];
+            });
+            setAddedProduct(prodArr);
+          }
+        }
+        // console.log(data);
+      })
+      .catch((err) => {});
+  }, []);
   let handleChangeBillDtls = (event) => {
     // console.log(event.target);
     let eventName = event.target.name;
@@ -195,13 +243,14 @@ export default function AddSale() {
       }
     });
   };
+
   let onloader = () => {
     setLoading(true);
   };
   let offloader = () => {
     setLoading(false);
   };
-  let submitSaleBill = () => {
+  let submitSaleBill = async () => {
     let msg = '';
     if (billDtls.billDueAmount > 0) {
       if (billDtls.customerName == '' && billDtls.customerId == '') {
@@ -238,7 +287,17 @@ export default function AddSale() {
       };
       // console.log(postData);
       onloader();
-      client
+      if (saleId != 'add') {
+        await client
+          .delete('/sales/' + saleId)
+          .then((res) => {
+            setError({ error: false, message: res.data.message });
+            handleClose();
+          })
+          .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+      }
+
+      await client
         .post('/sales', postData)
         .then((res) => {
           setAddedProduct([]);
@@ -253,6 +312,7 @@ export default function AddSale() {
             billTotalAmount: 0
           });
           setError({ err: false, message: res.data.message });
+          window.close();
         })
         .catch((err) => {
           setError({ err: true, message: err.response.data.errorMessage });
@@ -263,7 +323,6 @@ export default function AddSale() {
       offloader();
     }
   };
-  const [error, setError] = useState('');
   let handleCloseSnackBar = () => {
     setError('');
   };
@@ -276,6 +335,7 @@ export default function AddSale() {
   }
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+      {/* {console.log(billDtls)} */}
       {/* {console.log(billDtls)} */}
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
@@ -313,9 +373,11 @@ export default function AddSale() {
               label="Bill Number"
               type="text"
               fullWidth
+              // disabled={saleId ? 'true' : 'false'}
+              readOnly={saleId ? true : false}
               variant="outlined"
               value={billDtls.billNumber}
-              onChange={handleChangeBillDtls}
+              onChange={saleId != 'add' ? null : handleChangeBillDtls}
             />
             <Autocomplete
               id="free-solo-demo"
@@ -324,6 +386,7 @@ export default function AddSale() {
               value={billDtls.customerName}
               name="customerName"
               disableClearable="true"
+              // readOnly={saleId ? 'true' : 'false'}
               size="small"
               renderInput={(params) => (
                 <TextField
@@ -336,7 +399,9 @@ export default function AddSale() {
                     //console.log('name : ' + value);
                     // setSupplierName(event.target.value);
                     // handleChangeBillDtls(event);
-                    setBillDtls({ ...billDtls, customerName: event.target.value });
+                    setCustomerPhoneNumber('');
+                    setCustomerAddress('');
+                    setBillDtls({ ...billDtls, customerId: '', customerName: event.target.value });
                   }}
                   onKeyUp={(event) => setCustomerSearchParm(event.target.value)}
                 />
@@ -362,9 +427,10 @@ export default function AddSale() {
               value={billDtls.customerName}
               onChange={handleChangeBillDtls}
             /> */}
+            {/* {console.log(billDtls.customerId)} */}
             <TextField
               required={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? true : false}
-              disabled={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? false : true}
+              disabled={billDtls.customerId?.length || false}
               id="customerPhoneNumber"
               name="customerPhoneNumber"
               label="Customer PH No."
@@ -376,11 +442,13 @@ export default function AddSale() {
             />
             <TextField
               required={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? true : false}
-              disabled={billDtls.customerName != '' && billDtls.customerId == '' && billDtls.billDueAmount != 0 ? false : true}
+              disabled={billDtls.customerId?.length || false}
               id="customerAddress"
               name="customerAddress"
               label="Customer Address"
               value={customerAddress}
+              // readOnly={saleId ? 'true' : 'false'}
+
               type="text"
               fullWidth
               variant="outlined"
@@ -391,6 +459,7 @@ export default function AddSale() {
                 required
                 label="Bill Date"
                 fullWidth
+                readOnly={saleId ? 'true' : 'false'}
                 // views={['year', 'month']}
                 name="billDate"
                 // value={dayjs(billDtls.billDate).format('MM/DD/YYYY')}
@@ -410,13 +479,13 @@ export default function AddSale() {
               onChange={handleChangeBillDtls}
               disabled={fullPaid ? true : false}
             />
-
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Due Date"
                 fullWidth
                 views={['year', 'month']}
                 name="dueDate"
+                readOnly={saleId ? 'true' : 'false'}
                 // value={} dayjs(prodExpDate)
                 // defaultValue={}
                 onChange={(date) => handleChangeDueDate(date)}
@@ -432,7 +501,7 @@ export default function AddSale() {
               type="text"
               fullWidth
               variant="outlined"
-              disabled
+              readOnly
             />
             <TextField
               required
@@ -443,7 +512,7 @@ export default function AddSale() {
               type="text"
               fullWidth
               variant="outlined"
-              disabled
+              readOnly
             />
             <TextField
               required
@@ -454,7 +523,7 @@ export default function AddSale() {
               type="text"
               fullWidth
               variant="outlined"
-              disabled
+              readOnly
             />
           </Stack>
           <Stack direction="row" spacing={2}>
@@ -467,14 +536,14 @@ export default function AddSale() {
           </Stack>
 
           {addedProduct?.length ? (
-            <Divider textAlign="left" style={{ margin: '20px 0px 20px 0px' }}>
+            <Divider textAlign="center" style={{ margin: '20px 0px 20px 0px' }}>
               <Chip label="Selected Products" size="small" />
             </Divider>
           ) : (
             ''
           )}
           {addedProduct.map((e) => {
-            console.log(e);
+            // console.log(e);
             return <OnSearchItemBox result={true} selected={true} added={true} data={e} onDelete={handleSelectedProductDelete} />;
           })}
         </MainCard>

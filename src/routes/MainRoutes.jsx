@@ -50,7 +50,11 @@ const MainRoutes = {
       element: <ManagePurchaseOrder />
     },
     {
-      path: '/sale/add',
+      path: '/sale/edit/:id',
+      element: <AddSale />
+    },
+    {
+      path: '/sale/add/',
       element: <AddSale />
     },
     {

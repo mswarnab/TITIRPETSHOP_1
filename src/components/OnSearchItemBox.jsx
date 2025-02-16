@@ -36,7 +36,7 @@ const OnSearchItemBox = ({
         <Stack direction={'row'}>
           <Typography variant="h5">Name:</Typography>
           <Typography variant="h5" color={'peru'} marginLeft={1}>
-            {data.productName}
+            {data.productName} {data?._id}
           </Typography>
         </Stack>
         {result && (
@@ -53,10 +53,16 @@ const OnSearchItemBox = ({
           </Typography>
         </Stack>
         <Stack direction={'row'}>
-          <Typography variant="h5">Expiry Date:</Typography>
-          <Typography variant="h5" color={'peru'} marginLeft={1}>
-            {dayjs(data.expDate).format('YYYY-MM-DD')}
-          </Typography>
+          {data.expDate ? (
+            <>
+              <Typography variant="h5">Expiry Date:</Typography>
+              <Typography variant="h5" color={'peru'} marginLeft={1}>
+                {dayjs(data.expDate).format('YYYY-MM-DD')}
+              </Typography>
+            </>
+          ) : (
+            ''
+          )}
         </Stack>
       </Stack>
       <Stack direction={'row'} justifyContent={'space-between'}>

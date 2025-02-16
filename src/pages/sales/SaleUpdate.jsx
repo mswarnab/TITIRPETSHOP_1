@@ -36,6 +36,10 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
   const [saleUpdateForm, setSaleUpdateForm] = useState({
     paidAmount: 0
   });
+  const editSale = () => {
+    window.open('http://localhost:5174/sale/edit/' + selectedData._id, '_blank');
+    handleClose();
+  };
 
   // let changeValue = (event) => {
   //   let eventValue = event.target.value;
@@ -134,7 +138,7 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
           <DialogContentText>Update Existing Purchase Order</DialogContentText>
           <Stack direction="row" style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography variant="h6" sx={{ pt: 1 }}>
-              Bill Number: {selectedData?.paidAmount}
+              Bill Number: {selectedData?.billNumber}
             </Typography>
             <Typography variant="h6" sx={{ pt: 1 }}>
               Bill Date: {dayjs(selectedData?.dateOfBilling).format('YYYY-MM-DD')}
@@ -147,13 +151,13 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
             {/* <Typography variant="h6" sx={{ pt: 1 }}>
               Payment Mode: {supplierUpdateForm.modeOfPayment}
             </Typography> */}
-            {selectedData?.cerditAmount <= 0 ? (
-              <Typography variant="h6" sx={{ pt: 1 }}>
-                Paid Amount: ₹{selectedData?.paidAmount}
-              </Typography>
-            ) : (
+            {/* {selectedData?.cerditAmount <= 0 ? ( */}
+            <Typography variant="h6" sx={{ pt: 1 }}>
+              Paid Amount: ₹{selectedData?.paidAmount}
+            </Typography>
+            {/* ) : (
               ''
-            )}
+            )} */}
             <Typography variant="h6" sx={{ pt: 1 }}>
               Total Due Amount: ₹{selectedData?.dueAmount}
             </Typography>
@@ -192,18 +196,21 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
           )}
         </DialogContent>
         <DialogActions style={{ paddingBottom: '40px', paddingRight: '40px' }}>
+          <Button variant="contained" color="info" onClick={() => editSale()}>
+            EDIT ITEM
+          </Button>
           <Button variant="contained" color="secondary" onClick={() => handleClose()}>
-            Cancel
+            CANCEL
           </Button>
           {selectedData?.dueAmount > 0 ? (
             <Button variant="contained" color="success" onClick={() => updateSaleOrder()}>
-              Update
+              UPDATE
             </Button>
           ) : (
             ''
           )}
           <Button variant="contained" color="error" onClick={() => deleteSaleOrder()}>
-            Delete
+            DELETE
           </Button>
         </DialogActions>
       </Dialog>
