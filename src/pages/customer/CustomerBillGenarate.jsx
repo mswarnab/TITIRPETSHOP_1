@@ -101,8 +101,8 @@ export default function CustomerBillGenarate() {
             )
           ];
           totalAmount = parseFloat(parseFloat(totalAmount) + parseFloat(el.sellingPrice) * parseInt(el.quantity)).toFixed(2);
-          paidAmount += parseFloat(e.paidAmount).toFixed(2);
-          discount += parseFloat(el.discountedAmount).toFixed(2);
+          paidAmount = (parseFloat(paidAmount) + parseFloat(e.paidAmount)).toFixed(2);
+          discount = (parseFloat(discount) + parseFloat(el.discountedAmount)).toFixed(2);
         });
       });
       // return { invoice, item, quantity, rate, purchaseDate };
