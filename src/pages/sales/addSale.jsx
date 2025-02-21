@@ -459,7 +459,7 @@ export default function AddSale() {
                 required
                 label="Bill Date"
                 fullWidth
-                readOnly={saleId ? 'true' : 'false'}
+                // readOnly={saleId ? 'true' : 'false'}
                 // views={['year', 'month']}
                 name="billDate"
                 // value={dayjs(billDtls.billDate).format('MM/DD/YYYY')}
