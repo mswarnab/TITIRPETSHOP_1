@@ -56,7 +56,7 @@ export default function AddPurchase() {
   const [orderNumber, setOrderNumber] = React.useState('');
   const [supplierName, setSupplierName] = React.useState('');
   const [supplierId, setSupplierId] = React.useState('');
-  const [purchaseDate, setPurchaseDate] = React.useState('');
+  const [purchaseDate, setPurchaseDate] = React.useState();
   const [totalSGSTAmount, setTotalSGSTAmount] = React.useState(0);
   const [totalCGSTAmount, setTotalCGSTAmount] = React.useState(0);
   const [totalAmount, setTotalAmount] = React.useState(0);
@@ -93,7 +93,8 @@ export default function AddPurchase() {
   const [discountPerc, setDiscountPerc] = useState(0);
   const [discountScheme, setDiscountScheme] = useState(0);
   const [productPurchasePriceAfterDiscount, setProductPurchasePriceAfterDiscount] = useState(0);
-
+  // let oldInvNo = '';
+  const [oldInvNo, setOldInvNo] = useState('');
   // const [emptyProdExpDate, setEmptyProdExpDate] = React.useState();
   /* all fucntion */
   let handleChange = (event) => {
@@ -480,13 +481,15 @@ export default function AddPurchase() {
   });
   // alert(purchaseDate);
   let setPurchaseDateFunction = (date) => {
-    let newDate = new Date(date);
-    // console.log(newDate);
-    let dd = newDate.getDate();
-    let mm = newDate.getMonth() + 1;
-    // console.log(mm);
-    let yy = newDate.getFullYear();
-    setPurchaseDate(yy + '-' + mm + '-' + dd);
+    // console.log(date);
+    // let newDate = new Date(date);
+    // // console.log(newDate);
+    // let dd = newDate.getDate();
+    // let mm = newDate.getMonth() + 1;
+    // // console.log(mm);
+    // let yy = newDate.getFullYear();
+    setPurchaseDate(dayjs(date).format('DD-MM-YYYY'));
+    // setPurchaseDate(dayjs('2021-02-01'));
   };
   // console.log(stockData);
   let setExpDateFunction = (date) => {
@@ -821,7 +824,93 @@ export default function AddPurchase() {
       }
     });
   };
+  const searchExistingPurchaseOrder = () => {
+    let invNo = orderNumber;
+    if (invNo) {
+      if (oldInvNo != invNo) {
+        setLoading(true);
+        client
+          .get('/purchaseorder?filterByInvoiceNumber=' + invNo)
+          .then((res) => {
+            let dataResultArr = res.data.result.result[0];
+            //console.log(dataResultArr);
+            client
+              .get('/purchaseorder/' + dataResultArr._id)
+              .then((resBody) => {
+                let purchaseDtls = { ...resBody.data.result.result.purchaseOrderDetails };
+                // console.log(purchaseDtls);
+                let productDtls = [...resBody.data.result.result.products];
+                setOrderNumber(purchaseDtls.invoiceNumber);
+                setSupplierName(purchaseDtls.supplierName);
+                setPurchaseDate(dayjs(purchaseDtls.dateOfPruchase));
+                parseFloat(purchaseDtls.grandTotalAmount).toFixed(2) - parseFloat(purchaseDtls.paidAmount).toFixed(2) == 0
+                  ? setFullPaid(true)
+                  : setFullPaid(false);
+                setPaidAmount(parseFloat(purchaseDtls.paidAmount).toFixed(2));
+                setCreditAmount(purchaseDtls.cerditAmount);
+                setModeofPayment(purchaseDtls.modeOfPayment);
+                setTotalSGSTAmount(purchaseDtls.sgst);
+                setTotalCGSTAmount(purchaseDtls.cgst);
+                setTotalAmount(parseFloat(purchaseDtls.grandTotalAmount).toFixed(2));
 
+                let prodDtlsArr = [];
+                productDtls.map((e) => {
+                  // let discountRate = e.discount / e.prodQty;
+                  // let schemeDiscountRate = e.schemeDiscount / e.prodQty;
+                  // let discountPer = (discountRate / e.rate) * 100;
+                  let discountPer = e.discount;
+                  // let schemeDiscountper = parseFloat((schemeDiscountRate / e.rate(1 - discountRate / 100)) * 100).toFixed(2);
+                  let schemeDiscountper = e.schemeDiscount;
+                  let gstperc = parseFloat((e.sgst / e.purchasePrice) * 100).toFixed(1);
+                  let totalAmountWithGst = parseFloat((parseFloat(e.purchasePrice) + parseFloat(e.sgst * 2)) * e.purchaseQuantity).toFixed(
+                    2
+                  );
+                  let newDataForm = {
+                    prodName: e.productName,
+                    prodQty: e.purchaseQuantity,
+                    prodCatagory: e.category,
+                    prodPurcahsePrice: e.rate,
+                    prodMrpPrice: e.mrp,
+                    prodBatch: e.batchNumber,
+                    prodSGST: gstperc,
+                    prodCGST: gstperc,
+                    prodAmountWithoutGst: e.purchasePrice * e.purchaseQuantity,
+                    prodExpDate: dayjs(e.expDate),
+                    prodHsn: e.hsnCode,
+                    prodAmountWithGst: totalAmountWithGst,
+                    prodDiscountPerc: discountPer,
+                    prodDiscountScheme: schemeDiscountper
+                  };
+
+                  prodDtlsArr = [...prodDtlsArr, newDataForm];
+                });
+                setStockData(prodDtlsArr);
+              })
+              .catch()
+              .finally(() => {
+                setLoading(false);
+              });
+          })
+          .catch((err) => {
+            setSupplierName();
+            setPurchaseDate();
+            setPaidAmount(0);
+            setCreditAmount(0);
+            setModeofPayment();
+            setTotalSGSTAmount(0);
+            setTotalCGSTAmount(0);
+            setTotalAmount(0);
+            setFullPaid(false);
+            setStockData([]);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+        setOldInvNo(invNo);
+      }
+    }
+  };
+  // console.log(purchaseDate);
   useEffect(() => {
     if (fullPaid) {
       return setPaidAmount(userInputTotalAmount || totalAmount);
@@ -879,6 +968,7 @@ export default function AddPurchase() {
           autoComplete="off"
           value={orderNumber}
           onChange={(event) => setOrderNumber(event.target.value)}
+          onBlur={searchExistingPurchaseOrder}
         />
 
         <Autocomplete
@@ -909,14 +999,32 @@ export default function AddPurchase() {
             changeSupplierId(value);
           }}
         />
+        {/* <TextField
+          id="outlined-basic"
+          label="Purchase Date"
+          variant="outlined"
+          type="date"
+          fullWidth
+          autoComplete="off"
+          value={purchaseDate ? dayjs(purchaseDate).format('DD-MM-YYYY') : ''}
+          onChange={(event) => setPurchaseDateFunction(event.target.value)}
+          // onBlur={searchExistingPurchaseOrder}
+        /> */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             label="Purchase Date"
             fullWidth
             name="purchaseDate"
             format="DD-MM-YYYY"
-            selected={purchaseDate}
-            onChange={(date) => setPurchaseDateFunction(date)}
+            // defaultValue={dayjs(purchaseDate)}
+            // selected={dayjs(purchaseDate)}
+            value={purchaseDate}
+            onChange={(date, constext) => {
+              // console.log(constext.validationError);
+              if (constext.validationError == null) {
+                setPurchaseDate(date);
+              }
+            }} //setPurchaseDate(dayjs('2020-01-02'))
           />
         </LocalizationProvider>
         <FormControlLabel

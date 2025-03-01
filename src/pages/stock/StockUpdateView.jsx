@@ -19,24 +19,25 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function StockUpdateView({ open, rowData, handleClose, handleUpdate, handleDelete, viewType }) {
   // console.log(rowData);
-  const [formData, setFormDate] = useState({
-    id: 0,
-    name: '',
-    catagory: '',
-    batch: '',
-    hsn: '',
-    mfr: '',
-    qty: '',
-    mrp: '',
-    sgstperc: 0,
-    // cgstPerc: 0,
-    expDate: '',
-    prodPurchasePrice: '',
-    totalPrice: '',
-    totalPriceWithGst: '',
-    discountPerc: 0,
-    discountScheme: 0
-  });
+  // const [formData, setFormDate] = useState({
+  //   id: 0,
+  //   name: '',
+  //   catagory: '',
+  //   batch: '',
+  //   hsn: '',
+  //   mfr: '',
+  //   qty: '',
+  //   mrp: '',
+  //   sgstperc: 0,
+  //   // cgstPerc: 0,
+  //   expDate: '',
+  //   prodPurchasePrice: '',
+  //   totalPrice: '',
+  //   totalPriceWithGst: '',
+  //   discountPerc: 0,
+  //   discountScheme: 0
+  // });
+  const [formData, setFormDate] = useState({ ...rowData });
   useEffect(() => {
     setFormDate({
       id: rowData.id,
@@ -49,17 +50,19 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       mrp: rowData.mrp,
       sgstperc: rowData.sgstPerc * 2,
       // cgstPerc: rowData.cgstPerc,
-      expDate: rowData.expDate,
+      expDate: dayjs(rowData.expDate),
       prodPurchasePrice: rowData.purchaseRate,
       totalPrice: rowData.amount,
       totalPriceWithGst: rowData.amountWithgst,
       discountPerc: rowData.discountPerc,
       discountScheme: rowData.discountScheme
     });
+    // console.log(dayjs(rowData.expDate).format('DD-MM-YYYY'));
     return () => {
       return null;
     };
   }, [rowData]);
+  // console.log(formData.expDate);
   useEffect(() => {
     let newData = { ...formData };
     let newPurchasePrice = newData.prodPurchasePrice;
@@ -137,27 +140,27 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     // }
     setFormDate(oldData);
   };
-  let setExpDateFunction = (date) => {
-    let newDate = new Date(date);
-    // console.log(newDate);
-    let dd = '01';
-    let mm = newDate.getMonth() + 1;
-    // console.log(mm);
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-    let yy = newDate.getFullYear();
-    let oldData = { ...formData };
-    if (oldData['id'] == '') {
-      oldData['id'] = rowData.id;
-    } else {
-      if (oldData['id'] != rowData.id) {
-        oldData['id'] = rowData.id;
-      }
-    }
-    oldData['expDate'] = yy + '-' + mm + '-' + dd;
-    setFormDate(oldData);
-  };
+  // let setExpDateFunction = (date) => {
+  //   // let newDate = new Date(date);
+  //   // console.log(newDate);
+  //   // let dd = '01';
+  //   // let mm = newDate.getMonth() + 1;
+  //   // // console.log(mm);
+  //   // if (mm < 10) {
+  //   //   mm = '0' + mm;
+  //   // }
+  //   let yy = newDate.getFullYear();
+  //   let oldData = { ...formData };
+  //   if (oldData['id'] == '') {
+  //     oldData['id'] = rowData.id;
+  //   } else {
+  //     if (oldData['id'] != rowData.id) {
+  //       oldData['id'] = rowData.id;
+  //     }
+  //   }
+  //   // oldData['expDate'] = yy + '-' + mm + '-' + dd;
+  //   setFormDate(oldData);
+  // };
   // console.log(formData);
   const [prodSearch, setProdSearch] = useState([]);
   const [prodNameParm, setProdNameParm] = useState('');
@@ -205,6 +208,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     oldData['name'] = v;
     setFormDate(oldData);
   };
+  // console.log(formData.expDate);
   return (
     <>
       <Dialog
@@ -347,14 +351,21 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               value={formData.hsn}
               onChange={changeDataOnClick}
             />
+
+            {/* {formData.expDate} */}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Exp. Date"
                 fullWidth
                 views={['year', 'month']}
-                defaultValue={dayjs(formData.expDate)}
+                format="MMMM-YYYY"
+                value={formData.expDate}
                 name="expDate"
-                onChange={(date) => setExpDateFunction(date)}
+                onChange={(date, constext) => {
+                  if (constext.validationError == null) {
+                    setFormDate({ ...formData, expDate: date });
+                  }
+                }}
               />
             </LocalizationProvider>
             <TextField
