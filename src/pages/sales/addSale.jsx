@@ -108,7 +108,7 @@ export default function AddSale() {
             billNumber: data.billNumber,
             customerName: data.customerName,
             customerId: data.customerId,
-            billDate: dayjs(data.dateOfSale).format('YYYY-MM-DD'),
+            billDate: dayjs(data.dateOfSale),
             dueDate: dayjs(data.dueDate).format('YYYY-MM-DD'),
             billPaidAmount: parseFloat(data.paidAmount).toFixed(2),
             billDueAmount: parseFloat(data.grandTotalAmount - data.paidAmount).toFixed(2),
@@ -462,9 +462,14 @@ export default function AddSale() {
                 // readOnly={saleId ? 'true' : 'false'}
                 // views={['year', 'month']}
                 name="billDate"
+                value={billDtls.billDate}
                 // value={dayjs(billDtls.billDate).format('MM/DD/YYYY')}
-                defaultValue={dayjs()}
-                onChange={(date) => handleChangeBillDate(date)}
+                // defaultValue={dayjs()}
+                onChange={(date, constext) => {
+                  if (constext.validationError == null) {
+                    setBillDtls({ ...billDtls, billDate: date });
+                  }
+                }}
               />
             </LocalizationProvider>
             <TextField
