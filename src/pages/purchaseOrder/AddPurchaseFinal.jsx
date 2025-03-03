@@ -853,7 +853,7 @@ export default function AddPurchase() {
                 setTotalSGSTAmount(purchaseDtls.sgst);
                 setTotalCGSTAmount(purchaseDtls.cgst);
                 setTotalAmount(parseFloat(purchaseDtls.grandTotalAmount).toFixed(2));
-
+                // setSupplierName('hello');
                 let prodDtlsArr = [];
                 productDtls.map((e) => {
                   // let discountRate = e.discount / e.prodQty;
@@ -893,11 +893,11 @@ export default function AddPurchase() {
               });
           })
           .catch((err) => {
-            setSupplierName();
+            setSupplierName('');
             setPurchaseDate();
             setPaidAmount(0);
             setCreditAmount(0);
-            setModeofPayment();
+            setModeofPayment('');
             setTotalSGSTAmount(0);
             setTotalCGSTAmount(0);
             setTotalAmount(0);
@@ -911,7 +911,7 @@ export default function AddPurchase() {
       }
     }
   };
-  // console.log(purchaseDate);
+  // console.log(supplierName);
   useEffect(() => {
     if (fullPaid) {
       return setPaidAmount(userInputTotalAmount || totalAmount);
@@ -995,7 +995,7 @@ export default function AddPurchase() {
             />
           )}
           onChange={(event, value) => {
-            //console.log('name : ' + value);
+            console.log('name : ' + value);
             setSupplierName(value);
             changeSupplierId(value);
           }}
