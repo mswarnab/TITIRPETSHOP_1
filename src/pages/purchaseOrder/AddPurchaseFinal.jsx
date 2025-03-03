@@ -686,8 +686,8 @@ export default function AddPurchase() {
           setOrderNumber('');
           setSupplierName('');
           setSupplierId('');
-          setPurchaseDate('');
-          setPurchaseDate(dayjs().format('YYYY-MM-DD'));
+          // setPurchaseDate('');
+          setPurchaseDate();
           setTotalSGSTAmount(0);
           setTotalCGSTAmount(0);
           setTotalAmount(0);
@@ -842,6 +842,7 @@ export default function AddPurchase() {
                 let productDtls = [...resBody.data.result.result.products];
                 setOrderNumber(purchaseDtls.invoiceNumber);
                 setSupplierName(purchaseDtls.supplierName);
+                setSupplierId(purchaseDtls.supplierId);
                 setPurchaseDate(dayjs(purchaseDtls.dateOfPruchase));
                 parseFloat(purchaseDtls.grandTotalAmount).toFixed(2) - parseFloat(purchaseDtls.paidAmount).toFixed(2) == 0
                   ? setFullPaid(true)

@@ -24,6 +24,8 @@ import {
   Typography
 } from '@mui/material';
 import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -32,6 +34,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function CustomerUpdate({ open, selectedDate, handleClose }) {
   const [totalSoldAmount, setTotalSoldAmount] = useState(0);
   const [saleDetails, setSaleDetails] = useState([]);
+  const [newPaymentButton, setNewPaymentButton] = useState(false);
+  const [paidAddData, setPaidAddData] = useState({ amount: 0, paymentDate: '' });
   const columns = [
     { id: 'invoice', label: 'Invoice', minWidth: '20%' },
     { id: 'sellingDate', label: 'Date of Sale', minWidth: '15%' },
@@ -194,6 +198,13 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
       })
       .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
   };
+  let checkUserInputTotalPaidvalue = (value) => {
+    let regex = /^-?\d*\.?\d*$/;
+    if (regex.test(value)) {
+      //console.log('ok');
+      setPaidAddData({ ...paidAddData, amount: value });
+    }
+  };
 
   const [error, setError] = React.useState('');
   let handleCloseSnackBar = () => {
@@ -298,7 +309,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
               value={formData.customerAddress}
               onChange={changeValue}
             />
-            <TextField
+            {/* <TextField
               required
               margin="normal"
               id="paidAmount"
@@ -310,11 +321,77 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
               value={formData.paidAmount}
               onChange={changeValue}
               disabled
-            />
+            /> */}
           </Stack>
+          {/* <Button variant="outlined" onClick={() => setNewPaymentButton(!newPaymentButton)}>
+            New Payment
+          </Button> */}
+          <Dialog open={newPaymentButton} onClose={() => setNewPaymentButton(false)} fullWidth maxWidth="sm">
+            <DialogTitle style={{ padding: '30px 30px 10px 30px' }}>
+              <Typography variant="h4">{'New Payment'}</Typography>
+            </DialogTitle>
+            <DialogContent style={{ padding: '0px 30px 0px 30px' }}>
+              <Stack direction="row" spacing={10} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography>
+                  <b>Customer Name :</b> {formData.customerName}
+                </Typography>
+                <Typography>
+                  <b>Due Amount :</b> {`₹` + (formData.totalCreditAmount || 0)}
+                </Typography>
+              </Stack>
+              <Stack spacing={1}>
+                <Typography>
+                  <TextField
+                    required
+                    margin="normal"
+                    id="paidAmount"
+                    name="paidAmount"
+                    label="Add Amount Paid"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    value={paidAddData.amount}
+                    onChange={(event) => {
+                      checkUserInputTotalPaidvalue(event.target.value);
+                    }}
+                    disabled={formData.paymentDate <= 0 ? true : false}
+                  />
+                </Typography>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Payment Date*"
+                    required
+                    name="paymentDate"
+                    format="DD-MM-YYYY"
+                    value={paidAddData.paymentDate || null}
+                    onChange={(date, constext) => {
+                      // console.log(constext.validationError);
+                      if (constext.validationError == null) {
+                        setPaidAddData({ ...paidAddData, paymentDate: date });
+                      }
+                    }} //setPurchaseDate(dayjs('2020-01-02'))
+                  />
+                </LocalizationProvider>
+              </Stack>
+            </DialogContent>
+            <DialogActions style={{ padding: '20px 30px 30px 30px' }}>
+              <Button
+                variant="outlined"
+                color="success"
+                onClick={() => {
+                  addPayment;
+                }}
+              >
+                Add
+              </Button>
+              <Button variant="outlined" color="error" onClick={() => setNewPaymentButton(false)}>
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
           <Grid container>
             <Grid xl={6}>
-              <Typography variant="h5" style={{ marginTop: 0 }}>
+              <Typography variant="h5" style={{ marginTop: 5 }}>
                 Sale Receipts of Last Month:
               </Typography>
             </Grid>
