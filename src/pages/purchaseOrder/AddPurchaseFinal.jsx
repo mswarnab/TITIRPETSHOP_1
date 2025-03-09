@@ -978,7 +978,7 @@ export default function AddPurchase() {
           options={supplierSearch.map((option) => option.supplierName + '--' + option.supplierContactNo)}
           value={supplierName}
           name="supplier"
-          disableClearable="true"
+          disableClearable={true}
           size="small"
           renderInput={(params) => (
             <TextField
@@ -1142,12 +1142,14 @@ export default function AddPurchase() {
               onChange={(event) => setProdCatagory(event.target.value)}
               onClick={() => setEmptyProdCategoryCheck('')}
             >
-              <MenuItem value="" disabled>
+              <MenuItem key={0} value="" disabled>
                 <em>Catagory</em>
               </MenuItem>
               {prodCatagoryArr.map((element) => (
                 // console.log(element);
-                <MenuItem value={element}>{element}</MenuItem>
+                <MenuItem key={element} value={element}>
+                  {element}
+                </MenuItem>
               ))}
 
               {/* <MenuItem value={5}>SGST 5%</MenuItem>
@@ -1156,7 +1158,7 @@ export default function AddPurchase() {
             </Select>
             <TextField
               id="outlined-basic"
-              error={emptyProdQtyCheck}
+              error={emptyProdQtyCheck ? true : false}
               helperText={emptyProdQtyCheck ? emptyProdQtyCheck : ''}
               type="text"
               label="QTY"
@@ -1174,7 +1176,7 @@ export default function AddPurchase() {
               options={productSearch.map((option) => option.productName)}
               value={prodName}
               name="prodName"
-              disableClearable="true"
+              disableClearable={true}
               size="small"
               style={{ width: 250 }}
               renderInput={(params) => (
@@ -1210,7 +1212,7 @@ export default function AddPurchase() {
                 /> */}
             <TextField
               id="outlined-basic"
-              error={emptyProdMrpCheck}
+              error={emptyProdMrpCheck ? true : false}
               helperText={emptyProdMrpCheck ? emptyProdMrpCheck : ''}
               type="text"
               label="MRP"
@@ -1256,7 +1258,7 @@ export default function AddPurchase() {
             ></TextField>
             <TextField
               id="outlined-basic"
-              error={emptyProdPurchasePriceCheck}
+              error={emptyProdPurchasePriceCheck ? true : false}
               helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
               type="text"
               label="Rate"
@@ -1363,7 +1365,7 @@ export default function AddPurchase() {
             </Select>
             <TextField
               id="outlined-basic"
-              error={emptyProdPurchasePriceCheck}
+              error={emptyProdPurchasePriceCheck ? true : false}
               helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
               type="text"
               label="D%"
@@ -1377,7 +1379,7 @@ export default function AddPurchase() {
             ></TextField>
             <TextField
               id="outlined-basic"
-              error={emptyProdPurchasePriceCheck}
+              error={emptyProdPurchasePriceCheck ? true : false}
               helperText={emptyProdPurchasePriceCheck ? emptyProdPurchasePriceCheck : ''}
               type="text"
               label="Scheme D%"

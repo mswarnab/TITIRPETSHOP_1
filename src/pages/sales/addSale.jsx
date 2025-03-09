@@ -74,7 +74,9 @@ export default function AddSale() {
   };
   useEffect(() => {
     let newArr = { ...billDtls };
+
     if (addedProduct?.length) {
+      // console.log(billDtls.billPaidAmount);
       let totalBillAmount = 0;
       addedProduct.map((e) => {
         totalBillAmount += parseFloat(e.quantity * e.sellingPrice);
@@ -94,14 +96,20 @@ export default function AddSale() {
     }
     setBillDtls(newArr);
   }, [addedProduct, billDtls.billPaidAmount]);
+  // console.log(billDtls);
   useEffect(() => {
     // console.log(saleId);
     if (!saleId) {
-      return null;
+      // console.log('here1');
+      return undefined;
+    } else if (saleId === 'add') {
+      return undefined;
     }
+
     client
       .get('/sales/' + saleId)
       .then((res) => {
+        // console.log('hello1');
         const data = res.data.result.result;
         if (data) {
           setBillDtls({
@@ -137,8 +145,21 @@ export default function AddSale() {
         }
         // console.log(data);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        // console.log('here2');
+        // setBillDtls({
+        //   billNumber: '',
+        //   customerName: '',
+        //   customerId: '',
+        //   billDate: null,
+        //   dueDate: '',
+        //   billPaidAmount: 0,
+        //   billDueAmount: 0,
+        //   billTotalAmount: 0
+        // });
+      });
   }, []);
+  // console.log(billDtls);
   let handleChangeBillDtls = (event) => {
     // console.log(event.target);
     let eventName = event.target.name;
@@ -268,6 +289,7 @@ export default function AddSale() {
       msg = 'Please atleast sale one item.';
     }
     if (msg == '') {
+      // console.log(billDtls);
       let customerNameSplit = billDtls.customerName.split('--');
       let dueDate = billDtls.dueDate ? dayjs(billDtls.dueDate).format('YYYYMMDD') : dayjs(billDtls.billDate).format('YYYYMMDD');
       // addedProduct.map()
@@ -385,7 +407,7 @@ export default function AddSale() {
               options={customerSearch.map((option) => option.customerName + '--' + option.customerContactNo)}
               value={billDtls.customerName}
               name="customerName"
-              disableClearable="true"
+              disableClearable={true}
               // readOnly={saleId ? 'true' : 'false'}
               size="small"
               renderInput={(params) => (
@@ -490,7 +512,7 @@ export default function AddSale() {
                 fullWidth
                 views={['year', 'month']}
                 name="dueDate"
-                readOnly={saleId ? 'true' : 'false'}
+                readOnly={saleId ? true : false}
                 // value={} dayjs(prodExpDate)
                 // defaultValue={}
                 onChange={(date) => handleChangeDueDate(date)}
