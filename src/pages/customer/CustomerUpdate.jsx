@@ -21,7 +21,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -35,7 +40,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
   const [totalSoldAmount, setTotalSoldAmount] = useState(0);
   const [saleDetails, setSaleDetails] = useState([]);
   const [newPaymentButton, setNewPaymentButton] = useState(false);
-  const [paidAddData, setPaidAddData] = useState({ amount: 0, paymentDate: '' });
+  const [paidAddData, setPaidAddData] = useState({ amount: 0, paymentDate: '', paymentMode: '', title: '' });
   const columns = [
     { id: 'invoice', label: 'Invoice', minWidth: '20%' },
     { id: 'sellingDate', label: 'Date of Sale', minWidth: '15%' },
@@ -309,21 +314,18 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
               value={formData.customerAddress}
               onChange={changeValue}
             />
-            {/* <TextField
-              required
-              margin="normal"
-              id="paidAmount"
-              name="paidAmount"
-              label="Add Amount Paid"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={formData.paidAmount}
-              onChange={changeValue}
-              disabled
-            /> */}
+            {/* <Button
+              variant="contained"
+              color={'success'}
+              size="small"
+              sx={{ width: 500 }}
+              onClick={() => setNewPaymentButton(!newPaymentButton)}
+            >
+              ADD PAYMENT
+            </Button> */}
+            {/* </Stack> */}
           </Stack>
-          {/* <Button variant="outlined" onClick={() => setNewPaymentButton(!newPaymentButton)}>
+          {/* <Button variant="outlined" onClick={() => }>
             New Payment
           </Button> */}
           <Dialog open={newPaymentButton} onClose={() => setNewPaymentButton(false)} fullWidth maxWidth="sm">
@@ -372,6 +374,47 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
                     }} //setPurchaseDate(dayjs('2020-01-02'))
                   />
                 </LocalizationProvider>
+                <Typography>
+                  <TextField
+                    required
+                    margin="normal"
+                    id="paidAmount"
+                    name="paidAmount"
+                    label="Add Amount Paid"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    value={paidAddData.title}
+                    onChange={(event) => {
+                      setPaidAddData({ ...paidAddData, title: event.target.value });
+                    }}
+                    disabled={formData.paymentDate <= 0 ? true : false}
+                  />
+                  <FormControl sx={{ mt: 1 }}>
+                    <FormLabel id="demo-row-radio-buttons-group-label">Payment Mode</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="row-radio-buttons-group"
+                      value={paidAddData.paymentMode}
+                      onChange={(event) => setPaidAddData({ ...paidAddData, paymentMode: event.target.value })}
+                    >
+                      <FormControlLabel value="CARD" control={<Radio size="small" />} label="CARD" />
+                      <FormControlLabel
+                        value="CASH"
+                        control={<Radio size="small" />}
+                        label="CASH"
+                        // onClick={(event) => setPaidAddData(event.target.value)}
+                      />
+                      <FormControlLabel
+                        value="ONLINE"
+                        control={<Radio size="small" />}
+                        label="ONLINE"
+                        // onClick={(event) => setPaidAddData(event.target.value)}
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Typography>
               </Stack>
             </DialogContent>
             <DialogActions style={{ padding: '20px 30px 30px 30px' }}>
