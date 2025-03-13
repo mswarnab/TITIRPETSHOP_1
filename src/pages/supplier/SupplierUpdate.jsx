@@ -130,7 +130,7 @@ export default function SupplierUpdate({ open, handleClose, data }) {
     return () => {
       return null;
     };
-  }, [open]);
+  }, [data]);
 
   useEffect(() => {
     // console.log('in here');
