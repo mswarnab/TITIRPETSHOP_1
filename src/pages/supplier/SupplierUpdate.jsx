@@ -30,6 +30,7 @@ import { client } from 'api/client';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import AlertDialog from 'components/AlertDialog';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -104,7 +105,7 @@ export default function SupplierUpdate({ open, handleClose, data }) {
         .then((res) => {
           let totalAmount = 0;
           let tempPurchaseDetails = [];
-          console.log(res.data.result.result);
+          // console.log(res.data.result.result);
           res.data.result.result.map((e) => {
             totalAmount += e.grandTotalAmount;
             tempPurchaseDetails = [
@@ -212,7 +213,30 @@ export default function SupplierUpdate({ open, handleClose, data }) {
         setNewPaymentButton(false);
         handleClose();
       })
-      .catch((err) => setError({ err: true, message: res.data.message }));
+      .catch((error) => {
+        setError({ err: true, message: error.response.data.errorMessage });
+      })
+      .finally(() => {
+        setPaidAddData({ amount: 0, paymentDate: '', paymentMode: '', title: '' });
+      });
+  };
+
+  const handleDelete = async (data) => {
+    await client
+      .delete('/payment/' + data._id)
+      .then((res) => {
+        if (res.data.status == '200') {
+          setError({ err: false, message: res.data.message });
+          handleClose();
+        }
+      })
+      .catch((error) => {
+        // alert(error);
+        setError({ err: true, message: error.response.data.errorMessage });
+      })
+      .finally(() => {
+        setPaidAddData({ amount: 0, paymentDate: '', paymentMode: '', title: '' });
+      });
   };
 
   let handleCloseSnackBar = () => {
@@ -440,7 +464,13 @@ export default function SupplierUpdate({ open, handleClose, data }) {
                 <DenseTable purpose={'SALES'} productDtls={purchaseDetails} columns={columns} />
               </Grid>
               <Grid xl={5.5} sx={{ marginLeft: '30px' }}>
-                <DenseTable purpose={'PAYMENT'} productDtls={paymentDetails} columns={columnsPayment} />
+                <DenseTable
+                  purpose={'PAYMENT'}
+                  productDtls={paymentDetails}
+                  columns={columnsPayment}
+                  name={supplierUpdateForm.supplierName}
+                  handleDelete={handleDelete}
+                />
               </Grid>
             </Grid>
           </DialogContent>
@@ -461,7 +491,14 @@ export default function SupplierUpdate({ open, handleClose, data }) {
   );
 }
 
-function DenseTable({ productDtls = [], purpose = 'SALES', columns }) {
+function DenseTable({ productDtls = [], purpose = 'SALES', columns, name, handleDelete }) {
+  const [open, setOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState({});
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 350 }}>
@@ -489,18 +526,32 @@ function DenseTable({ productDtls = [], purpose = 'SALES', columns }) {
                 ))
               : purpose == 'PAYMENT'
                 ? productDtls.map((row) => (
-                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
+                    <TableRow
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      onClick={() => {
+                        setOpen(true);
+                        setSelectedData(row);
+                      }}
+                    >
                       <TableCell>{dayjs(row.paymentDate).format('DD-MM-YYYY')}</TableCell>
-                      <TableCell>{row.paidAmount}</TableCell>
+                      <TableCell>{parseFloat(row.paidAmount).toFixed(2)}</TableCell>
                       <TableCell>{row.paymentMode}</TableCell>
                       <TableCell>{row.title}</TableCell>
                     </TableRow>
-                    // invoice, sellingDate, grandTotal, dueDate, amountDue
                   ))
                 : null}
           </TableBody>
         </Table>
       </TableContainer>
+      <AlertDialog
+        open={open}
+        handleClose={handleClose}
+        handleDelete={(data) => handleDelete(data)}
+        data={{ ...selectedData, supplierName: name }}
+      />
     </Paper>
   );
 }

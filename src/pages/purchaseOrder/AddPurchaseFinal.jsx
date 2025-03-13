@@ -995,7 +995,7 @@ export default function AddPurchase() {
             />
           )}
           onChange={(event, value) => {
-            console.log('name : ' + value);
+            // console.log('name : ' + value);
             setSupplierName(value);
             changeSupplierId(value);
           }}
