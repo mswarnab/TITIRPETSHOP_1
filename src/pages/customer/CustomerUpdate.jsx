@@ -41,6 +41,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
   const [saleDetails, setSaleDetails] = useState([]);
   const [newPaymentButton, setNewPaymentButton] = useState(false);
   const [paidAddData, setPaidAddData] = useState({ amount: 0, paymentDate: '', paymentMode: '', title: '' });
+  const [paymentDetails, setPaymentDetails] = useState([]);
   const columns = [
     { id: 'invoice', label: 'Invoice', minWidth: '20%' },
     { id: 'sellingDate', label: 'Date of Sale', minWidth: '15%' },
@@ -52,14 +53,36 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
       // format: (value) => value.toLocaleString('en-US')
     },
     {
-      id: 'dueDate',
-      label: 'Due Date',
+      id: 'paidAmount',
+      label: 'Paid Amount',
       minWidth: '20%'
     },
     {
       id: 'amountDue',
       label: 'Amount Due',
       minWidth: '15%'
+    }
+  ];
+
+  const columnsPayment = [
+    // { id: 'invoice', label: 'Invoice', minWidth: '20%' },
+    { id: 'paymentDate', label: 'Date of Payment', minWidth: '25%' },
+    {
+      id: 'paidAmount',
+      label: 'Amount',
+      minWidth: '25%'
+      // align: 'right',
+      // format: (value) => value.toLocaleString('en-US')
+    },
+    {
+      id: 'paymentMode',
+      label: 'Mode',
+      minWidth: '20%'
+    },
+    {
+      id: 'title',
+      label: 'Title',
+      minWidth: '25%'
     }
   ];
 
@@ -108,7 +131,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
                 invoice: e.billNumber,
                 sellingDate: e.dateOfSale,
                 grandTotal: e.grandTotalAmount,
-                dueDate: dayjs().endOf('month').format('DD/MM/YYYY'),
+                paidAmount: e.paidAmount,
                 amountDue: e.cerditAmount
               }
             ];
@@ -126,6 +149,22 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
       return null;
     };
   }, [open]);
+
+  useEffect(() => {
+    (async () => {
+      await client
+        .get('/payment?filterByCustomerSupplier=' + selectedDate._id)
+        .then((res) => {
+          setPaymentDetails(res.data.result.result);
+        })
+        .catch((err) => {
+          setPaymentDetails([]);
+        });
+    })();
+    return () => {
+      return null;
+    };
+  }, [selectedDate]);
 
   let changeValue = (event) => {
     let eventValue = event.target.value.toString();
@@ -212,6 +251,25 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
   };
 
   const [error, setError] = React.useState('');
+
+  const handleAddPayment = async () => {
+    client
+      .post('/payment', {
+        paymentPartner: 'CUSTOMER',
+        id: formData._id,
+        paymentDate: paidAddData.paymentDate,
+        title: paidAddData.title,
+        paidAmount: paidAddData.amount,
+        paymentMode: paidAddData.paymentMode
+      })
+      .then((res) => {
+        setError({ err: false, message: res.data.message });
+        setNewPaymentButton(false);
+        handleClose();
+      })
+      .catch((err) => setError({ err: true, message: res.data.message }));
+  };
+
   let handleCloseSnackBar = () => {
     setError('');
   };
@@ -314,7 +372,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
               value={formData.customerAddress}
               onChange={changeValue}
             />
-            {/* <Button
+            <Button
               variant="contained"
               color={'success'}
               size="small"
@@ -322,7 +380,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
               onClick={() => setNewPaymentButton(!newPaymentButton)}
             >
               ADD PAYMENT
-            </Button> */}
+            </Button>
             {/* </Stack> */}
           </Stack>
           {/* <Button variant="outlined" onClick={() => }>
@@ -380,7 +438,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
                     margin="normal"
                     id="paidAmount"
                     name="paidAmount"
-                    label="Add Amount Paid"
+                    label="Title"
                     type="text"
                     fullWidth
                     variant="outlined"
@@ -418,13 +476,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
               </Stack>
             </DialogContent>
             <DialogActions style={{ padding: '20px 30px 30px 30px' }}>
-              <Button
-                variant="outlined"
-                color="success"
-                onClick={() => {
-                  addPayment;
-                }}
-              >
+              <Button variant="outlined" color="success" onClick={handleAddPayment}>
                 Add
               </Button>
               <Button variant="outlined" color="error" onClick={() => setNewPaymentButton(false)}>
@@ -448,10 +500,10 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
         <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
           <Grid container sx={{ paddingTop: 0 }}>
             <Grid xl={6}>
-              <DenseTable productDtls={saleDetails} columns={columns} />
+              <DenseTable purpose={'SALES'} productDtls={saleDetails} columns={columns} />
             </Grid>
             <Grid xl={5.5} sx={{ marginLeft: '30px' }}>
-              <Typography>Will be available soon!</Typography>
+              <DenseTable purpose={'PAYMENT'} productDtls={paymentDetails} columns={columnsPayment} />
             </Grid>
           </Grid>
         </DialogContent>
@@ -471,7 +523,7 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
   );
 }
 
-function DenseTable({ productDtls = [], columns }) {
+function DenseTable({ productDtls = [], purpose = 'SALES', columns }) {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 350 }}>
@@ -486,16 +538,28 @@ function DenseTable({ productDtls = [], columns }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {productDtls.map((row) => (
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
-                <TableCell>{row.invoice}</TableCell>
-                <TableCell>{row.sellingDate}</TableCell>
-                <TableCell>{row.grandTotal}</TableCell>
-                <TableCell>{row.dueDate}</TableCell>
-                <TableCell>{row.amountDue}</TableCell>
-              </TableRow>
-              // invoice, sellingDate, grandTotal, dueDate, amountDue
-            ))}
+            {purpose == 'SALES'
+              ? productDtls.map((row) => (
+                  <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
+                    <TableCell>{row.invoice}</TableCell>
+                    <TableCell>{dayjs(row.sellingDate).format('DD-MM-YYYY')}</TableCell>
+                    <TableCell>{parseFloat(row.grandTotal).toFixed(2)}</TableCell>
+                    <TableCell>{parseFloat(row.paidAmount).toFixed(2)}</TableCell>
+                    <TableCell>{parseFloat(row.amountDue).toFixed(2)}</TableCell>
+                  </TableRow>
+                  // invoice, sellingDate, grandTotal, dueDate, amountDue
+                ))
+              : purpose == 'PAYMENT'
+                ? productDtls.map((row) => (
+                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
+                      <TableCell>{dayjs(row.paymentDate).format('DD-MM-YYYY')}</TableCell>
+                      <TableCell>{row.paidAmount}</TableCell>
+                      <TableCell>{row.paymentMode}</TableCell>
+                      <TableCell>{row.title}</TableCell>
+                    </TableRow>
+                    // invoice, sellingDate, grandTotal, dueDate, amountDue
+                  ))
+                : null}
           </TableBody>
         </Table>
       </TableContainer>

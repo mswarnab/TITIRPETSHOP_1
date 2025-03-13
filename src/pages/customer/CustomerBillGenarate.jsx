@@ -175,7 +175,7 @@ export default function CustomerBillGenarate() {
         <Grid container justifyContent={'center'} marginBottom="20px">
           <Button variant="contained" size="large" sx={{ padding: '10px 220px', backgroundColor: '#f5f5f5' }}>
             <Typography variant="h2" color={'black'}>
-              Invoice
+              Invoice : TPS12{customerDetails}
             </Typography>
           </Button>{' '}
         </Grid>
