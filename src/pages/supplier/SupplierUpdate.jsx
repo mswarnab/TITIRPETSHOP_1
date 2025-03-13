@@ -112,7 +112,7 @@ export default function SupplierUpdate({ open, handleClose, data }) {
               {
                 invoice: e.invoiceNumber,
                 sellingDate: e.dateOfPruchase,
-                grandTotal: e.cerditAmount,
+                grandTotal: e.grandTotalAmount,
                 paidAmount: e.paidAmount,
                 amountDue: e.cerditAmount
               }
