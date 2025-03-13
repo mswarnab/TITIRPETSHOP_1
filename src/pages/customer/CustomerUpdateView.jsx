@@ -30,6 +30,7 @@ export default function ManageCustomer() {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedData] = useState({});
   const [sortPerm, setSortParm] = useState('');
+  const [count, setCount] = useState(0);
   const handleClickOpen = (value) => {
     // console.log(value);
     setSelectedData(value.row);
@@ -107,6 +108,7 @@ export default function ManageCustomer() {
         setPaginationCount(pagiCount);
         let newData = [];
         let result = [...res.data.result.result];
+        setCount(count);
         // console.log(result);
         let id = parseInt(parseInt(page * 20) + 1);
         result.map((value) => {
@@ -208,7 +210,7 @@ export default function ManageCustomer() {
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
           <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{rows.length} Customers found</Typography>
+            <Typography variant="h5">{count} Customers found</Typography>
           </Grid>
           <Grid container justifyContent="flex-end">
             {/* console.log(SALE); */}
