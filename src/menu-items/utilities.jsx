@@ -10,7 +10,8 @@ import {
   CarryOutFilled,
   ReconciliationFilled,
   SkinFilled,
-  TruckFilled
+  TruckFilled,
+  HolderOutlined
 } from '@ant-design/icons';
 
 // icons
@@ -98,7 +99,7 @@ const icons = {
 
 export const utilities = {
   id: 'utilities',
-  title: 'Utilities',
+  title: 'Navigation',
   type: 'group',
   children: [
     {
@@ -106,7 +107,7 @@ export const utilities = {
       title: 'Stock',
       type: 'collapse',
       url: '/stock',
-      icon: (padding) => <ProductFilled style={padding} />,
+      icon: (padding) => <HolderOutlined style={padding} />,
       children: [
         // {
         //   id: 'util-stock-child1',
@@ -120,7 +121,7 @@ export const utilities = {
           title: 'Manage Stock',
           type: 'item',
           url: '/stock/manage',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         }
       ]
     },
@@ -129,21 +130,21 @@ export const utilities = {
       title: 'Sale',
       type: 'collapse',
       url: '/sale',
-      icon: (padding) => <ProductFilled style={padding} />,
+      icon: (padding) => <HolderOutlined style={padding} />,
       children: [
         {
           id: 'util-sale-child1',
           title: 'Create Sale Bill',
           type: 'item',
           url: '/sale/add',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         },
         {
           id: 'util-sale-child2',
           title: 'Manage Sale Bill',
           type: 'item',
           url: '/sale/manage',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         }
       ]
     },
@@ -152,21 +153,21 @@ export const utilities = {
       title: 'Purchase Order',
       type: 'collapse',
       url: '/purchase',
-      icon: (padding) => <ProductFilled style={padding} />,
+      icon: (padding) => <HolderOutlined style={padding} />,
       children: [
         {
           id: 'util-purchase-child1',
           title: 'Create Purchase Order',
           type: 'item',
           url: '/purchaseorder/add',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         },
         {
           id: 'util-purchase-child2',
           title: 'Manage Purchase Order',
           type: 'item',
           url: '/purchaseorder/manage',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         }
       ]
     },
@@ -175,21 +176,21 @@ export const utilities = {
       title: 'Customer',
       type: 'collapse',
       url: '/customer',
-      icon: (padding) => <ProductFilled style={padding} />,
+      icon: (padding) => <HolderOutlined style={padding} />,
       children: [
         {
           id: 'util-customer-child1',
           title: 'Add Customer',
           type: 'item',
           url: '/customer/add',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         },
         {
           id: 'util-customer-child2',
           title: 'Manage Customer',
           type: 'item',
           url: '/customer/manage',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         }
       ]
     },
@@ -198,21 +199,21 @@ export const utilities = {
       title: 'Supplier',
       type: 'collapse',
       url: '/supplier',
-      icon: (padding) => <ProductFilled style={padding} />,
+      icon: (padding) => <HolderOutlined style={padding} />,
       children: [
         {
           id: 'util-supplier-child1',
           title: 'Add Supplier',
           type: 'item',
           url: '/supplier/add',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         },
         {
           id: 'util-supplier-child2',
           title: 'Manage Supplier',
           type: 'item',
           url: '/supplier/manage',
-          icon: (padding) => <ProductFilled style={padding} />
+          icon: (padding) => <HolderOutlined style={padding} />
         }
       ]
     }

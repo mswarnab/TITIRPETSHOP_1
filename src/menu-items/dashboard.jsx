@@ -1,24 +1,21 @@
 // assets
-import { DashboardFilled } from '@ant-design/icons';
+import { DragOutlined } from '@ant-design/icons';
 
 // icons
-const icons = {
-  DashboardFilled
-};
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+  title: 'Dashboard',
   type: 'group',
   children: [
     {
       id: 'dashboard',
       title: 'Dashboard',
       type: 'item',
-      url: '/',
-      icon: icons.DashboardFilled,
+      url: '/dashboard',
+      icon: (padding) => <DragOutlined style={padding} />,
       breadcrumbs: false
     }
   ]
