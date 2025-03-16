@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Image from 'assets/images/icons/logo/Titir Pet Logo.png';
 import QRImage from 'assets/images/qrPayment.jpeg';
 
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 // import LottieAnimation from 'components/loaderDog';
 import { jsPDF } from 'jspdf';
 import { client } from 'api/client';
@@ -21,11 +21,12 @@ export default function CustomerBillGenarate() {
   const [paidAmount, setPaidAmount] = useState(0.0);
   const [discount, setDiscount] = useState(0.0);
   const [dueAmount, setDueAmount] = useState(0.0);
+  const [invoiceNumber, setInvoiceNumber] = useState('');
 
-  const [customerDetails, setCustomerDetails] = useState([]);
+  const [customerDetails, setCustomerDetails] = useState({});
   const contentRef = useRef(); // Reference to the content to be converted
 
-  const handleDownload = () => {
+  const handleDownload = (name) => {
     const doc = new jsPDF();
 
     // You can use the `html` method to capture an HTML element and convert it to PDF.
@@ -33,7 +34,7 @@ export default function CustomerBillGenarate() {
     doc.html(contentRef.current, {
       callback: (doc) => {
         // When the conversion is done, save the PDF with a filename
-        doc.save('downloaded-page.pdf');
+        doc.save(`${name}.pdf`);
         window.close();
       },
       x: 0, // Starting X position of the content in the PDF
@@ -113,6 +114,7 @@ export default function CustomerBillGenarate() {
       setTotalAmount(totalAmount);
       setSaleDetails(saleArray);
       setCustomerDetails(res.data.result.customerDetails);
+      setInvoiceNumber(res.data.result.invoiceNumber);
       // setError({ err: false, message: res.data.message });
       // const width = window.innerWidth; // Get the full width of the screen
       // const height = window.innerHeight; // Get the full height of the screen
@@ -124,8 +126,8 @@ export default function CustomerBillGenarate() {
   useEffect(() => {
     // openWindow();
     // print('a', 'jsx-template');
-    if (saleDetails.length) {
-      handleDownload();
+    if (saleDetails.length && customerDetails.customerName) {
+      handleDownload(invoiceNumber);
     }
     // window.close();
     // setDownloaded(true);
@@ -134,14 +136,6 @@ export default function CustomerBillGenarate() {
   useEffect(() => {
     generateMonthlyBill();
   }, []);
-
-  // if (setDownloaded) {
-  //   return null;
-  // }
-
-  // useEffect(() => {
-
-  // }, [saleDetails]);
 
   return (
     // <Grid xl={3}>
@@ -175,7 +169,7 @@ export default function CustomerBillGenarate() {
         <Grid container justifyContent={'center'} marginBottom="20px">
           <Button variant="contained" size="large" sx={{ padding: '10px 220px', backgroundColor: '#f5f5f5' }}>
             <Typography variant="h2" color={'black'}>
-              Invoice : TPS12{customerDetails}
+              INVOICE NO: <span style={{ marginLeft: 5 }}>{invoiceNumber}</span>
             </Typography>
           </Button>{' '}
         </Grid>
@@ -206,7 +200,9 @@ export default function CustomerBillGenarate() {
           </Typography>
         </Stack> */}
           <Stack padding={0}>
-            <Typography variant="h5">TITIR PET SHOP</Typography>
+            <Typography variant="h5">
+              <b>TITIR PET SHOP</b>
+            </Typography>
             <Typography variant="h6">Address: </Typography>
             <Typography variant="body">Patuliya, Khardaha</Typography>
             <Typography variant="body">Pin: 700118</Typography>
@@ -227,10 +223,14 @@ export default function CustomerBillGenarate() {
             <Typography variant="body">
               Mob: <span style={{ color: '#1677ff' }}>+91 {customerDetails.customerContactNo}</span>
             </Typography>
+            <Typography variant="body">
+              INVOICE No:
+              <span style={{ marginLeft: 5 }}>{invoiceNumber}</span>
+            </Typography>
           </Stack>
           <Stack paddingLeft={1.5}>
             <Typography variant="bady">
-              <b>Date</b> : <span>{dayjs('2024-11-30').format('MMM DD, YYYY')}</span>
+              <b>Date</b> : <span>{dayjs().format('MMM DD, YYYY')}</span>
             </Typography>
             {/* <Typography variant="body">
             Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
@@ -246,7 +246,7 @@ export default function CustomerBillGenarate() {
               size="small"
               style={{
                 position: 'absolute',
-                top: 475,
+                top: 497,
                 left: navigator.userAgent.toString().toLocaleLowerCase().includes('windows') ? '47%' : '43%',
                 backgroundColor: 'grey'
               }}
@@ -295,7 +295,7 @@ export default function CustomerBillGenarate() {
               <Grid display={'flex'} justifyContent={'space-between'} marginBottom={'15px'}>
                 <Typography variant="h4">Discount:</Typography>
                 <Typography variant="h4" sx={{ color: 'cornflowerblue', marginLeft: '20px' }}>
-                  {discount}
+                  {discount > 0 ? discount : 0}
                 </Typography>
               </Grid>
               <Grid display={'flex'} justifyContent={'space-between'} paddingBottom={'40px'}>

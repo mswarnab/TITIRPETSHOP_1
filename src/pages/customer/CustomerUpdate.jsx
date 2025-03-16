@@ -236,7 +236,8 @@ export default function CustomerUpdate({ open, selectedDate, handleClose }) {
         const width = window.innerWidth; // Get the full width of the screen
         const height = window.innerHeight; // Get the full height of the screen
         window.open(
-          'https://titirpetshop-1-ez7f.vercel.app/customerbill/' + formData._id,
+          // 'https://titirpetshop-1-ez7f.vercel.app/customerbill/' + formData._id,
+          'http://localhost:5174/customerbill/' + formData._id,
           '',
           `width=${width},height=${height},top=0,left=0`
         ); // You can specify a URL or leave it blank
