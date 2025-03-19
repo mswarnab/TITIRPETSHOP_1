@@ -270,7 +270,7 @@ export default function CustomerBillGenarate() {
           <Grid display={'flex'} justifyContent={'space-between'}>
             <Grid>
               <img
-                src={QRImage}
+                src={null}
                 style={
                   navigator.userAgent.toString().toLocaleLowerCase().includes('windows')
                     ? { width: '250px', height: '300px', paddingTop: '60px' }
