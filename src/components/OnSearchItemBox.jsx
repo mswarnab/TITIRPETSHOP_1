@@ -1,10 +1,21 @@
-import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const OnSearchItemBox = ({
-  data = { productName: '', purchasePrice: 0, quantity: '', sgst: 0, cgst: 0, mrp: 0, expDate: '', sellingPrice: 0, totalSellingPrice: 0 },
+  data = {
+    productName: '',
+    productMFR: '',
+    purchasePrice: 0,
+    quantity: '',
+    sgst: 0,
+    cgst: 0,
+    mrp: 0,
+    expDate: '',
+    sellingPrice: 0,
+    totalSellingPrice: 0
+  },
   result = true,
   selected = false,
   added = false,
@@ -32,19 +43,26 @@ const OnSearchItemBox = ({
         onSelect(data);
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Stack direction={'row'}>
           <Typography variant="h5">Name:</Typography>
           <Typography variant="h5" color={'peru'} marginLeft={1}>
             {data.productName}
           </Typography>
         </Stack>
+
         {result && (
           <IconButton color="error" size="medium" variant="standard" onClick={() => onDelete(data?._id)}>
             <DeleteOutlined />
           </IconButton>
         )}
       </div>
+      <Grid container>
+        <Typography variant="h5">Product ID:</Typography>
+        <Typography variant="h5" color={'peru'} marginLeft={1}>
+          {data.productMFR}
+        </Typography>
+      </Grid>
       <Stack direction={'row'} justifyContent={'space-between'}>
         <Stack direction={'row'}>
           <Typography variant="h5">{added ? 'Sale' : 'Available'} Quantity:</Typography>

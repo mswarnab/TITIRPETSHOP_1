@@ -106,6 +106,14 @@ export default function AddPurchase() {
   };
 
   useEffect(() => {
+    setProdMfr(supplierName.substring(0, 2).toUpperCase() + dayjs().format('YYMMDDhhmmss'));
+  }, [prodQty, supplierName]);
+
+  useEffect(() => {
+    setStockData([]);
+  }, [supplierName]);
+
+  useEffect(() => {
     let tempProductPurchasePrice = 0;
 
     switch (discountSelect) {
@@ -176,7 +184,11 @@ export default function AddPurchase() {
     }
   };
   let handleClickOpen = () => {
-    setOpen(true);
+    if (supplierName) {
+      setOpen(true);
+    } else {
+      setError({ err: true, message: 'Error: Please select Supplier first' });
+    }
   };
   let handleClose = () => {
     setOpen(false);
@@ -291,8 +303,8 @@ export default function AddPurchase() {
         prodDiscountScheme: discountScheme
       };
       setStockData([...stockData, newDataForm]);
-      // setProdName('');
-      // setProdQty('');
+      setProdName('');
+      setProdQty('');
       // setProdCatagory('');
       setProdPurcahsePrice('');
       // setProdMrpPrice('');
@@ -364,7 +376,7 @@ export default function AddPurchase() {
     },
     {
       field: 'mfr',
-      headerName: 'Mfr',
+      headerName: 'Product ID',
       width: 160
     },
     {
@@ -648,7 +660,7 @@ export default function AddPurchase() {
             productName: e.prodName,
             category: e.prodCatagory,
             supplierName: splitSupplierName[0],
-            mfrCode: 'N/A',
+            mfrCode: e.prodMfr,
             hsnCode: e.prodHsn,
             mfgDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
             expDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
@@ -1197,19 +1209,19 @@ export default function AddPurchase() {
               }}
             />
 
-            {/* <TextField
+            {/*           <TextField
               id="outlined-basic"
               label="Mfr"
               variant="outlined"
               // fullWidth
               autoComplete="off"
               style={{ width: 280 }}
-              value={prodMfr}
+              value={supplierName.substring(0, 2).toUpperCase() + dayjs().format('YYMMDDhhmmss')}
               onChange={(event) => {
                 // fetchSupplier();
                 setProdMfr(event.target.value);
-                }}
-                /> */}
+              }}
+            /> */}
             <TextField
               id="outlined-basic"
               error={emptyProdMrpCheck ? true : false}
@@ -1348,7 +1360,7 @@ export default function AddPurchase() {
               aria-readonly="true"
               onClick={() => setEmptyProdTotalPriceWithGstCheck('')}
             ></TextField> */}
-            <Select
+            {/* <Select
               labelId="discountSelect"
               id="demo-simple-select-helper"
               value={discountSelect}
@@ -1361,8 +1373,8 @@ export default function AddPurchase() {
                 <em>Select field</em>
               </MenuItem>
               <MenuItem value={1}>D% - RATE</MenuItem>
-              {/* <MenuItem value={2}>D% - MRP</MenuItem> */}
-            </Select>
+              <MenuItem value={2}>D% - MRP</MenuItem>
+            </Select> */}
             <TextField
               id="outlined-basic"
               error={emptyProdPurchasePriceCheck ? true : false}

@@ -38,6 +38,7 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
   });
   const editSale = () => {
     window.open('https://titirpetshop-1-ez7f.vercel.app/sale/edit/' + selectedData._id, '_blank');
+    // window.open('http://localhost:5174/sale/edit/' + selectedData._id, '_blank');
     handleClose();
   };
 
@@ -225,6 +226,7 @@ function DenseTable({ productDtls = [] }) {
         <TableHead>
           <TableRow>
             <TableCell>Product Name</TableCell>
+            <TableCell>Product ID</TableCell>
             <TableCell align="right">Purchase Price + Gst</TableCell>
             <TableCell align="right">MRP</TableCell>
             <TableCell align="right">Sale Qty</TableCell>
@@ -238,6 +240,9 @@ function DenseTable({ productDtls = [] }) {
             <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
                 {row.productName}
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {row.mfrCode}
               </TableCell>
               <TableCell align="right">{parseFloat(row.purchasePriceWithGst).toFixed(2)}</TableCell>
               <TableCell align="right">{row.mrp}</TableCell>

@@ -36,6 +36,7 @@ const actionSX = {
 function createData(
   id,
   productName,
+  mfrCode,
   invoiceNumber,
   category,
   expDate,
@@ -57,6 +58,7 @@ function createData(
   return {
     id,
     productName,
+    mfrCode,
     invoiceNumber,
     category,
     expDate,
@@ -95,6 +97,15 @@ export default function ManageStock() {
       // editable: true
     },
     {
+      field: 'mfrCode',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+
+      headerName: 'PRODUCT ID',
+      width: 250
+      // editable: true
+    },
+    {
       field: 'invoiceNumber',
       headerClassName: 'super-app-theme--header',
       headerAlign: 'center',
@@ -103,6 +114,7 @@ export default function ManageStock() {
       width: 250
       // editable: true
     },
+
     {
       field: 'category',
       headerClassName: 'super-app-theme--header',
@@ -295,6 +307,7 @@ export default function ManageStock() {
           let createdData = createData(
             id,
             value.productName,
+            value.mfrCode,
             value.invoiceNumber,
             value.category,
             value.expDate,
@@ -331,7 +344,7 @@ export default function ManageStock() {
     };
   }, [searchParm]);
   const [loading, setLoading] = useState(true);
-  const [searchType, setSearchType] = useState('0');
+  const [searchType, setSearchType] = useState('filterByProductName');
   const [searchValue, setSearchValue] = useState('');
   // console.log(dataRows);
   if (loading) {
@@ -351,69 +364,69 @@ export default function ManageStock() {
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
-        <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%', marginTop: '10px' }}>
+        <Grid container display={'flex'} alignItems="center" justifyContent="space-between" xl={12}>
+          <Grid alignItems={'center'} justifyContent={'center'} xl={6}>
             <Typography variant="h5">{productCount} Products found</Typography>
           </Grid>
-          <Grid container justifyContent="flex-end">
-            <Stack direction="row" spacing={1}>
+          <Grid display={'flex'} xl={6} justifyContent={'flex-end'}>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={searchType}
+              // sx={{ height: '45px' }}
+              // label="Age"
+              onChange={(event) => {
+                setSearchType(event.target.value);
+                if (event.target.value == 'filterByCategory') {
+                  setSearchValue(0);
+                }
+              }}
+            >
+              {/* <MenuItem value="0">Search Type</MenuItem> */}
+              <MenuItem value="filterByProductName">Product Name</MenuItem>
+              <MenuItem value="filterByMfrCode">Product ID</MenuItem>
+              <MenuItem value="filterByCategory">Category</MenuItem>
+              <MenuItem value="filterByInvoiceNumber">Invoice No.</MenuItem>
+              <MenuItem value="filterBySupplierName">Supplier</MenuItem>
+              <MenuItem value="filterByHsnCode">Hsn Code</MenuItem>
+            </Select>
+            {searchType == 'filterByCategory' ? (
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={searchType}
+                value={searchValue}
                 // sx={{ height: '45px' }}
                 // label="Age"
-                onChange={(event) => {
-                  setSearchType(event.target.value);
-                  if (event.target.value == 'filterByCategory') {
-                    setSearchValue(0);
-                  }
-                }}
+                onChange={(event) => setSearchValue(event.target.value)}
               >
-                <MenuItem value="0">Search Type</MenuItem>
-                <MenuItem value="filterByProductName">Product Name</MenuItem>
-                <MenuItem value="filterByCategory">Category</MenuItem>
-                <MenuItem value="filterByInvoiceNumber">Invoice No.</MenuItem>
-                <MenuItem value="filterBySupplierName">Supplier</MenuItem>
-                <MenuItem value="filterByHsnCode">Hsn Code</MenuItem>
+                <MenuItem value="0">Search Catagory</MenuItem>
+                {prodCatagoryArr.map((element) => (
+                  <MenuItem value={element}>{element}</MenuItem>
+                ))}
               </Select>
-              {searchType == 'filterByCategory' ? (
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={searchValue}
-                  // sx={{ height: '45px' }}
-                  // label="Age"
-                  onChange={(event) => setSearchValue(event.target.value)}
-                >
-                  <MenuItem value="0">Search Catagory</MenuItem>
-                  {prodCatagoryArr.map((element) => (
-                    <MenuItem value={element}>{element}</MenuItem>
-                  ))}
-                </Select>
-              ) : (
-                <TextField
-                  disabled={searchType == 0 ? true : false}
-                  value={searchValue}
-                  id="outlined-search"
-                  label="Search field"
-                  type="search"
-                  // size="medium"
-                  // sx={{ height: '45px' }}
-                  onChange={(event) => setSearchValue(event.target.value)}
-                />
-              )}
-              <IconButton aria-label="delete" size="small" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
-                <SearchOutlined />
-              </IconButton>
-              <IconButton aria-label="" size="small" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
-                <ClearOutlined />
-              </IconButton>
-              {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
+            ) : (
+              <TextField
+                disabled={searchType == 0 ? true : false}
+                value={searchValue}
+                id="outlined-search"
+                label="Search field"
+                type="search"
+                // size="medium"
+                // sx={{ height: '45px' }}
+                onChange={(event) => setSearchValue(event.target.value)}
+              />
+            )}
+            <IconButton aria-label="delete" size="small" sx={{ backgroundColor: '#8fe7e3', height: '41px' }} onClick={() => createUrl()}>
+              <SearchOutlined />
+            </IconButton>
+            <IconButton aria-label="" size="small" sx={{ backgroundColor: '#aaeaaa', height: '41px' }} onClick={() => crearAllFilter()}>
+              <ClearOutlined />
+            </IconButton>
+            {/* <Button disabled={searchType == 0 ? true : false} variant="contained" color="secondary" endIcon={<SearchOutlined />}>
                 Search
               </Button> */}
-            </Stack>
           </Grid>
+          {/* </Grid> */}
           <Grid item />
         </Grid>
         <Grid container alignItems="flex-start" justifyContent="space-between" marginTop={3}>

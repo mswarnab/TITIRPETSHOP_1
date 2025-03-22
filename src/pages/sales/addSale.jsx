@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 // project import
 import MainCard from 'components/MainCard';
 
-import { Alert, Autocomplete, Chip, Divider, FormControlLabel, Snackbar, Stack, Switch, TextField } from '@mui/material';
+import { Alert, Autocomplete, Chip, Divider, FormControlLabel, IconButton, Snackbar, Stack, Switch, TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -16,6 +16,7 @@ import FullScreenDialog from 'components/FullScreenModal';
 import OnSearchItemBox from 'components/OnSearchItemBox';
 import { client } from 'api/client';
 import LottieAnimation from 'components/loaderDog';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -28,6 +29,10 @@ export default function AddSale() {
   const [customerPrevDueAmount, setCustomerPrevDueAmount] = useState(0);
   const [saleId, setSaleId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
   const [error, setError] = useState('');
+  const [productId, setProductId] = useState('');
+  const [quantity, setQuantity] = useState(0);
+  const [sellingPrice, setSellingPrice] = useState(0);
+  const [stockData, setStockData] = useState({});
 
   const [billDtls, setBillDtls] = useState({
     billNumber: '',
@@ -345,7 +350,41 @@ export default function AddSale() {
       offloader();
     }
   };
-  let handleCloseSnackBar = () => {
+  const handleAddItem = () => {
+    if (addedProduct.find((e) => e.productId == productId)) {
+      return setError({ err: true, message: 'SAME PRODUCT ALREADY ADDED IN THE BILL' });
+    }
+    client
+      .get('/stock/productid/' + productId)
+      .then((res) => {
+        if (!res.data.result.count) {
+          return setError({ err: true, message: 'STOCK NOT FOUND' });
+        }
+        const product = res.data.result.result;
+        if (quantity > product.quantity) {
+          return setError({ err: true, message: 'ENTERED QUANTITY NOT AVAILABLE - AVAILABLE QUANTITY IS: ' + product.quantity });
+        }
+
+        const productObject = {
+          _id: product._id,
+          productName: product.productName,
+          quantity,
+          sgst: product.sgst,
+          cgst: product.cgst,
+          mrp: product.mrp,
+          purchasePrice: product.purchasePrice,
+          expDate: dayjs(product.expDate).format('YYYY-MM-DD'),
+          sellingPrice: parseFloat(parseInt(sellingPrice) / quantity).toFixed(2),
+          productId: product._id,
+          productMFR: product.mfrCode,
+          totalSellingPrice: parseFloat(sellingPrice).toFixed(2)
+        };
+        setAddedProduct([...addedProduct, productObject]);
+      })
+      .catch((err) => setError({ err: true, message: 'STOCK NOT FOUND' }));
+  };
+
+  const handleCloseSnackBar = () => {
     setError('');
   };
   let vertical = 'top';
@@ -379,7 +418,7 @@ export default function AddSale() {
         <Grid item />
         <MainCard sx={{ ml: '15%', mr: '15%', p: '5% 10%' }} content={false}>
           <Stack direction="row" style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography variant="h4" style={{ marginBottom: 10 }}>
+            <Typography variant="h4" style={{ marginBottom: 20 }}>
               Create New Selling Bill
             </Typography>
             <FormControlLabel control={<Switch checked={fullPaid} onChange={handleChangeFullPaid} name="fullPaid" />} label="Full Paid" />
@@ -481,6 +520,7 @@ export default function AddSale() {
                 required
                 label="Bill Date"
                 fullWidth
+                format="DD-MM-YYYY"
                 // readOnly={saleId ? 'true' : 'false'}
                 // views={['year', 'month']}
                 name="billDate"
@@ -553,14 +593,62 @@ export default function AddSale() {
               readOnly
             />
           </Stack>
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => setOpen(true)}>
-              Add Items
-            </Button>
-            <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => submitSaleBill()}>
-              Submit
-            </Button>
-          </Stack>
+
+          <Grid
+            container
+            sx={{ pb: 5, mt: 1.5, borderTop: '1px solid #cccccc', borderBottom: '1px solid #cccccc', borderRadius: 2 }}
+            justifyContent={'space-between'}
+            alignItems={'center'}
+            padding={'0px 10px 10px 10px'}
+          >
+            <Grid container mb={4} mt={3}>
+              <Typography variant="h5">Add Items using Product ID</Typography>
+            </Grid>
+            <TextField
+              required
+              id="productId"
+              name="productId"
+              label="PRODUCT ID"
+              sx={{ width: 300 }}
+              value={productId}
+              type="text"
+              variant="outlined"
+              onChange={(event) => setProductId(event.target.value)}
+            />{' '}
+            <TextField
+              required
+              id="productId"
+              name="productId"
+              label="QTY"
+              sx={{ width: 80 }}
+              value={quantity}
+              type="text"
+              variant="outlined"
+              onChange={(event) => {
+                if (/^-?\d*\.?\d*$/.test(event.target.value)) {
+                  setQuantity(event.target.value);
+                }
+              }}
+            />{' '}
+            <TextField
+              required
+              id="productId"
+              name="productId"
+              label="SELLING PRICE"
+              sx={{ width: 150 }}
+              value={sellingPrice}
+              type="text"
+              variant="outlined"
+              onChange={(event) => {
+                if (/^-?\d*\.?\d*$/.test(event.target.value)) {
+                  setSellingPrice(event.target.value);
+                }
+              }}
+            />{' '}
+            <IconButton onClick={handleAddItem}>
+              <PlusCircleOutlined style={{ fontSize: 30, color: 'cornflowerblue' }} />
+            </IconButton>
+          </Grid>
 
           {addedProduct?.length ? (
             <Divider textAlign="center" style={{ margin: '20px 0px 20px 0px' }}>
@@ -573,6 +661,14 @@ export default function AddSale() {
             // console.log(e);
             return <OnSearchItemBox result={true} selected={true} added={true} data={e} onDelete={handleSelectedProductDelete} />;
           })}
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => setOpen(true)}>
+              Add Items
+            </Button>
+            <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => submitSaleBill()}>
+              Submit
+            </Button>
+          </Stack>
         </MainCard>
       </Grid>
       <FullScreenDialog open={open} handleClose={handleClose} handleAddItemSale={handleAddItemSale} selectedLots={addedProduct} />

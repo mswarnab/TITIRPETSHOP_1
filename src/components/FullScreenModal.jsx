@@ -170,29 +170,30 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
         </AppBar>
         <Grid padding={5} display={'flex'} justifyContent={'space-between'} paddingTop={'80px'}>
           <Grid flexGrow={1} padding={1}>
-            <TextField
-              variant="standard"
-              fullWidth
-              label="Search Products"
-              autoFocus
-              onChange={(e) => setProductNameSearch(e.target.value)}
-            />
             <Stack direction={'row'} justifyContent={'space-between'}>
               <TextField
                 variant="standard"
                 label="Quantity"
-                style={{ width: '300px', margin: '20px 0px' }}
+                style={{ width: '300px', margin: '20px 0px', marginTop: 0 }}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
               <TextField
                 variant="standard"
                 label="Selling Price"
-                style={{ width: '300px', margin: '20px 0px' }}
+                style={{ width: '300px', margin: '20px 0px', marginTop: 0 }}
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
               />
             </Stack>
+            <TextField
+              variant="standard"
+              fullWidth
+              label="Search Products"
+              sx={{ mb: 4 }}
+              autoFocus
+              onChange={(e) => setProductNameSearch(e.target.value)}
+            />
             <Stack direction={'row'} justifyContent={'space-between'}>
               <Grid display={'flex'}>
                 <Typography variant="h5" style={{ paddingTop: '5px' }}>
@@ -224,7 +225,7 @@ export default function FullScreenDialog({ open, selectedLots, handleClose, hand
                   Selling price per unit:
                 </Typography>
                 <Typography style={{ marginLeft: '10px', paddingTop: '6px' }} variant="h5" color={'peru'}>
-                  ₹{sellingPricePerUnit || 0}
+                  ₹{sellingPricePerUnit == 'NaN' ? 0 : sellingPricePerUnit}
                 </Typography>
               </Grid>
             </Stack>

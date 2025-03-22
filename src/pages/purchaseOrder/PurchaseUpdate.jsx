@@ -337,14 +337,14 @@ function DenseTable({ productDtls = [] }) {
         <TableHead>
           <TableRow>
             <TableCell>Product Name</TableCell>
+            <TableCell align="right">Product ID</TableCell>
             <TableCell align="right">Category</TableCell>
             <TableCell align="right">Expiry Date</TableCell>
             <TableCell align="right">Purchase Qty</TableCell>
             <TableCell align="right">Available Qty</TableCell>
             <TableCell align="right">Rate</TableCell>
             <TableCell align="right">MRP</TableCell>
-            <TableCell align="right">SGST</TableCell>
-            <TableCell align="right">CGST</TableCell>
+            <TableCell align="right">GST</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -353,14 +353,14 @@ function DenseTable({ productDtls = [] }) {
               <TableCell component="th" scope="row">
                 {row.productName}
               </TableCell>
+              <TableCell align="right">{row.mfrCode}</TableCell>
               <TableCell align="right">{row.category}</TableCell>
               <TableCell align="right">{dayjs(row.expDate).format('YYYY-MM-DD')}</TableCell>
               <TableCell align="right">{parseFloat(row.purchaseQuantity).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.quantity).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.rate).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.mrp).toFixed(2)}</TableCell>
-              <TableCell align="right">{parseFloat(row.sgst).toFixed(2)}</TableCell>
-              <TableCell align="right">{parseFloat(row.cgst).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.sgst * 2).toFixed(2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
