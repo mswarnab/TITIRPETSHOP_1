@@ -23,6 +23,7 @@ import dayjs from 'dayjs';
 import { client } from 'api/client';
 import { useNavigate } from 'react-router';
 import { Chip, Divider } from '@mui/material';
+import Summarysection from './Summarysection';
 
 // avatar style
 const avatarSX = {
@@ -123,21 +124,30 @@ export default function MonthlyReport() {
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           //   expiredProducts={expiredProducts}
-          title={'Total Purchase Orders Made'}
-          //   isLoss
-          extraLabel={'Total spent for PO in this month'}
-          count={'₹' + expiredProducts?.count}
+          title={'OPENING STOCKS'}
+          // isLoss
+          extraLabel={''}
+          count={'₹' + parseFloat(expiredProducts.count).toFixed(2) || 0}
           // extra={'Click here to view more'}
           //   onHandleClick={() => navigate('/stock/expired')}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
-          title="Total sales in current month"
+          title="PURCHASE"
           count={`₹${parseFloat(totalSales.amount).toFixed(2) || 0}`}
           // percentage={percentage}
           extraLabel={''}
-          extra={(totalSales.count || 0) + ` sales made since last month`}
+          extra={(totalSales.count || 0) + ` Purchases made in this month`}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <AnalyticEcommerce
+          title="SALE"
+          count={`₹${parseFloat(totalSales.amount).toFixed(2) || 0}`}
+          // percentage={percentage}
+          extraLabel={''}
+          extra={(totalSales.count || 0) + ` sales made in this month`}
         />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -160,7 +170,7 @@ export default function MonthlyReport() {
         />
       </Grid>
 
-      <Grid item xs={12} sm={6} md={4} lg={3}>
+      {/* <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
           title="Growth metrics"
           count={'20%'}
@@ -168,10 +178,10 @@ export default function MonthlyReport() {
           extraLabel={'Growth metrics as per last month'}
           //   extra={totalCustomers.count || 0 + ' customer(s)'}
         />
-      </Grid>
+      </Grid> */}
       <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce
-          title="Total due from customers"
+          title="CUSTOMER DUE"
           count={'20%'}
           // percentage={percentage}
           extraLabel={'Growth metrics as per last month'}
@@ -408,6 +418,7 @@ export default function MonthlyReport() {
           </List>
         </Grid>
       </Grid>
+      <Summarysection />
     </Grid>
   );
 }

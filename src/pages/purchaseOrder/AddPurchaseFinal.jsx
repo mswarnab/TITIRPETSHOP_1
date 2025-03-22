@@ -32,7 +32,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import ProductTable from 'pages/dashboard/ProductTable';
 import dayjs from 'dayjs';
-import { prodCatagoryArr, gstPercArr } from 'static';
+import { prodCatagoryArr, gstPercArr, generateUniqueCode } from 'static';
 import LottieAnimation from 'components/loaderDog';
 import { isNumber } from 'utils/password-validation';
 import { use } from 'react';
@@ -106,7 +106,8 @@ export default function AddPurchase() {
   };
 
   useEffect(() => {
-    setProdMfr(supplierName.substring(0, 2).toUpperCase() + dayjs().format('YYMMDDhhmmss'));
+    // alert(generateUniqueCode());
+    setProdMfr(supplierName.substring(0, 2).toUpperCase() + generateUniqueCode());
   }, [prodQty, supplierName]);
 
   useEffect(() => {
