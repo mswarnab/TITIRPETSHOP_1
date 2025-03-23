@@ -141,6 +141,7 @@ export default function AddSale() {
                 expDate: '',
                 sellingPrice: e.sellingPrice,
                 productId: e.productId,
+                productMFR: e.mfrCode,
                 totalSellingPrice: e.quantity * e.sellingPrice
               };
               prodArr = [...prodArr, newDataArray];

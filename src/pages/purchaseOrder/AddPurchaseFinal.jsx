@@ -104,15 +104,15 @@ export default function AddPurchase() {
     setCgstPerc(cgstPercAmount);
     // totalProductPriceCal(prodQty, productPurchasePriceAfterDiscount, cgstPercAmount, sgstPercValue);
   };
-
+  /** generate Product Code  */
   useEffect(() => {
     // alert(generateUniqueCode());
     setProdMfr(supplierName.substring(0, 2).toUpperCase() + generateUniqueCode());
   }, [prodQty, supplierName]);
-
-  useEffect(() => {
-    setStockData([]);
-  }, [supplierName]);
+  /** here problem */
+  // useEffect(() => {
+  //   setStockData([]);
+  // }, [supplierName]);
 
   useEffect(() => {
     let tempProductPurchasePrice = 0;
@@ -467,6 +467,7 @@ export default function AddPurchase() {
     let yy = newDate.getFullYear();
     let data = {
       id: count,
+      pid: rowValues.pid,
       productName: rowValues.prodName,
       productCategory: rowValues.prodCatagory,
       mfr: rowValues.prodMfr,
@@ -652,30 +653,32 @@ export default function AddPurchase() {
       onloader();
       let stockBody = [];
       stockData.forEach((e) => {
-        let splitSupplierName = supplierName.split('--');
-        let gstAmt = parseFloat(e.prodPurcahsePrice * (1 - discountPerc / 100) * (1 - discountScheme / 100));
-        gstAmt = (gstAmt * parseFloat(e.prodSGST)) / 100;
-        stockBody = [
-          ...stockBody,
-          {
-            productName: e.prodName,
-            category: e.prodCatagory,
-            supplierName: splitSupplierName[0],
-            mfrCode: e.prodMfr,
-            hsnCode: e.prodHsn,
-            mfgDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
-            expDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
-            quantity: e.prodQty,
-            supplierId: supplierId,
-            rate: e.prodPurcahsePrice,
-            sgst: gstAmt,
-            cgst: gstAmt,
-            mrp: e.prodMrpPrice,
-            batchNumber: e.prodBatch,
-            discount: e.prodDiscountPerc || 0,
-            schemeDiscount: e.prodDiscountScheme || 0
-          }
-        ];
+        if (!e.pid) {
+          let splitSupplierName = supplierName.split('--');
+          let gstAmt = parseFloat(e.prodPurcahsePrice * (1 - discountPerc / 100) * (1 - discountScheme / 100));
+          gstAmt = (gstAmt * parseFloat(e.prodSGST)) / 100;
+          stockBody = [
+            ...stockBody,
+            {
+              productName: e.prodName,
+              category: e.prodCatagory,
+              supplierName: splitSupplierName[0],
+              mfrCode: e.prodMfr,
+              hsnCode: e.prodHsn,
+              mfgDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
+              expDate: dayjs(e.prodExpDate).format('YYYYMMDD'),
+              quantity: e.prodQty,
+              supplierId: supplierId,
+              rate: e.prodPurcahsePrice,
+              sgst: gstAmt,
+              cgst: gstAmt,
+              mrp: e.prodMrpPrice,
+              batchNumber: e.prodBatch,
+              discount: e.prodDiscountPerc || 0,
+              schemeDiscount: e.prodDiscountScheme || 0
+            }
+          ];
+        }
       });
       const purchaseOrderBody = {
         invoiceNumber: orderNumber,
@@ -823,7 +826,8 @@ export default function AddPurchase() {
   }, [productSearchParm]);
   // console.log(productSearch);
   let changeSupplierId = (e) => {
-    //console.log(supplierSearch);
+    //console.log(supplierSearch);/
+    // alert('hello');
     let name = e;
     // console.log(name);
     let split_name = name.split('--');
@@ -837,6 +841,7 @@ export default function AddPurchase() {
       }
     });
   };
+  /** existing order data fetch */
   const searchExistingPurchaseOrder = () => {
     let invNo = orderNumber;
     if (invNo) {
@@ -880,6 +885,7 @@ export default function AddPurchase() {
                     2
                   );
                   let newDataForm = {
+                    pid: e._id,
                     prodName: e.productName,
                     prodQty: e.purchaseQuantity,
                     prodCatagory: e.category,
@@ -893,7 +899,8 @@ export default function AddPurchase() {
                     prodHsn: e.hsnCode,
                     prodAmountWithGst: totalAmountWithGst,
                     prodDiscountPerc: discountPer,
-                    prodDiscountScheme: schemeDiscountper
+                    prodDiscountScheme: schemeDiscountper,
+                    prodMfr: e.mfrCode
                   };
 
                   prodDtlsArr = [...prodDtlsArr, newDataForm];

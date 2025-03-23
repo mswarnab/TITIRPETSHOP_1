@@ -502,12 +502,19 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
           <Button variant="contained" color="secondary" onClick={() => handleClose()}>
             Cancel
           </Button>
-          <Button variant="contained" color="success" onClick={() => handleUpdate(formData)}>
-            Update
-          </Button>
-          <Button variant="contained" color="error" onClick={() => handleDelete(rowData.id)}>
-            Delete
-          </Button>
+
+          {rowData.pid ? (
+            ''
+          ) : (
+            <>
+              <Button variant="contained" color="success" onClick={() => handleUpdate(formData)}>
+                Update
+              </Button>
+              <Button variant="contained" color="error" onClick={() => handleDelete(rowData.id)}>
+                Delete
+              </Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
     </>
