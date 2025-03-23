@@ -710,6 +710,7 @@ export default function AddPurchase() {
           setPaidAmount(0);
           setCreditAmount(0);
           setStockData([]);
+          setOldInvNo('');
           setError({ err: false, message: res.data.message });
           setLoading(true);
         })
