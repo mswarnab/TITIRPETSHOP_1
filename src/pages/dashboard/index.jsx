@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { client } from 'api/client';
 import { useNavigate } from 'react-router';
+import DashboardSkeleton from './DashboardSkeleton';
 
 // avatar style
 const avatarSX = {
@@ -69,6 +70,7 @@ export default function DashboardDefault() {
   const { sales, customer, purchaseOrder, stock, supplier } = data;
   const { totalSale = 100, percentage = 20, extraSale = 2000 } = sales;
   const [totalSales, setTotalSales] = useState('');
+  const [totalPurchase, setTotalPurchase] = useState('');
   const [weeklyTotalSales, setWeeklyTotalSales] = useState('');
   const [purchaseOrdersWithAmountDue, setPurchaseOrdersWithAmountDue] = useState([]);
 
@@ -93,6 +95,12 @@ export default function DashboardDefault() {
       client.get('/sales/totalsale').then((res) => {
         setTotalSales({ count: res.data.result.count, amount: res.data.result.result.length ? res.data.result.result[0].totalSales : 0 });
       });
+      client.get('/purchaseorder/total').then((res) => {
+        setTotalPurchase({
+          count: res.data.result.count,
+          amount: res.data.result.result.length ? res.data.result.result[0].totalPurchase : 0
+        });
+      });
 
       client.get('/supplier/totaldue').then((res) => {
         setTotalSupplierDue({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
@@ -102,7 +110,7 @@ export default function DashboardDefault() {
         setTotalCustomers({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
       });
 
-      client.get('/purchaseorder?page=0&filterByCreditAmountGte=1&filterByCreditAmountLte=9999999999').then((res) => {
+      client.get('/purchaseorder?page=0&filterByCreditAmount="Y"&sortByCreditAmount="DESC"').then((res) => {
         setPurchaseOrdersWithAmountDue(res.data.result.result);
       });
     })();
@@ -114,143 +122,154 @@ export default function DashboardDefault() {
   const navigate = useNavigate();
 
   return (
-    <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-      {/* row 1 */}
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Typography variant="h5">Dashboard</Typography>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce
-          expiredProducts={expiredProducts}
-          title={`Stocks expiring by ${expiryDate}`}
-          isLoss
-          extraLabel={'Click to view the stocks'}
-          count={expiredProducts?.count}
-          // extra={'Click here to view more'}
-          onHandleClick={() => navigate('/stock/expired')}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce
-          title="Total sales in current month"
-          count={`₹${parseFloat(totalSales.amount).toFixed(2) || 0}`}
-          // percentage={percentage}
-          extraLabel={''}
-          extra={(totalSales.count || 0) + ` sales made since last month`}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce
-          title="Total due to suppliers"
-          count={'₹' + (parseFloat(totalSupplierDue.amount).toFixed(2) || 0)}
-          isLoss
-          color="warning"
-          extraLabel={'Total amount due'}
-          extra={` to ${totalSupplierDue.count || 0} suppliers.`}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce
-          title="Total amount due from customers"
-          count={'₹' + (totalCustomers.amount || 0)}
-          // percentage={percentage}
-          extraLabel={'You have payment due for '}
-          extra={totalCustomers.count || 0 + ' customer(s)'}
-        />
-      </Grid>
-
-      <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
-
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Sales Overview</Typography>
+    <>
+      {expiredProducts && purchaseOrdersWithAmountDue && totalSales && totalSupplierDue && totalCustomers ? (
+        <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+          {/* row 1 */}
+          <Grid item xs={12} sx={{ mb: -2.25 }}>
+            <Typography variant="h5">Dashboard</Typography>
           </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <Box sx={{ p: 3, pb: 0 }}>
-            <Stack spacing={2}>
-              <Typography variant="h6" color="text.secondary">
-                Last 7 days Sales report
-              </Typography>
-              <Typography variant="h3">₹{weeklyTotalSales || 0}</Typography>
-            </Stack>
-          </Box>
-          <MonthlyBarChart onTotalSaleChange={(value) => setWeeklyTotalSales(value)} />
-        </MainCard>
-      </Grid>
-
-      {/* row 3 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Overdue Amounts (Top 10)</Typography>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <AnalyticEcommerce
+              expiredProducts={expiredProducts}
+              title={`Expiring by ${expiryDate}`}
+              isLoss
+              extraLabel={'Click to view the stocks'}
+              count={expiredProducts?.count}
+              // extra={'Click here to view more'}
+              onHandleClick={() => navigate('/stock/expired')}
+            />
           </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <OrdersTable />
-        </MainCard>
-      </Grid>
-
-      {/* row 4 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <SaleReportCard />
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Payment due for Purchase Orders</Typography>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <AnalyticEcommerce
+              title="Total sales in current month"
+              count={`₹${parseFloat(totalSales.amount).toFixed(2) || 0}`}
+              // percentage={percentage}
+              extraLabel={''}
+              extra={(totalSales.count || 0) + ` sales made since last month`}
+            />
           </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <List
-            component="nav"
-            sx={{
-              px: 0,
-              py: 0,
-              '& .MuiListItemButton-root': {
-                py: 1.5,
-                '& .MuiAvatar-root': avatarSX,
-                '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
-              }
-            }}
-          >
-            {purchaseOrdersWithAmountDue.length
-              ? purchaseOrdersWithAmountDue.map((e, i) => {
-                  const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
-                  if (i > 5) {
-                    return null;
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <AnalyticEcommerce
+              title="Total due to suppliers"
+              count={'₹' + (parseFloat(totalSupplierDue.amount).toFixed(2) || 0)}
+              isLoss
+              color="warning"
+              extraLabel={'Total amount due'}
+              extra={` to ${totalSupplierDue.count || 0} suppliers.`}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <AnalyticEcommerce
+              title="Total Customers Due"
+              count={'₹' + (totalCustomers.amount || 0)}
+              // percentage={percentage}
+              extraLabel={'You have payment due for '}
+              extra={totalCustomers.count || 0 + ' customer(s)'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <AnalyticEcommerce
+              title="Total Purchase Amount"
+              count={'₹' + (totalPurchase.amount || 0)}
+              // percentage={percentage}
+              extraLabel={'Last 30 days '}
+              // extra={totalCustomers.count || 0 + ' customer(s)'}
+            />
+          </Grid>
+
+          <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
+
+          <Grid item xs={12} md={5} lg={4}>
+            <Grid container alignItems="center" justifyContent="space-between">
+              <Grid item>
+                <Typography variant="h5">Sales Overview</Typography>
+              </Grid>
+              <Grid item />
+            </Grid>
+            <MainCard sx={{ mt: 2 }} content={false}>
+              <Box sx={{ p: 3, pb: 0 }}>
+                <Stack spacing={2}>
+                  <Typography variant="h6" color="text.secondary">
+                    Last 7 days Sales report
+                  </Typography>
+                  <Typography variant="h3">₹{weeklyTotalSales || 0}</Typography>
+                </Stack>
+              </Box>
+              <MonthlyBarChart onTotalSaleChange={(value) => setWeeklyTotalSales(value)} />
+            </MainCard>
+          </Grid>
+
+          {/* row 3 */}
+          <Grid item xs={12} md={7} lg={8}>
+            <Grid container alignItems="center" justifyContent="space-between">
+              <Grid item>
+                <Typography variant="h5">Overdue Amounts (Top 10)</Typography>
+              </Grid>
+              <Grid item />
+            </Grid>
+            <MainCard sx={{ mt: 2 }} content={false}>
+              <OrdersTable />
+            </MainCard>
+          </Grid>
+
+          {/* row 4 */}
+          <Grid item xs={12} md={7} lg={8}>
+            <SaleReportCard />
+          </Grid>
+          <Grid item xs={12} md={5} lg={4}>
+            <Grid container alignItems="center" justifyContent="space-between">
+              <Grid item>
+                <Typography variant="h5">Payment due for Purchase Orders</Typography>
+              </Grid>
+              <Grid item />
+            </Grid>
+            <MainCard sx={{ mt: 2 }} content={false}>
+              <List
+                component="nav"
+                sx={{
+                  px: 0,
+                  py: 0,
+                  '& .MuiListItemButton-root': {
+                    py: 1.5,
+                    '& .MuiAvatar-root': avatarSX,
+                    '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
                   }
-                  return (
-                    <ListItemButton divider>
-                      <ListItemAvatar>
-                        <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
-                          <GiftOutlined />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={<Typography variant="subtitle1">Order #{invoiceNumber}</Typography>}
-                        secondary={supplierName}
-                      />
-                      <ListItemSecondaryAction>
-                        <Stack alignItems="flex-end">
-                          <Typography variant="subtitle1" noWrap>
-                            ₹{cerditAmount}
-                          </Typography>
-                          <Typography variant="h6" color="secondary" noWrap>
-                            {dayjs(dueDate).format('YYYY-MM-DD')}
-                          </Typography>
-                        </Stack>
-                      </ListItemSecondaryAction>
-                    </ListItemButton>
-                  );
-                })
-              : ''}
+                }}
+              >
+                {purchaseOrdersWithAmountDue.length
+                  ? purchaseOrdersWithAmountDue.map((e, i) => {
+                      const { invoiceNumber, supplierName, cerditAmount, dueDate, dateOfPruchase, grandTotalAmount } = e;
+                      if (i > 5) {
+                        return null;
+                      }
+                      return (
+                        <ListItemButton divider>
+                          <ListItemAvatar>
+                            <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
+                              <GiftOutlined />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={<Typography variant="subtitle1">Order #{invoiceNumber}</Typography>}
+                            secondary={supplierName}
+                          />
+                          <ListItemSecondaryAction>
+                            <Stack alignItems="flex-end">
+                              <Typography variant="subtitle1" noWrap>
+                                ₹{cerditAmount}
+                              </Typography>
+                              <Typography variant="h6" color="secondary" noWrap>
+                                {dayjs(dueDate).format('YYYY-MM-DD')}
+                              </Typography>
+                            </Stack>
+                          </ListItemSecondaryAction>
+                        </ListItemButton>
+                      );
+                    })
+                  : ''}
 
-            {/* <ListItemButton divider>
+                {/* <ListItemButton divider>
               <ListItemAvatar>
                 <Avatar sx={{ color: 'primary.main', bgcolor: 'primary.lighter' }}>
                   <MessageOutlined />
@@ -286,9 +305,9 @@ export default function DashboardDefault() {
                 </Stack>
               </ListItemSecondaryAction>
             </ListItemButton> */}
-          </List>
-        </MainCard>
-        {/* <MainCard sx={{ mt: 2 }}>
+              </List>
+            </MainCard>
+            {/* <MainCard sx={{ mt: 2 }}>
           <Stack spacing={3}>
             <Grid container justifyContent="space-between" alignItems="center">
               <Grid item>
@@ -315,7 +334,11 @@ export default function DashboardDefault() {
             </Button>
           </Stack>
         </MainCard> */}
-      </Grid>
-    </Grid>
+          </Grid>
+        </Grid>
+      ) : (
+        <DashboardSkeleton />
+      )}
+    </>
   );
 }

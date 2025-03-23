@@ -157,7 +157,7 @@ export default function SalesChart({ duration }) {
       tooltip: {
         y: {
           formatter(val) {
-            return `₹ ${val} rupees`;
+            return `₹ ${parseFloat(val).toFixed(2)} Rupees`;
           }
         }
       },

@@ -19,8 +19,8 @@ import { useEffect, useState } from 'react';
 import { client } from 'api/client';
 import dayjs from 'dayjs';
 
-function createData(tracking_no, name, mobile, fat, carbs, protein) {
-  return { tracking_no, name, mobile, fat, carbs, protein };
+function createData(customerName, mobile, address, creditAmount) {
+  return { customerName, mobile, address, creditAmount };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -52,41 +52,41 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'tracking_no',
+    id: 'customerName',
     align: 'left',
     disablePadding: false,
-    label: 'Invoice No.'
+    label: 'Customer Name'
   },
   {
-    id: 'name',
+    id: 'customerContactNo',
     align: 'left',
     disablePadding: true,
     label: 'Mobile No.'
   },
   {
-    id: 'mobile',
+    id: 'customerAddress',
     align: 'left',
     disablePadding: true,
-    label: 'Total Amount'
+    label: 'Address'
   },
+  // {
+  //   id: 'fat',
+  //   align: 'right',
+  //   disablePadding: false,
+  //   label: 'Amount paid'
+  // },
   {
-    id: 'fat',
-    align: 'right',
-    disablePadding: false,
-    label: 'Amount paid'
-  },
-  {
-    id: 'carbs',
+    id: 'totalCreditAmount',
     align: 'left',
     disablePadding: false,
     label: 'Amount due'
-  },
-  {
-    id: 'protein',
-    align: 'right',
-    disablePadding: false,
-    label: 'Billing date'
   }
+  // {
+  //   id: 'protein',
+  //   align: 'right',
+  //   disablePadding: false,
+  //   label: 'Billing date'
+  // }
 ];
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
@@ -149,29 +149,41 @@ export default function OrderTable() {
   const [salesArray, setSalesArray] = useState([]);
 
   useEffect(() => {
+    let newValue = [];
     salesArray.forEach((e) => {
-      setRows([
-        ...rows,
-        createData(
-          e.billNumber,
-          e.customerMobileNo,
-          e.grandTotalAmount,
-          e.paidAmount,
-          e.cerditAmount,
-          dayjs(e.dateOfSale).format('YYYY-MM-DD')
-        )
-      ]);
+      newValue = [
+        ...newValue,
+        {
+          customerName: e.customerName,
+          customerContactNo: e.customerContactNo,
+          customerAddress: e.customerAddress,
+          // e.lastPurchaseDate,
+          totalCreditAmount: e.totalCreditAmount
+        }
+      ];
+      // setRows([
+      //   ...rows,
+      //   createData(
+      //     e.customerName,
+      //     e.customerContactNo,
+      //     e.customerAddress,
+      //     // e.lastPurchaseDate,
+      //     e.totalCreditAmount
+      //     // dayjs(e.dateOfSale).format('YYYY-MM-DD')
+      //   )
+      // ]);
     });
+    setRows(newValue);
   }, [salesArray]);
 
   useEffect(() => {
     (async () => {
       client
-        .get('/sales', {
+        .get('/customer', {
           params: {
             page: 0,
-            sortByCreditAmount: '-1',
-            filterByCreditAmount: { $gt: 0 }
+            filterByCreditAmount: 'Y',
+            sortByCreditAmount: 'DESC'
           }
         })
         .then((res) => {
@@ -183,6 +195,7 @@ export default function OrderTable() {
       return null;
     };
   }, []);
+  console.log(rows);
   return (
     <Box>
       <TableContainer
@@ -207,22 +220,19 @@ export default function OrderTable() {
                   role="checkbox"
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   tabIndex={-1}
-                  key={row.tracking_no}
+                  key={row.customerName}
                 >
                   <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.tracking_no}</Link>
+                    {row.customerName}
+                    {/* <Link color="secondary"> {row.customerName}</Link> */}
                   </TableCell>
-                  <TableCell align="right">{row.name}</TableCell>
-                  <TableCell align="right">
-                    <NumericFormat value={row.mobile} displayType="text" thousandSeparator prefix="" />
+                  {/* <TableCell align="right">{row.name}</TableCell> */}
+                  <TableCell>{row.customerContactNo}</TableCell>
+                  <TableCell>{row.customerAddress}</TableCell>
+                  <TableCell>
+                    <NumericFormat value={row.totalCreditAmount} displayType="text" thousandSeparator prefix="" />
                   </TableCell>
-                  <TableCell align="right">
-                    <NumericFormat value={row.fat} displayType="text" thousandSeparator prefix="" />
-                  </TableCell>
-                  <TableCell align="right">
-                    <NumericFormat value={row.carbs} displayType="text" thousandSeparator prefix="" />
-                  </TableCell>
-                  <TableCell align="right">{row.protein}</TableCell>
+                  {/* <TableCell align="right">{row.protein}</TableCell> */}
                 </TableRow>
               );
             })}
