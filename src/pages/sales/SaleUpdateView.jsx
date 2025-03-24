@@ -248,16 +248,20 @@ export default function ManageSaleView() {
           justifyContent="space-between"
           style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <Grid lg={5}>
-            <Typography variant="h5">{rows.length} Sales bill found</Typography>
+          <Grid lg={12}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h5">{rows.length} Sales bill found</Typography>
+              <div style={{ display: 'flex' }}>
+                <CustomSort screenType={{ ...screenType, SALE: true }} createSortParm={createSortParm} />
+                <CustomerFilter
+                  screenType={{ ...screenType, SALE: true }}
+                  createUrlFromFilter={createUrlFromFilter}
+                  searchFilterData={searchFilterData}
+                />
+              </div>
+            </Stack>
           </Grid>
-          <Grid container justifyContent="flex-end">
-            <CustomSort screenType={{ ...screenType, SALE: true }} createSortParm={createSortParm} />
-            <CustomerFilter
-              screenType={{ ...screenType, SALE: true }}
-              createUrlFromFilter={createUrlFromFilter}
-              searchFilterData={searchFilterData}
-            />
+          <Grid container justifyContent="flex-end" sx={{ backgroundColor: 'red' }}>
             {/* <Stack direction="row" spacing={1}>
               <Select
                 labelId="demo-simple-select-label"
@@ -309,7 +313,7 @@ export default function ManageSaleView() {
           {/* <Grid md={12} lg={7} style={{ marginRight: 0 }}>
             <ChipsArray />
           </Grid> */}
-          <Grid item />
+          {/* <Grid item /> */}
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
           <SaleTable

@@ -283,16 +283,26 @@ export default function ManagePurchaseOrder() {
           justifyContent="space-between"
           style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <Grid lg={5}>
-            <Typography variant="h5">{productCount} Purchase Orders found</Typography>
+          <Grid lg={12}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h5">{productCount} Purchase Orders found</Typography>
+              <div style={{ display: 'flex' }}>
+                <CustomSort screenType={{ ...screenType, PURCHASE: true }} createSortParm={createSortParm} />
+                <CustomerFilter
+                  screenType={{ ...screenType, PURCHASE: true }}
+                  createUrlFromFilter={createUrlFromFilter}
+                  searchFilterData={searchFilterData}
+                />
+              </div>
+            </Stack>
           </Grid>
           <Grid container justifyContent="flex-end">
-            <CustomSort screenType={{ ...screenType, PURCHASE: true }} createSortParm={createSortParm} />
+            {/* <CustomSort screenType={{ ...screenType, PURCHASE: true }} createSortParm={createSortParm} />
             <CustomerFilter
               screenType={{ ...screenType, PURCHASE: true }}
               createUrlFromFilter={createUrlFromFilter}
               searchFilterData={searchFilterData}
-            />
+            /> */}
             {/* <Stack direction="row" spacing={1}>
               <Select
                 labelId="demo-simple-select-label"

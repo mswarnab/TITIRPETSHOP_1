@@ -136,16 +136,26 @@ export default function ManageSupplier() {
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{rowData} Suppliers found</Typography>
+          <Grid lg={12}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h5">{rowData} Suppliers found</Typography>
+              <div style={{ display: 'flex' }}>
+                <CustomSort screenType={{ ...screenType, SUPPLIER: true }} createSortParm={createSortParm} />
+                <CustomerFilter
+                  screenType={{ ...screenType, SUPPLIER: true }}
+                  createUrlFromFilter={createUrlFromFilter}
+                  searchFilterData={searchFilterData}
+                />
+              </div>
+            </Stack>
           </Grid>
           <Grid container justifyContent="flex-end">
-            <CustomSort screenType={{ ...screenType, SUPPLIER: true }} createSortParm={createSortParm} />
+            {/* <CustomSort screenType={{ ...screenType, SUPPLIER: true }} createSortParm={createSortParm} />
             <CustomerFilter
               screenType={{ ...screenType, SUPPLIER: true }}
               createUrlFromFilter={createUrlFromFilter}
               searchFilterData={searchFilterData}
-            />
+            /> */}
             {/* <Stack direction="row" spacing={1}>
               <Select
                 labelId="demo-simple-select-label"

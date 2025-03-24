@@ -209,18 +209,28 @@ export default function ManageCustomer() {
       {/* row 3 */}
       <Grid item xs={12} md={12} lg={12}>
         <Grid container alignItems="flex-start" justifyContent="space-between">
-          <Grid style={{ width: '50%' }}>
-            <Typography variant="h5">{count} Customers found</Typography>
+          <Grid lg={12}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h5">{count} Customers found</Typography>
+              <div style={{ display: 'flex' }}>
+                <CustomSort screenType={{ ...screenType, CUSTOMER: true }} createSortParm={createSortParm} />
+                <CustomerFilter
+                  screenType={{ ...screenType, CUSTOMER: true }}
+                  createUrlFromFilter={createUrlFromFilter}
+                  searchFilterData={searchFilterData}
+                />
+              </div>
+            </Stack>
           </Grid>
           <Grid container justifyContent="flex-end">
             {/* console.log(SALE); */}
             {/* <Grid display={'flex'}> */}
-            <CustomSort screenType={{ ...screenType, CUSTOMER: true }} createSortParm={createSortParm} />
+            {/* <CustomSort screenType={{ ...screenType, CUSTOMER: true }} createSortParm={createSortParm} />
             <CustomerFilter
               screenType={{ ...screenType, CUSTOMER: true }}
               createUrlFromFilter={createUrlFromFilter}
               searchFilterData={searchFilterData}
-            />
+            /> */}
             {/* </Grid> */}
             {/* <Stack direction="row" spacing={1}>
               <Select
