@@ -69,6 +69,7 @@ const data = {
 export default function DashboardDefault() {
   const { sales, customer, purchaseOrder, stock, supplier } = data;
   const { totalSale = 100, percentage = 20, extraSale = 2000 } = sales;
+  const [isLoading, setIsLoading] = useState(true);
   const [totalSales, setTotalSales] = useState('');
   const [totalPurchase, setTotalPurchase] = useState('');
   const [weeklyTotalSales, setWeeklyTotalSales] = useState('');
@@ -110,9 +111,12 @@ export default function DashboardDefault() {
         setTotalCustomers({ count: res.data.result.count, amount: res.data.result.result[0].totalDue });
       });
 
-      client.get('/purchaseorder?page=0&filterByCreditAmount="Y"&sortByCreditAmount="DESC"').then((res) => {
-        setPurchaseOrdersWithAmountDue(res.data.result.result);
-      });
+      client
+        .get('/purchaseorder?page=0&filterByCreditAmount="Y"&sortByCreditAmount="DESC"')
+        .then((res) => {
+          setPurchaseOrdersWithAmountDue(res.data.result.result);
+        })
+        .finally(() => setIsLoading(false));
     })();
 
     return () => {
@@ -123,7 +127,9 @@ export default function DashboardDefault() {
 
   return (
     <>
-      {expiredProducts && purchaseOrdersWithAmountDue && totalSales && totalSupplierDue && totalCustomers ? (
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
           {/* row 1 */}
           <Grid item xs={12} sx={{ mb: -2.25 }}>
@@ -135,7 +141,7 @@ export default function DashboardDefault() {
               title={`Expiring by ${expiryDate}`}
               isLoss
               extraLabel={'Click to view the stocks'}
-              count={expiredProducts?.count}
+              count={expiredProducts.count ? expiredProducts.count : 0}
               // extra={'Click here to view more'}
               onHandleClick={() => navigate('/stock/expired')}
             />
@@ -143,7 +149,7 @@ export default function DashboardDefault() {
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <AnalyticEcommerce
               title="Total sales in current month"
-              count={`₹${parseFloat(totalSales.amount).toFixed(2) || 0}`}
+              count={`₹${totalSales.amount ? parseFloat(totalSales.amount).toFixed(2) : 0}`}
               // percentage={percentage}
               extraLabel={''}
               extra={(totalSales.count || 0) + ` sales made since last month`}
@@ -152,7 +158,7 @@ export default function DashboardDefault() {
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <AnalyticEcommerce
               title="Total due to suppliers"
-              count={'₹' + (parseFloat(totalSupplierDue.amount).toFixed(2) || 0)}
+              count={'₹' + (totalSupplierDue.amount ? parseFloat(totalSupplierDue.amount).toFixed(2) : 0)}
               isLoss
               color="warning"
               extraLabel={'Total amount due'}
@@ -164,7 +170,7 @@ export default function DashboardDefault() {
               title="Total Customers Due"
               count={'₹' + (totalCustomers.amount || 0)}
               // percentage={percentage}
-              extraLabel={'You have payment due for '}
+              extraLabel={'Due for '}
               extra={totalCustomers.count || 0 + ' customer(s)'}
             />
           </Grid>
@@ -336,8 +342,6 @@ export default function DashboardDefault() {
         </MainCard> */}
           </Grid>
         </Grid>
-      ) : (
-        <DashboardSkeleton />
       )}
     </>
   );
