@@ -8,11 +8,16 @@ import dayjs, { Dayjs } from 'dayjs';
 // import LottieAnimation from 'components/loaderDog';
 import { jsPDF } from 'jspdf';
 import { client } from 'api/client';
+import { color } from 'framer-motion';
+import { fontSize } from '@mui/system';
 
 function createData(invoice, item, quantity, mrp, rate, purchaseDate) {
   const formattedDate =
     purchaseDate.toString().substring(6, 9) + '/' + purchaseDate.toString().substring(4, 6) + '/' + purchaseDate.toString().substring(0, 4);
   return { invoice, item, quantity, mrp, rate, purchaseDate: formattedDate };
+}
+function formatToRupee(amount) {
+  return '' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export default function CustomerBillGenarate() {
@@ -77,7 +82,7 @@ export default function CustomerBillGenarate() {
   // if (loading) {
   //   return <LottieAnimation />;
   // }
-
+  // console.log(QRImage);
   let generateMonthlyBill = () => {
     client.get('/customer/monthlybill/' + customerId).then((res) => {
       // setMonthlySaleDetails(res.data.result.saleDetails);
@@ -114,7 +119,7 @@ export default function CustomerBillGenarate() {
       setTotalAmount(totalAmount);
       setSaleDetails(saleArray);
       setCustomerDetails(res.data.result.customerDetails);
-      setInvoiceNumber(res.data.result.invoiceNumber);
+      setInvoiceNumber(res.data.result.invoiceNumber.toUpperCase());
       // setError({ err: false, message: res.data.message });
       // const width = window.innerWidth; // Get the full width of the screen
       // const height = window.innerHeight; // Get the full height of the screen
@@ -139,11 +144,11 @@ export default function CustomerBillGenarate() {
 
   return (
     // <Grid xl={3}>
-    <Grid>
-      <Grid container sx={{ backgroundColor: '#ffffff' }} width={'80%'} ref={contentRef}>
+    <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Grid container sx={{ backgroundColor: '#ffffff', border: '1px solid lightgray', paddingTop: 5 }} width={'80%'} ref={contentRef}>
         {/* row 1 */}
         {/* <Grid> */}
-        <Stack
+        {/* <Stack
           sx={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -163,30 +168,36 @@ export default function CustomerBillGenarate() {
           <Typography variant="h2" sx={{ fontFamily: 'sans-serif' }}>
             {dueAmount}
           </Typography>
-        </Stack>
+        </Stack> */}
         {/* </Grid> */}
         {/* <Grid> */}
-        <Grid container justifyContent={'center'} marginBottom="20px">
-          <Button variant="contained" size="large" sx={{ padding: '10px 220px', backgroundColor: '#f5f5f5' }}>
-            <Typography variant="h2" color={'black'}>
-              INVOICE NO: <span style={{ marginLeft: 5 }}>{invoiceNumber}</span>
+        {/* <Grid container justifyContent={'center'} marginBottom="20px">
+          <Grid sx={{ paddingTop: '25px', width: '100%', display: 'flex', justifyContent: 'flex-end', paddingRight: '100px' }}>
+            <Typography fontFamily="sans-serif" variant="h1" color={'#333'}>
+              INVOICE
             </Typography>
-          </Button>{' '}
-        </Grid>
+          </Grid>{' '}
+        </Grid> */}
         <Stack
           direction="row"
           padding={1.5}
           sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', height: '100%', padding: '0px 80px' }}
-          maxHeight={120}
+          maxHeight={150}
         >
           <Grid display={'flex'} alignItems={'center'}>
-            <img src={Image} style={{ width: '180px', height: '120px', position: 'relative', left: -45 }} />
+            <img src={Image} style={{ width: '250px', height: '180px', position: 'relative', left: -45, top: 15 }} />
             <Grid>
-              <Typography variant="h1" color={'#444597'} style={{ position: 'relative', left: -55 }}>
+              <Typography fontFamily="sans-serif" variant="h1" color={'#444597'} style={{ position: 'relative', left: -55 }}>
                 TITIR PET SHOP
               </Typography>
               <Typography variant="body" color={'grey'} sx={{ paddingTop: '8px', position: 'relative', left: -50 }}>
                 Your one stop pet solution.
+              </Typography>
+              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50 }}>
+                Patuliya, Khardaha, Pin: 700118
+              </Typography>
+              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50 }}>
+                Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
               </Typography>
             </Grid>
           </Grid>
@@ -199,54 +210,73 @@ export default function CustomerBillGenarate() {
             MOB: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
           </Typography>
         </Stack> */}
-          <Stack padding={0}>
-            <Typography variant="h5">
-              <b>TITIR PET SHOP</b>
+          <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Typography fontFamily="sans-serif" variant="h1" color="#444597">
+              <b>INVOICE</b>
             </Typography>
-            <Typography variant="h6">Address: </Typography>
+            {/* <Typography variant="h6">Address: </Typography>
             <Typography variant="body">Patuliya, Khardaha</Typography>
             <Typography variant="body">Pin: 700118</Typography>
             <Typography variant="body">
               Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
-            </Typography>
+            </Typography> */}
           </Stack>
         </Stack>
         {/* </Grid> */}
         {/* <Divider></Divider> */}
-        <Grid container sx={{ height: '1px', backgroundColor: '#f5f5f5', margin: '20px 80px 35px 80px' }} />
+        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '50px 80px 35px 80px' }} />
 
         <Stack direction="row" padding={'0px 80px'} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Stack>
-            <Typography variant="h5">
-              Bill To : <span>{customerDetails.customerName}</span>
+            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              INVOICE NO : <span style={{ color: '#333', fontSize: '19px' }}>{invoiceNumber}</span>
             </Typography>
-            <Typography variant="body">
-              Mob: <span style={{ color: '#1677ff' }}>+91 {customerDetails.customerContactNo}</span>
+            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              BILL TO : <span style={{ color: '#333', fontSize: '19px' }}>{customerDetails.customerName}</span>
             </Typography>
-            <Typography variant="body">
-              INVOICE No:
-              <span style={{ marginLeft: 5 }}>{invoiceNumber}</span>
+            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              MOB: <span style={{ color: '#333', fontSize: '19px' }}> {customerDetails.customerContactNo}</span>
             </Typography>
           </Stack>
           <Stack paddingLeft={1.5}>
-            <Typography variant="bady">
-              <b>Date</b> : <span>{dayjs().format('MMM DD, YYYY')}</span>
+            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              DATE : <span style={{ color: '#333', fontSize: '19px' }}>{dayjs().format('MMM DD, YYYY')}</span>
             </Typography>
             {/* <Typography variant="body">
             Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
           </Typography> */}
           </Stack>
         </Stack>
+        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '50px 80px 35px 80px' }} />
+        <div
+          style={{
+            position: 'absolute',
+            top: 400,
+            // borderLeft: '1px solid #444597',
+            // borderRight: '1px solid #444597',
+            // borderTop: '1px solid   #444597',
+            // borderBottom: '1px solid   #444597',
+            padding: 3,
+            borderRadius: 20,
+            left: navigator.userAgent.toString().toLocaleLowerCase().includes('windows') ? '47%' : '43%',
+            backgroundColor: 'white',
+            borderColor: '#444597',
+            color: '#444597',
+            fontSize: '15px',
+            fontFamily: 'sans-serif'
+          }}
+        >
+          <b>ITEM DETAILS</b>
+        </div>
         {/* <Grid container sx={{ height: '1px', backgroundColor: '#f5f5f5', margin: '40px 40px 35px 40px' }} /> */}
-        <Grid container sx={{ padding: '40px 80px' }}>
+        {/* <Grid container sx={{ padding: '0px 0px' }}>
           <Grid container style={{ backgroundColor: '#f5f5f5', height: 1 }}>
-            {/* <Chip label="Invoice details" size="small" color="secondary" /> */}
             <Button
               variant="contained"
               size="small"
               style={{
                 position: 'absolute',
-                top: 497,
+                // top: 497,
                 left: navigator.userAgent.toString().toLocaleLowerCase().includes('windows') ? '47%' : '43%',
                 backgroundColor: 'grey'
               }}
@@ -254,21 +284,32 @@ export default function CustomerBillGenarate() {
               Item details
             </Button>
           </Grid>
-        </Grid>
+        </Grid> */}
         <Grid sx={{ width: '100%', padding: '0px 80px' }}>
           <DenseTable productDtls={saleDetails} columns={columns} />
         </Grid>
-        <Grid sx={{ width: '100%', padding: '0px 80px' }}>
-          <Grid
+        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '20px 80px 5px 80px' }} />
+
+        <Grid display={'flex'} justifyContent={'space-between'} sx={{ width: '100%', padding: '0px 80px' }}>
+          <Typography variant="h4" paddingRight={12} fontFamily="sans-serif" sx={{ color: '#444597' }}>
+            TOTAL AMOUNT
+          </Typography>
+          <Typography variant="h4" sx={{ color: '#333', marginLeft: '20px' }}>
+            {formatToRupee(totalAmount)}
+          </Typography>
+        </Grid>
+        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 80px 5px 80px' }} />
+        {/* <Grid
             container
             sx={{
               height: '1px',
               backgroundColor: '#f5f5f5',
               margin: navigator.userAgent.toString().toLocaleLowerCase().includes('windows') ? '40px 0px 10px 0' : '40px 0px 40px 0'
             }}
-          />
+          /> */}
+        <Grid sx={{ width: '100%', padding: '0px 80px' }}>
           <Grid display={'flex'} justifyContent={'space-between'}>
-            <Grid>
+            <Grid lg={6}>
               <img
                 src={null}
                 style={
@@ -278,31 +319,75 @@ export default function CustomerBillGenarate() {
                 }
               />
             </Grid>
-            <Grid display={'flex'} flexDirection={'column'} justifyContent={'flex-end'} justifySelf={'flex-end'}>
-              <Grid display={'flex'} justifyContent={'space-between'} marginBottom={'15px'}>
+            <Grid lg={6} display={'flex'} flexDirection={'column'}>
+              {/* <Grid display={'flex'} justifyContent={'space-between'} marginBottom={'15px'}>
                 <Typography variant="h4">Total Amount:</Typography>
                 <Typography variant="h4" sx={{ color: 'cornflowerblue', marginLeft: '20px' }}>
                   {totalAmount}
                 </Typography>
-              </Grid>
+              </Grid> */}
 
-              <Grid display={'flex'} justifyContent={'space-between'} marginBottom={'15px'}>
-                <Typography variant="h4">Paid Amount:</Typography>
-                <Typography variant="h4" sx={{ color: 'cornflowerblue', marginLeft: '20px' }}>
-                  {paidAmount}
-                </Typography>
+              <Grid container marginBottom={'15px'}>
+                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                    PAID AMOUNT :
+                  </Typography>
+                </Grid>
+                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '20px' }}>
+                    {formatToRupee(paidAmount)}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid display={'flex'} justifyContent={'space-between'} marginBottom={'15px'}>
-                <Typography variant="h4">Discount:</Typography>
-                <Typography variant="h4" sx={{ color: 'cornflowerblue', marginLeft: '20px' }}>
-                  {discount > 0 ? discount : 0}
-                </Typography>
+              <Grid container marginBottom={'5px'}>
+                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                    DISCOUNT :
+                  </Typography>
+                </Grid>
+                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
+                    {discount > 0 ? formatToRupee(discount) : formatToRupee(0)}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid display={'flex'} justifyContent={'space-between'} paddingBottom={'40px'}>
-                <Typography variant="h4">Amount Due:</Typography>
-                <Typography variant="h4" sx={{ color: 'cornflowerblue', marginLeft: '20px' }}>
-                  {dueAmount}
-                </Typography>
+              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 0px 5px 200px' }} />
+              <Grid container marginBottom={'5px'}>
+                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                    CURRENT DUE :
+                  </Typography>
+                </Grid>
+                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
+                    {formatToRupee(dueAmount)}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid container marginBottom={'5px'}>
+                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                    PREVIOUS DUE :
+                  </Typography>
+                </Grid>
+                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
+                    {formatToRupee(dueAmount)}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 0px 5px 200px' }} />
+              <Grid container marginBottom={'5px'}>
+                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                    TOTAL DUE :
+                  </Typography>
+                </Grid>
+                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
+                    {formatToRupee(dueAmount)}
+                  </Typography>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -326,10 +411,10 @@ function DenseTable({ productDtls = [], columns }) {
     <Paper sx={{ width: '100%' }}>
       <TableContainer>
         <Table aria-label="sticky table" size="small">
-          <TableHead>
+          <TableHead sx={{ backgroundColor: '#444597', color: 'whitesmoke' }}>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} style={{ width: column.minWidth }}>
+                <TableCell key={column.id} align={column.align} style={{ width: column.minWidth, color: 'whitesmoke', fontSize: '18px' }}>
                   {column.label}
                 </TableCell>
               ))}
@@ -338,12 +423,12 @@ function DenseTable({ productDtls = [], columns }) {
           <TableBody>
             {productDtls.map((row) => (
               <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
-                <TableCell>{row.purchaseDate}</TableCell>
-                <TableCell>{row.invoice}</TableCell>
-                <TableCell>{row.item}</TableCell>
-                <TableCell>{row.quantity}</TableCell>
-                <TableCell>{row.mrp}</TableCell>
-                <TableCell>{row.rate}</TableCell>
+                <TableCell sx={{ fontSize: '16px' }}>{row.purchaseDate}</TableCell>
+                <TableCell sx={{ fontSize: '16px' }}>{row.invoice}</TableCell>
+                <TableCell sx={{ fontSize: '16px' }}>{row.item}</TableCell>
+                <TableCell sx={{ fontSize: '16px' }}>{row.quantity}</TableCell>
+                <TableCell sx={{ fontSize: '16px' }}>{row.mrp}</TableCell>
+                <TableCell sx={{ fontSize: '16px' }}>{row.rate}</TableCell>
                 {/* <TableCell>{row.price}</TableCell> */}
                 {/* <TableCell align="right">{row.quantity}</TableCell> */}
               </TableRow>
