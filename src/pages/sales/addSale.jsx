@@ -356,7 +356,7 @@ export default function AddSale() {
       return setError({ err: true, message: 'SAME PRODUCT ALREADY ADDED IN THE BILL' });
     }
     client
-      .get('/stock/productid/' + productId)
+      .get('/stock/productid/' + encodeURIComponent(productId))
       .then((res) => {
         if (!res.data.result.count) {
           return setError({ err: true, message: 'STOCK NOT FOUND' });
