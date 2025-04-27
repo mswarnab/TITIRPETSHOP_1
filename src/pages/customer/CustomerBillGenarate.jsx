@@ -102,7 +102,7 @@ export default function CustomerBillGenarate() {
               el.productName,
               el.quantity,
               el.mrp,
-              parseFloat(parseFloat(el.sellingPrice) * parseInt(el.quantity)).toFixed(2),
+              parseFloat(parseFloat(el.sellingPrice),
               e.dateOfSale
             )
           ];
