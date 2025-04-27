@@ -27,7 +27,7 @@ export default function CustomerBillGenarate() {
   const [discount, setDiscount] = useState(0.0);
   const [dueAmount, setDueAmount] = useState(0.0);
   const [invoiceNumber, setInvoiceNumber] = useState('');
-
+  const [totalDueAmount, setTotalDueAmount] = useState(0);
   const [customerDetails, setCustomerDetails] = useState({});
   const contentRef = useRef(); // Reference to the content to be converted
 
@@ -40,7 +40,7 @@ export default function CustomerBillGenarate() {
       callback: (doc) => {
         // When the conversion is done, save the PDF with a filename
         doc.save(`${name}.pdf`);
-        window.close();
+        // window.close();
       },
       x: 0, // Starting X position of the content in the PDF
       y: 0, // Starting Y position of the content in the PDF
@@ -113,6 +113,7 @@ export default function CustomerBillGenarate() {
       });
       // return { invoice, item, quantity, rate, purchaseDate };
       dueAmount = (totalAmount - paidAmount).toFixed(2);
+      const creditAmount = parseFloat(res.data.result.customerDetails.totalCreditAmount).toFixed(2);
       setDueAmount(dueAmount);
       setPaidAmount(paidAmount);
       setDiscount(discount);
@@ -120,6 +121,8 @@ export default function CustomerBillGenarate() {
       setSaleDetails(saleArray);
       setCustomerDetails(res.data.result.customerDetails);
       setInvoiceNumber(res.data.result.invoiceNumber.toUpperCase());
+      setTotalDueAmount(parseFloat(parseFloat(creditAmount) + parseFloat(dueAmount)).toFixed(2));
+
       // setError({ err: false, message: res.data.message });
       // const width = window.innerWidth; // Get the full width of the screen
       // const height = window.innerHeight; // Get the full height of the screen
@@ -190,7 +193,7 @@ export default function CustomerBillGenarate() {
               <Typography fontFamily="sans-serif" variant="h1" color={'#444597'} style={{ position: 'relative', left: -55 }}>
                 TITIR PET SHOP
               </Typography>
-              <Typography variant="body" color={'grey'} sx={{ paddingTop: '8px', position: 'relative', left: -50 }}>
+              <Typography variant="body" color={'grey'} sx={{ paddingTop: '8px', position: 'relative', fontSize: 18, left: -50 }}>
                 Your one stop pet solution.
               </Typography>
               <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50 }}>
@@ -372,7 +375,7 @@ export default function CustomerBillGenarate() {
                 </Grid>
                 <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
-                    {formatToRupee(dueAmount)}
+                    {formatToRupee(customerDetails.totalCreditAmount || 0)}
                   </Typography>
                 </Grid>
               </Grid>
@@ -385,7 +388,7 @@ export default function CustomerBillGenarate() {
                 </Grid>
                 <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
-                    {formatToRupee(dueAmount)}
+                    {totalDueAmount}
                   </Typography>
                 </Grid>
               </Grid>
