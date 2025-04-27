@@ -27,7 +27,7 @@ export default function CustomerBillGenarate() {
   const [discount, setDiscount] = useState(0.0);
   const [dueAmount, setDueAmount] = useState(0.0);
   const [invoiceNumber, setInvoiceNumber] = useState('');
-  const [totalDueAmount, setTotalDueAmount] = useState(0);
+  const [previousDueAmount, setPreviousDueAmount] = useState(0);
   const [customerDetails, setCustomerDetails] = useState({});
   const contentRef = useRef(); // Reference to the content to be converted
 
@@ -121,7 +121,7 @@ export default function CustomerBillGenarate() {
       setSaleDetails(saleArray);
       setCustomerDetails(res.data.result.customerDetails);
       setInvoiceNumber(res.data.result.invoiceNumber.toUpperCase());
-      setTotalDueAmount(parseFloat(parseFloat(creditAmount) + parseFloat(dueAmount)).toFixed(2));
+      setPreviousDueAmount(parseFloat(parseFloat(creditAmount) - parseFloat(dueAmount)).toFixed(2));
 
       // setError({ err: false, message: res.data.message });
       // const width = window.innerWidth; // Get the full width of the screen
@@ -375,7 +375,7 @@ export default function CustomerBillGenarate() {
                 </Grid>
                 <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
-                    {formatToRupee(customerDetails.totalCreditAmount || 0)}
+                    {formatToRupee(previousDueAmount)}
                   </Typography>
                 </Grid>
               </Grid>
@@ -388,7 +388,7 @@ export default function CustomerBillGenarate() {
                 </Grid>
                 <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
-                    {totalDueAmount}
+                    {formatToRupee(customerDetails.totalCreditAmount || 0)}
                   </Typography>
                 </Grid>
               </Grid>
