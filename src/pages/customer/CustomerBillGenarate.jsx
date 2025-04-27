@@ -97,14 +97,7 @@ export default function CustomerBillGenarate() {
         e.products.forEach((el) => {
           saleArray = [
             ...saleArray,
-            createData(
-              e.billNumber,
-              el.productName,
-              el.quantity,
-              el.mrp,
-              parseFloat(parseFloat(el.sellingPrice),
-              e.dateOfSale
-            )
+            createData(e.billNumber, el.productName, el.quantity, el.mrp, parseFloat(parseFloat(el.sellingPrice)).toFixed(2), e.dateOfSale)
           ];
           totalAmount = parseFloat(parseFloat(totalAmount) + parseFloat(el.sellingPrice) * parseInt(el.quantity)).toFixed(2);
           paidAmount = (parseFloat(paidAmount) + parseFloat(e.paidAmount)).toFixed(2);
