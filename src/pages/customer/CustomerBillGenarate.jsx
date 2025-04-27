@@ -40,7 +40,7 @@ export default function CustomerBillGenarate() {
       callback: (doc) => {
         // When the conversion is done, save the PDF with a filename
         doc.save(`${name}.pdf`);
-        // window.close();
+        window.close();
       },
       x: 0, // Starting X position of the content in the PDF
       y: 0, // Starting Y position of the content in the PDF
