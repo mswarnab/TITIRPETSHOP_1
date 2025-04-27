@@ -78,7 +78,7 @@ export default function DashboardDefault() {
   const [totalCustomers, setTotalCustomers] = useState('');
   const [expiredProducts, setExpiredProducts] = useState('');
 
-  const expiryDate = dayjs().add(3, 'month').format('YYYY-MM-DD');
+  const expiryDate = dayjs().add(3, 'month').format('DD-MM-YYYY');
   const { totalOrders } = purchaseOrder;
   const [totalSupplierDue, setTotalSupplierDue] = useState('');
   const [error, setError] = useState('');

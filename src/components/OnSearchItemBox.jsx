@@ -75,7 +75,7 @@ const OnSearchItemBox = ({
             <>
               <Typography variant="h5">Expiry Date:</Typography>
               <Typography variant="h5" color={'peru'} marginLeft={1}>
-                {dayjs(data.expDate).format('YYYY-MM-DD')}
+                {dayjs(data.expDate).format('DD-MM-YYYY')}
               </Typography>
             </>
           ) : (
