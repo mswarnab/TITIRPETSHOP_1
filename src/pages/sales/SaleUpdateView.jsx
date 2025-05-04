@@ -10,10 +10,11 @@ import dayjs from 'dayjs';
 import SaleTable from 'pages/dashboard/SaleTable';
 import LottieAnimation from 'components/loaderDog';
 import NoDataFoundAnimation from 'components/nodatafound';
-import { IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { ClearOutlined, DatabaseOutlined, SearchOutlined } from '@ant-design/icons';
 import CustomSort from 'pages/filters/sort';
 import CustomerFilter from 'pages/filters/filter';
+import DraggableDialog from 'components/Draggable';
 
 // let id = 0;
 function createData(id, billNumber, customerName, customerMobileNo, sellTotalAmount, dateOfBilling, paidAmount, dueAmount, _id, value) {
@@ -39,6 +40,13 @@ export default function ManageSaleView() {
   const [searchValue, setSearchValue] = useState('');
   const [searchParm, setSearchParm] = useState('');
   const [sortPerm, setSortParm] = useState('');
+  const [totalBillCount, setTotalBillCount] = useState(0);
+  const [totalSaleAmount, setTotalSaleAmount] = useState(0);
+  const [totalDueAmount, setTotalDueAmount] = useState(0);
+  const [totalProfitAmount, setTotalProfitAmount] = useState(0);
+  const [totalReceivedAmount, setReceivedAmount] = useState(0);
+  const [reportOpen, setReportOpen] = useState(true);
+
   let createUrl = () => {
     let newdata = { ...paginationModel };
     newdata.page = 0;
@@ -64,8 +72,11 @@ export default function ManageSaleView() {
 
   const handleClose = () => {
     fetchRowData(paginationModel.page, searchParm, sortPerm);
+    fetchStatData(paginationModel.page, searchParm, sortPerm);
     setOpen(false);
   };
+
+  const handleReportOpen = () => setReportOpen(!reportOpen);
 
   const columns = [
     { field: 'id', headerName: 'Sl No.', width: 100, headerClassName: 'super-app-theme--header', headerAlign: 'center' },
@@ -127,6 +138,7 @@ export default function ManageSaleView() {
     newdata['pageSize'] = 20;
     setPaginationModel(newdata);
     fetchRowData(newdata['page'], searchParm, sortPerm);
+    fetchStatData(newdata['page'], searchParm, sortPerm);
   };
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -146,6 +158,7 @@ export default function ManageSaleView() {
         setPaginationCount(pagiCount);
         let newData = [];
         let result = [...res.data.result.result];
+        setTotalBillCount(res.data.result.count);
         // console.log(result);
         // /createData(id, invoiceNumber, supplierName, grandTotalAmount, dateOfPurchase, creditAmount, paidAmount) {
 
@@ -172,12 +185,42 @@ export default function ManageSaleView() {
       .catch(() => setRows([]))
       .finally(() => setLoading(false));
   };
+
+  let fetchStatData = async (page, url, sorturl) => {
+    if (!reportOpen) {
+      return;
+    }
+    client.get('/sales/status?page=' + page + url + sorturl).then((res) => {
+      // console.log(res.data.result.result);
+
+      setTotalSaleAmount(res.data.result.result[0].totalAmount);
+      setTotalDueAmount(res.data.result.result[0].totalDue);
+      setReceivedAmount(res.data.result.result[0].totalPaid);
+      setTotalProfitAmount(res.data.result.result[0].totalProfit);
+    });
+    // .catch(() => setRows([]));
+    // .finally(() => setLoading(false));
+  };
   useEffect(() => {
-    (async () => await fetchRowData(paginationModel.page, searchParm, sortPerm))();
+    (async () => {
+      await fetchRowData(paginationModel.page, searchParm, sortPerm);
+      await fetchStatData(paginationModel.page, searchParm, sortPerm);
+    })();
     return () => {
       return null;
     };
   }, [searchParm, sortPerm]);
+
+  useEffect(() => {
+    (async () => {
+      if (reportOpen) {
+        await fetchStatData(paginationModel.page, searchParm, sortPerm);
+      }
+    })();
+    return () => {
+      return null;
+    };
+  }, [reportOpen]);
   const [loading, setLoading] = useState(true);
   const [searchFilterData, setSearchFilterData] = useState({
     searchBySupplierName: '',
@@ -250,8 +293,11 @@ export default function ManageSaleView() {
         >
           <Grid lg={12}>
             <Stack direction="row" justifyContent="space-between">
-              <Typography variant="h5">{rows.length} Sales bill found</Typography>
+              <Typography variant="h5">{totalBillCount} Sale bills found</Typography>
               <div style={{ display: 'flex' }}>
+                <Button variant="outlined" sx={{ marginRight: 1.5 }} onClick={handleReportOpen}>
+                  <DatabaseOutlined /> <span style={{ marginLeft: 10 }}>Report</span>
+                </Button>
                 <CustomSort screenType={{ ...screenType, SALE: true }} createSortParm={createSortParm} />
                 <CustomerFilter
                   screenType={{ ...screenType, SALE: true }}
@@ -259,6 +305,11 @@ export default function ManageSaleView() {
                   searchFilterData={searchFilterData}
                 />
               </div>
+              <DraggableDialog
+                data={{ totalSaleAmount, totalDueAmount, totalProfitAmount, totalReceivedAmount }}
+                open={reportOpen}
+                handleClose={handleReportOpen}
+              />
             </Stack>
           </Grid>
           <Grid container justifyContent="flex-end" sx={{ backgroundColor: 'red' }}>
