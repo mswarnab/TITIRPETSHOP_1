@@ -358,7 +358,7 @@ function DenseTable({ productDtls = [] }) {
               <TableCell align="right">{dayjs(row.expDate).format('YYYY-MM-DD')}</TableCell>
               <TableCell align="right">{parseFloat(row.purchaseQuantity).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.quantity).toFixed(2)}</TableCell>
-              <TableCell align="right">{parseFloat(row.rate + row.sgst + row.cgst).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat(row.purchasePrice + row.sgst + row.cgst).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.mrp).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.sgst * 2).toFixed(2)}</TableCell>
             </TableRow>
