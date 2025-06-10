@@ -618,7 +618,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               </Button>
             </>
           )}
-          {rowData.pid && rowData.availableQty == rowData.qty ? (
+          {/* {rowData.pid && rowData.availableQty == rowData.qty ? (
             <>
               <Button variant="contained" color="success" onClick={() => handleUpdateCheckAndConfirm('EDIT')}>
                 Update
@@ -631,7 +631,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
             <Button variant="contained" color="success" onClick={() => handleUpdateCheckAndConfirm('EDIT')}>
               Update
             </Button>
-          )}
+          )} */}
         </DialogActions>
       </Dialog>
     </>
