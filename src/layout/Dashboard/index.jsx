@@ -34,7 +34,7 @@ export default function DashboardLayout() {
         }
       } catch (error) {
         setLoggedIn(false);
-        return navigate('/login');
+        // return navigate('/login');
       }
     })();
     return () => {

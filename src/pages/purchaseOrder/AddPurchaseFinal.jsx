@@ -544,7 +544,7 @@ export default function AddPurchase() {
       if (stockData[e].pid) {
         onloader();
         client
-          .delete('/stock1/' + stockData[e].pid)
+          .delete('/stock/' + stockData[e].pid)
           .then(setStockData((l) => l.filter((item, i) => i != e)))
           .catch()
           .finally(offloader());
@@ -630,7 +630,7 @@ export default function AddPurchase() {
         if (stockData[findId].pid) {
           onloader();
           client
-            .put('/stock1/' + stockData[findId].pid, newData[findId])
+            .put('/stock/' + stockData[findId].pid, newData[findId])
             .then(() => {
               setStockData(newData);
               handleCloseUpdate();
@@ -998,6 +998,7 @@ export default function AddPurchase() {
   if (loading) {
     return <LottieAnimation />;
   }
+  console.log(purchaseEditFlag);
   return (
     <Grid item style={{ padding: 0, margin: 0 }}>
       {/* <h3 className='ColorPrimary'>Purchase Order</h3> */}
@@ -1040,7 +1041,7 @@ export default function AddPurchase() {
           name="supplier"
           disableClearable={true}
           size="small"
-          readOnly={purchaseEditFlag}
+          readOnly={purchaseEditFlag.current}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -1080,7 +1081,7 @@ export default function AddPurchase() {
             format="DD-MM-YYYY"
             // defaultValue={dayjs(purchaseDate)}
             // selected={dayjs(purchaseDate)}
-            readOnly={purchaseEditFlag}
+            readOnly={purchaseEditFlag.current}
             value={purchaseDate}
             onChange={(date, constext) => {
               // console.log(constext.validationError);
@@ -1093,7 +1094,7 @@ export default function AddPurchase() {
         <FormControlLabel
           control={
             <Switch
-              readOnly={purchaseEditFlag}
+              readOnly={purchaseEditFlag.current}
               checked={fullPaid}
               onChange={() => {
                 if (modeOfPayment == 'CREDIT') {
@@ -1112,7 +1113,7 @@ export default function AddPurchase() {
           label="Paid Amount"
           variant="outlined"
           autoComplete="off"
-          readOnly={purchaseEditFlag}
+          readOnly={purchaseEditFlag.current}
           fullWidth
           disabled={modeOfPayment == 'CREDIT' || fullPaid ? true : false}
           value={paidAmount}
@@ -1127,28 +1128,28 @@ export default function AddPurchase() {
               value="CARD"
               control={<Radio size="small" />}
               label="CARD"
-              disabled={purchaseEditFlag}
+              disabled={purchaseEditFlag.current}
               onClick={(event) => setModeofPayment(event.target.value)}
             />
             <FormControlLabel
               value="CASH"
               control={<Radio size="small" />}
               label="CASH"
-              disabled={purchaseEditFlag}
+              disabled={purchaseEditFlag.current}
               onClick={(event) => setModeofPayment(event.target.value)}
             />
             <FormControlLabel
               value="ONLINE"
               control={<Radio size="small" />}
               label="ONLINE"
-              disabled={purchaseEditFlag}
+              disabled={purchaseEditFlag.current}
               onClick={(event) => setModeofPayment(event.target.value)}
             />
             <FormControlLabel
               value="CREDIT"
               control={<Radio size="small" />}
               label="CREDIT"
-              disabled={purchaseEditFlag}
+              disabled={purchaseEditFlag.current}
               onClick={(event) => {
                 setFullPaid(false);
                 setPaidAmount(0);
@@ -1179,7 +1180,7 @@ export default function AddPurchase() {
           label="Final Amount (If total amount does not match)"
           variant="outlined"
           fullWidth
-          disabled={purchaseEditFlag}
+          disabled={purchaseEditFlag.current}
           value={userInputTotalAmount}
           onChange={(event) => checkUserInputTotalvalue(event.target.value)}
         />
