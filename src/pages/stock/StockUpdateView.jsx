@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Autocomplete, Divider, Grid, MenuItem, Select, Slide, Stack, Typography } from '@mui/material';
+import { Alert, Autocomplete, Divider, Grid, MenuItem, Select, Slide, Snackbar, Stack, Typography } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -16,6 +16,25 @@ import { prodCatagoryArr, gstPercArr } from 'static';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+function deepEqual(obj1, obj2) {
+  if (obj1 === obj2) return true;
+
+  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+    return false;
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  for (let key of keys1) {
+    if (!keys2.includes(key)) return false;
+    if (!deepEqual(obj1[key], obj2[key])) return false;
+  }
+
+  return true;
+}
 
 export default function StockUpdateView({ open, rowData, handleClose, handleUpdate, handleDelete, viewType }) {
   // console.log(rowData);
@@ -38,8 +57,21 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
   //   discountScheme: 0
   // });
   const [formData, setFormDate] = useState({ ...rowData });
+  const [alertOpen, setAlertOpen] = useState({
+    openFlag: false,
+    alertMsg: '1',
+    severity: 'error'
+  });
+  const [submitAlert, setSubmitAlert] = useState({
+    flag: false,
+    title: '',
+    msg: '',
+    submitType: ''
+  });
   useEffect(() => {
+    // console.log(rowData);
     setFormDate({
+      pid: rowData.pid,
       id: rowData.id,
       name: rowData.productName,
       catagory: rowData.productCategory,
@@ -62,7 +94,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       return null;
     };
   }, [rowData]);
-  // console.log(formData.expDate);
+
   useEffect(() => {
     let newData = { ...formData };
     let newPurchasePrice = newData.prodPurchasePrice;
@@ -86,9 +118,12 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     let objName = event.target.name;
     let objValue = event.target.value;
     // console.log(event.target);
-    let oldData = { ...formData };
+    if (objName == 'qty' && rowData.pid && rowData.availableQty > objValue) {
+      setAlertOpen({ openFlag: true, alertMsg: 'You can not reduce QTY less than ' + rowData.availableQty + ' QTY.', severity: 'error' });
+    } else {
+      let oldData = { ...formData };
 
-    /*if (objName == 'qty') {
+      /*if (objName == 'qty') {
       // console.log(oldData['prodPurchasePrice']);
       if (objValue > 0) {
         oldData[objName] = objValue;
@@ -136,9 +171,10 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
       oldData['totalPrice'] = newTotalPrice.toFixed(2);
       oldData['totalPriceWithGst'] = newTotalPriceWithGst.toFixed(2);
     } else { */
-    oldData[objName] = objValue;
-    // }
-    setFormDate(oldData);
+      oldData[objName] = objValue;
+      // }
+      setFormDate(oldData);
+    }
   };
   // let setExpDateFunction = (date) => {
   //   // let newDate = new Date(date);
@@ -164,6 +200,8 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
   // console.log(formData);
   const [prodSearch, setProdSearch] = useState([]);
   const [prodNameParm, setProdNameParm] = useState('');
+  const vertical = 'top';
+  const horizontal = 'center';
   // useEffect(()=>{
   //   setProdNameParm(row);
   // },[rowData]);
@@ -208,9 +246,63 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
     oldData['name'] = v;
     setFormDate(oldData);
   };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertOpen({ openFlag: false, alertMsg: '1', severity: 'error' });
+  };
+  let handleConfirm = () => {
+    if (submitAlert.submitType == 'edit') {
+      handleUpdate(formData);
+    } else if (submitAlert.submitType == 'delete') {
+      handleDelete(rowData.id);
+    }
+    handleCloseSubmitAlert();
+  };
+  let handleUpdateCheckAndConfirm = (submitType) => {
+    if (submitType == 'DELETE') {
+      setSubmitAlert({
+        flag: true,
+        title: 'Delete Product',
+        msg: 'Are you sure? ',
+        submitType: 'delete'
+      });
+    } else if (submitType == 'EDIT') {
+      let editFlag = deepEqual(rowData, formData);
+      if (!editFlag) {
+        setSubmitAlert({
+          flag: true,
+          title: 'Edit Product',
+          msg: 'Are you sure? ',
+          submitType: 'edit'
+        });
+      }
+    }
+  };
+  let handleCloseSubmitAlert = () => {
+    setSubmitAlert({
+      flag: false,
+      title: '',
+      msg: '',
+      submitType: ''
+    });
+  };
   // console.log(formData.expDate);
   return (
     <>
+      <Dialog open={submitAlert.flag} onClose={handleCloseSubmitAlert} aria-describedby="alert-dialog-slide-description">
+        <DialogTitle>{submitAlert.title}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">{submitAlert.msg}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirm}>Confirm</Button>
+          <Button onClick={handleCloseSubmitAlert}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         open={open}
         fullWidth
@@ -229,6 +321,16 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
         <DialogTitle variant="h3" style={{ padding: '20px 40px', paddingBottom: '20px' }}>
           <Grid container justifyContent={'space-between'} alignItems={'center'}>
             <Typography variant="h3">Update Stock</Typography>
+            <Snackbar
+              anchorOrigin={{ vertical, horizontal }}
+              open={alertOpen.openFlag}
+              autoHideDuration={6000}
+              onClose={handleCloseSnackBar}
+            >
+              <Alert onClose={handleCloseSnackBar} severity={alertOpen.severity} variant="filled" sx={{ width: '100%' }}>
+                {alertOpen.alertMsg}
+              </Alert>
+            </Snackbar>
             <Grid
               display={'flex'}
               style={{
@@ -297,6 +399,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               name="name"
               disableClearable="true"
               size="small"
+              readOnly={rowData.pid ? true : false}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -422,7 +525,7 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
               labelId="sgstLavel"
               id="demo-simple-select-helper"
               value={formData.sgstperc}
-              defaultValue={rowData.sgstPerc}
+              defaultValue={parseInt(rowData.sgstPerc) * 2}
               displayEmpty
               name="sgstperc"
               onChange={changeDataOnClick}
@@ -514,6 +617,20 @@ export default function StockUpdateView({ open, rowData, handleClose, handleUpda
                 Delete
               </Button>
             </>
+          )}
+          {rowData.pid && rowData.availableQty == rowData.qty ? (
+            <>
+              <Button variant="contained" color="success" onClick={() => handleUpdateCheckAndConfirm('EDIT')}>
+                Update
+              </Button>
+              <Button variant="contained" color="error" onClick={() => handleUpdateCheckAndConfirm('DELETE')}>
+                Delete
+              </Button>
+            </>
+          ) : (
+            <Button variant="contained" color="success" onClick={() => handleUpdateCheckAndConfirm('EDIT')}>
+              Update
+            </Button>
           )}
         </DialogActions>
       </Dialog>

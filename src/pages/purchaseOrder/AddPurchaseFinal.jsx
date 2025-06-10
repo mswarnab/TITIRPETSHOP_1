@@ -26,7 +26,7 @@ import {
   Typography
 } from '@mui/material';
 import { client } from '../../api/client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -36,6 +36,7 @@ import { prodCatagoryArr, gstPercArr, generateUniqueCode } from 'static';
 import LottieAnimation from 'components/loaderDog';
 import { isNumber } from 'utils/password-validation';
 import { use } from 'react';
+import { availableMemory } from 'process';
 
 // import './Css/AddPurchase.css'
 // import AddStockDiv from '../relationComponents/AddStockDiv';
@@ -93,6 +94,7 @@ export default function AddPurchase() {
   const [discountPerc, setDiscountPerc] = useState(0);
   const [discountScheme, setDiscountScheme] = useState(0);
   const [productPurchasePriceAfterDiscount, setProductPurchasePriceAfterDiscount] = useState(0);
+  const purchaseEditFlag = useRef(false);
   // let oldInvNo = '';
   const [oldInvNo, setOldInvNo] = useState('');
   // const [emptyProdExpDate, setEmptyProdExpDate] = React.useState();
@@ -326,6 +328,8 @@ export default function AddPurchase() {
       // setEmptyProdMrpCheck('');
     }
   };
+
+  /** calculation of total gst and total amount after product add or edit */
   useEffect(() => {
     let totSgstAmount = 0;
     let totCgstAmount = 0;
@@ -353,8 +357,8 @@ export default function AddPurchase() {
     if (totalDueAmount < 0) {
       totalDueAmount = 0;
     }
-    setTotalSGSTAmount(totSgstAmount.toFixed(2));
-    setTotalCGSTAmount(totCgstAmount.toFixed(2));
+    setTotalSGSTAmount(totSgstAmount);
+    setTotalCGSTAmount(totCgstAmount);
     setTotalAmount(totalAmount);
     setCreditAmount(totalDueAmount);
   }, [stockData]);
@@ -484,7 +488,8 @@ export default function AddPurchase() {
       sgstPerc: rowValues.prodSGST,
       cgstPerc: rowValues.prodCGST,
       discountPerc: rowValues.prodDiscountPerc,
-      discountScheme: rowValues.prodDiscountScheme
+      discountScheme: rowValues.prodDiscountScheme,
+      availableQty: rowValues.prodAvailableQty
     };
     return data;
   }
@@ -536,7 +541,16 @@ export default function AddPurchase() {
     e = e - 1;
     // alert('hello');
     if (e >= 0) {
-      setStockData((l) => l.filter((item, i) => i != e));
+      if (stockData[e].pid) {
+        onloader();
+        client
+          .delete('/stock1/' + stockData[e].pid)
+          .then(setStockData((l) => l.filter((item, i) => i != e)))
+          .catch()
+          .finally(offloader());
+      } else {
+        setStockData((l) => l.filter((item, i) => i != e));
+      }
     }
     if (stockData?.length == 1) {
       setTotalSGSTAmount(0);
@@ -546,6 +560,7 @@ export default function AddPurchase() {
     }
     handleCloseUpdate();
   };
+
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState('');
   const [fullPaid, setFullPaid] = useState(false);
@@ -595,6 +610,7 @@ export default function AddPurchase() {
       }
       if (flag) {
         newData[findId] = {
+          pid: formData.pid,
           prodName: formData.name,
           prodQty: formData.qty,
           prodCatagory: formData.catagory,
@@ -611,10 +627,22 @@ export default function AddPurchase() {
           prodDiscountPerc: formData.discountPerc,
           prodDiscountScheme: formData.discountScheme
         };
+        if (stockData[findId].pid) {
+          onloader();
+          client
+            .put('/stock1/' + stockData[findId].pid, newData[findId])
+            .then(() => {
+              setStockData(newData);
+              handleCloseUpdate();
+            })
+            .catch()
+            .finally(offloader());
+        } else {
+          setStockData(newData);
+          handleCloseUpdate();
+        }
         // }
         // console.log(newData);
-        setStockData(newData);
-        handleCloseUpdate();
       }
     } else {
       handleCloseUpdate();
@@ -628,7 +656,7 @@ export default function AddPurchase() {
   let offloader = () => {
     setLoading(false);
   };
-
+  /** purchase order submit if any stock added. for edit purchase order and newly added purchase order  */
   let submitPurchaseOrder = () => {
     /// Check mand values
     let flag = 1;
@@ -693,37 +721,42 @@ export default function AddPurchase() {
       };
       onloader();
       // let baseURL = 'popo-backend-1.onrender.com';
-      client
-        .post('/purchaseorder', {
-          purchaseOrderBody,
-          stockBody
-        })
-        .then((res) => {
-          setOrderNumber('');
-          setSupplierName('');
-          setSupplierId('');
-          // setPurchaseDate('');
-          setPurchaseDate();
-          setTotalSGSTAmount(0);
-          setTotalCGSTAmount(0);
-          setTotalAmount(0);
-          setPaidAmount(0);
-          setCreditAmount(0);
-          setStockData([]);
-          setOldInvNo('');
-          setError({ err: false, message: res.data.message });
-          setLoading(true);
-        })
-        .catch((err) => {
-          setError({ err: true, message: err.response.data.errorMessage });
-          setLoading(true);
-        })
-        .finally(() => {
-          offloader();
-        })
-        .finally(() => {
-          offloader();
-        });
+      if (stockBody.length) {
+        client
+          .post('/purchaseorder', {
+            purchaseOrderBody,
+            stockBody
+          })
+          .then((res) => {
+            setOrderNumber('');
+            setSupplierName('');
+            setSupplierId('');
+            // setPurchaseDate('');
+            setPurchaseDate();
+            setTotalSGSTAmount(0);
+            setTotalCGSTAmount(0);
+            setTotalAmount(0);
+            setPaidAmount(0);
+            setCreditAmount(0);
+            setStockData([]);
+            setOldInvNo('');
+            setError({ err: false, message: res.data.message });
+            setLoading(true);
+          })
+          .catch((err) => {
+            setError({ err: true, message: err.response.data.errorMessage });
+            setLoading(true);
+          })
+          .finally(() => {
+            offloader();
+          })
+          .finally(() => {
+            offloader();
+          });
+      } else {
+        setError({ err: true, message: 'Nothing to submit' });
+        offloader();
+      }
     } else {
       offloader();
     }
@@ -736,6 +769,7 @@ export default function AddPurchase() {
   let horizontal = 'center';
   let [supplierSearch, setSupplierSearch] = React.useState([]);
   const [supplierSearchParm, setSupplierSearchParm] = useState('');
+  /** debouce supplier search */
   useEffect(() => {
     (async () => {
       const getData = setTimeout(async () => {
@@ -788,8 +822,10 @@ export default function AddPurchase() {
       return () => clearTimeout(getData);
     })();
   }, [supplierSearchParm]);
+
   let [productSearch, setProductSearch] = useState([]);
   const [productSearchParm, setProductSearchParm] = useState('');
+  /** debounce product name search */
   useEffect(() => {
     (async () => {
       const getData = setTimeout(() => {
@@ -826,6 +862,7 @@ export default function AddPurchase() {
     })();
   }, [productSearchParm]);
   // console.log(productSearch);
+  /** change supplier id in value after supplier change   */
   let changeSupplierId = (e) => {
     //console.log(supplierSearch);/
     // alert('hello');
@@ -856,6 +893,7 @@ export default function AddPurchase() {
             client
               .get('/purchaseorder/' + dataResultArr._id)
               .then((resBody) => {
+                purchaseEditFlag.current = true;
                 let purchaseDtls = { ...resBody.data.result.result.purchaseOrderDetails };
                 // console.log(purchaseDtls);
                 let productDtls = [...resBody.data.result.result.products];
@@ -889,6 +927,7 @@ export default function AddPurchase() {
                     pid: e._id,
                     prodName: e.productName,
                     prodQty: e.purchaseQuantity,
+                    prodAvailableQty: e.quantity,
                     prodCatagory: e.category,
                     prodPurcahsePrice: e.rate,
                     prodMrpPrice: e.mrp,
@@ -932,7 +971,7 @@ export default function AddPurchase() {
       }
     }
   };
-  // console.log(supplierName);
+  // console.log(purchaseEditFlag);
   useEffect(() => {
     if (fullPaid) {
       return setPaidAmount(userInputTotalAmount || totalAmount);
@@ -1001,6 +1040,7 @@ export default function AddPurchase() {
           name="supplier"
           disableClearable={true}
           size="small"
+          readOnly={purchaseEditFlag}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -1040,6 +1080,7 @@ export default function AddPurchase() {
             format="DD-MM-YYYY"
             // defaultValue={dayjs(purchaseDate)}
             // selected={dayjs(purchaseDate)}
+            readOnly={purchaseEditFlag}
             value={purchaseDate}
             onChange={(date, constext) => {
               // console.log(constext.validationError);
@@ -1052,6 +1093,7 @@ export default function AddPurchase() {
         <FormControlLabel
           control={
             <Switch
+              readOnly={purchaseEditFlag}
               checked={fullPaid}
               onChange={() => {
                 if (modeOfPayment == 'CREDIT') {
@@ -1070,6 +1112,7 @@ export default function AddPurchase() {
           label="Paid Amount"
           variant="outlined"
           autoComplete="off"
+          readOnly={purchaseEditFlag}
           fullWidth
           disabled={modeOfPayment == 'CREDIT' || fullPaid ? true : false}
           value={paidAmount}
@@ -1084,24 +1127,28 @@ export default function AddPurchase() {
               value="CARD"
               control={<Radio size="small" />}
               label="CARD"
+              disabled={purchaseEditFlag}
               onClick={(event) => setModeofPayment(event.target.value)}
             />
             <FormControlLabel
               value="CASH"
               control={<Radio size="small" />}
               label="CASH"
+              disabled={purchaseEditFlag}
               onClick={(event) => setModeofPayment(event.target.value)}
             />
             <FormControlLabel
               value="ONLINE"
               control={<Radio size="small" />}
               label="ONLINE"
+              disabled={purchaseEditFlag}
               onClick={(event) => setModeofPayment(event.target.value)}
             />
             <FormControlLabel
               value="CREDIT"
               control={<Radio size="small" />}
               label="CREDIT"
+              disabled={purchaseEditFlag}
               onClick={(event) => {
                 setFullPaid(false);
                 setPaidAmount(0);
@@ -1110,18 +1157,33 @@ export default function AddPurchase() {
             />
           </RadioGroup>
         </FormControl>
-        <TextField id="outlined-basic" label="Total GST Amount" variant="outlined" fullWidth value={totalSGSTAmount} disabled />
-        <TextField id="outlined-basic" label="Total CGST Amount" variant="outlined" fullWidth value={totalCGSTAmount} disabled />
-        <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} disabled />
+        <TextField
+          id="outlined-basic"
+          label="Total GST Amount"
+          variant="outlined"
+          fullWidth
+          value={parseFloat(totalSGSTAmount).toFixed(2)}
+          readOnly
+        />
+        <TextField
+          id="outlined-basic"
+          label="Total CGST Amount"
+          variant="outlined"
+          fullWidth
+          value={parseFloat(totalCGSTAmount).toFixed(2)}
+          readOnly
+        />
+        <TextField id="outlined-basic" label="Total Amount" variant="outlined" fullWidth value={totalAmount} readOnly />
         <TextField
           id="outlined-basic"
           label="Final Amount (If total amount does not match)"
           variant="outlined"
           fullWidth
+          disabled={purchaseEditFlag}
           value={userInputTotalAmount}
           onChange={(event) => checkUserInputTotalvalue(event.target.value)}
         />
-        <TextField id="outlined-basic" label="Credit Amount" variant="outlined" fullWidth value={creditAmount} disabled />
+        <TextField id="outlined-basic" label="Credit Amount" variant="outlined" fullWidth value={creditAmount} readOnly />
       </Stack>
       <Stack direction="row" spacing={2}>
         <Button variant="contained" color="secondary" onClick={handleClickOpen} marginTop={3} style={{ width: '50%' }}>
