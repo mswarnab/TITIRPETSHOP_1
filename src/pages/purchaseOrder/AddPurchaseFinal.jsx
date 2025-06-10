@@ -998,7 +998,7 @@ export default function AddPurchase() {
   if (loading) {
     return <LottieAnimation />;
   }
-  // console.log(purchaseEditFlag);
+  console.log(purchaseEditFlag);
   return (
     <Grid item style={{ padding: 0, margin: 0 }}>
       {/* <h3 className='ColorPrimary'>Purchase Order</h3> */}
