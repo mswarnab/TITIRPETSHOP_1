@@ -20,6 +20,7 @@ import ManageSaleView from 'pages/sales/SaleUpdateView';
 import CustomerBillGenarate from 'pages/customer/CustomerBillGenarate';
 import MonthlyReport from 'pages/monthlyReport/Index';
 import ExpenseDefault from 'pages/Expense/Index';
+import SaleInvoice from 'pages/sales/SaleInvoice';
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
 const Shadow = Loadable(lazy(() => import('pages/component-overview/shadows')));
@@ -94,6 +95,10 @@ const MainRoutes = {
     {
       path: '/customerbill/:id',
       element: <CustomerBillGenarate />
+    },
+    {
+      path: '/saleinvoice/:id',
+      element: <SaleInvoice />
     },
 
     {

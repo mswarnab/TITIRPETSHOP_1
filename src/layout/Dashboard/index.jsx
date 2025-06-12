@@ -19,7 +19,7 @@ import { client } from 'api/client';
 // ==============================|| MAIN LAYOUT ||============================== //
 
 export default function DashboardLayout() {
-  const avoidMenuAndHeaderFromSuchPages = ['customerbill', 'login'];
+  const avoidMenuAndHeaderFromSuchPages = ['customerbill', 'login', 'saleinvoice'];
   const { menuMasterLoading } = useGetMenuMaster();
   const downXL = useMediaQuery((theme) => theme.breakpoints.down('xl'));
   const [loggedIn, setLoggedIn] = useState(false);

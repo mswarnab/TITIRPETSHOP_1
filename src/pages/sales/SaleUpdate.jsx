@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import { client } from 'api/client';
 import dayjs from 'dayjs';
+import { Grid } from 'antd';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -52,6 +53,32 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
   //   newData[eventName] = eventValue;
   //   setFormData(newData);
   // };
+
+  let handleGenerateInvoice = () => {
+    // let id = formData._id;
+    // client
+    //   .get('/customer/monthlybill/' + id)
+    //   .then((res) => {
+    //     const tempSaleDetails = res.data.result.saleDetails.result || [];
+
+    //     if (!tempSaleDetails.length) {
+    //       return setError({ err: true, message: err.response.data.errorMessage });
+    //     }
+    //     setError({ err: false, message: res.data.message });
+    //      // You can specify a URL or leave it blank
+    //   })
+    //   .catch((err) => setError({ err: true, message: err.response.data.errorMessage }));
+
+    const width = window.innerWidth; // Get the full width of the screen
+    const height = window.innerHeight; // Get the full height of the screen
+    window.open(
+      'https://titirpetshop-1-ez7f.vercel.app/saleinvoice/' + selectedData._id,
+      // 'http://localhost:5174/saleinvoice/' + selectedData._id,
+      '',
+      `width=${width},height=${height},top=0,left=0`
+    );
+  };
+
   let updateSaleOrder = () => {
     let id = selectedData._id;
     client
@@ -133,10 +160,20 @@ export default function SaleUpdate({ open, selectedData, handleClose }) {
         }}
       >
         <DialogTitle variant="h4" style={{ padding: '40px 40px', paddingBottom: '30px' }}>
-          Update Sale order
+          {/* Sale Details */}
+          {/* <Grid container justifyContent={'space-between'}> */}
+          <Stack direction={'row'} justifyContent={'space-between'}>
+            <Typography variant="h3">Sale Details</Typography>
+            <Button variant="contained" color="primary" onClick={() => handleGenerateInvoice()}>
+              Generate Invoice
+            </Button>
+          </Stack>
+          {/* </Grid> */}
         </DialogTitle>
+
         <DialogContent style={{ padding: '0 40px', paddingBottom: '20px' }}>
           <DialogContentText>Update Existing Purchase Order</DialogContentText>
+
           <Stack direction="row" style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography variant="h6" sx={{ pt: 1 }}>
               Bill Number: {selectedData?.billNumber}
