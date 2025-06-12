@@ -27,7 +27,7 @@ export default function SaleInvoice() {
   const [discount, setDiscount] = useState(0.0);
   const [dueAmount, setDueAmount] = useState(0.0);
   const [invoiceNumber, setInvoiceNumber] = useState('');
-  const [previousDueAmount, setPreviousDueAmount] = useState(0);
+  // const [previousDueAmount, setPreviousDueAmount] = useState(0);
   const [customerDetails, setCustomerDetails] = useState({});
   const [customerId, setCustomerId] = useState('');
   const [customerAVL, setCustomerAVL] = useState('');
@@ -100,7 +100,7 @@ export default function SaleInvoice() {
       setDiscount(tempSaleDetails.discountedAmount);
       setCustomerId(tempSaleDetails.customerId);
       setPurchaseDate(tempSaleDetails.dateOfSale);
-      setPreviousDueAmount(0);
+      // setPreviousDueAmount(0);
 
       if (tempSaleDetails.customerId && tempSaleDetails.customerId != 'No DATA') {
         console.log('here');
@@ -324,7 +324,7 @@ export default function SaleInvoice() {
                 </Typography>
               </Grid> */}
 
-              <Grid container marginBottom={'15px'}>
+              <Grid container marginBottom={'15px'} marginTop={'20px'}>
                 <Grid container marginBottom={'5px'}>
                   <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
@@ -349,14 +349,9 @@ export default function SaleInvoice() {
                     </Typography>
                   </Grid>
                 </Grid>
-              </Grid>
-
-              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 0px 5px 200px' }} />
-
-              <Grid container marginBottom={'5px'}>
                 <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
-                    PAID AMOUNT :
+                    AMOUNT PAID :
                   </Typography>
                 </Grid>
                 <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -364,7 +359,22 @@ export default function SaleInvoice() {
                     {formatToRupee(paidAmount)}
                   </Typography>
                 </Grid>
-                {/* <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              </Grid>
+
+              {/* <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 0px 5px 200px' }} /> */}
+
+              {/* <Grid container marginBottom={'5px'}> */}
+              {/* <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                    PAID AMOUNT :
+                  </Typography>
+                </Grid>
+                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '20px' }}>
+                    {formatToRupee(paidAmount)}
+                  </Typography> */}
+              {/* </Grid> */}
+              {/* <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                     CURRENT DUE :
                   </Typography>
@@ -374,9 +384,9 @@ export default function SaleInvoice() {
                     {formatToRupee(dueAmount)}
                   </Typography>
                 </Grid> */}
-              </Grid>
+              {/* </Grid> */}
               <Grid container marginBottom={'5px'}>
-                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                {/* <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                     PREVIOUS DUE :
                   </Typography>
@@ -385,7 +395,7 @@ export default function SaleInvoice() {
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
                     {formatToRupee(previousDueAmount)}
                   </Typography>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 0px 5px 200px' }} />
               <Grid container marginBottom={'5px'}>
@@ -396,7 +406,7 @@ export default function SaleInvoice() {
                 </Grid>
                 <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
-                    {formatToRupee(customerDetails.totalCreditAmount || 0)}
+                    {formatToRupee(totalAmount - paidAmount)}
                   </Typography>
                 </Grid>
               </Grid>
