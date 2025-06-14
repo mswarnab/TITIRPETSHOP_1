@@ -9,6 +9,7 @@ const OnSearchItemBox = ({
     productMFR: '',
     purchasePrice: 0,
     quantity: '',
+    availableQty: '',
     sgst: 0,
     cgst: 0,
     mrp: 0,
@@ -57,12 +58,20 @@ const OnSearchItemBox = ({
           </IconButton>
         )}
       </div>
-      <Grid container>
-        <Typography variant="h5">Product ID:</Typography>
-        <Typography variant="h5" color={'peru'} marginLeft={1}>
-          {data.productMFR}
-        </Typography>
-      </Grid>
+      <Stack direction={'row'} justifyContent={'space-between'}>
+        <Stack direction={'row'}>
+          <Typography variant="h5">Product ID:</Typography>
+          <Typography variant="h5" color={'peru'} marginLeft={1}>
+            {data.productMFR}
+          </Typography>
+        </Stack>
+        <Stack direction={'row'}>
+          <Typography variant="h5">Available Qty:</Typography>
+          <Typography variant="h5" color={'peru'} marginLeft={1}>
+            {data.availableQty}
+          </Typography>
+        </Stack>
+      </Stack>
       <Stack direction={'row'} justifyContent={'space-between'}>
         <Stack direction={'row'}>
           <Typography variant="h5">{added ? 'Sale' : 'Available'} Quantity:</Typography>

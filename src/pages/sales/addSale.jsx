@@ -32,13 +32,14 @@ export default function AddSale() {
   const [productId, setProductId] = useState('');
   const [quantity, setQuantity] = useState(0);
   const [sellingPrice, setSellingPrice] = useState(0);
+  const [discountPer, setDiscountPer] = useState(0);
   const [stockData, setStockData] = useState({});
 
   const [billDtls, setBillDtls] = useState({
-    billNumber: '',
+    billNumber: 'TPS/' + dayjs().format('YYMMDD') + '/' + Math.floor(100 + Math.random() * 900),
     customerName: '',
     customerId: '',
-    billDate: null,
+    billDate: dayjs(),
     dueDate: '',
     billPaidAmount: 0,
     billDueAmount: 0,
@@ -352,7 +353,8 @@ export default function AddSale() {
     }
   };
   const handleAddItem = () => {
-    if (addedProduct.find((e) => e.productId == productId)) {
+    console.log(productId);
+    if (addedProduct.find((e) => e.productMFR == productId)) {
       return setError({ err: true, message: 'SAME PRODUCT ALREADY ADDED IN THE BILL' });
     }
     client
@@ -369,22 +371,24 @@ export default function AddSale() {
         const productObject = {
           _id: product._id,
           productName: product.productName,
+          availableQty: product.quantity,
           quantity,
           sgst: product.sgst,
           cgst: product.cgst,
           mrp: product.mrp,
           purchasePrice: product.purchasePrice,
           expDate: dayjs(product.expDate).format('YYYY-MM-DD'),
-          sellingPrice: parseFloat(parseInt(sellingPrice) / quantity).toFixed(2),
+          // sellingPrice: parseFloat(parseInt(sellingPrice) / quantity).toFixed(2),
+          sellingPrice: parseFloat(parseFloat(product.mrp) * (1 - discountPer / 100)).toFixed(2),
           productId: product._id,
           productMFR: product.mfrCode,
-          totalSellingPrice: parseFloat(sellingPrice).toFixed(2)
+          totalSellingPrice: parseFloat(parseInt(quantity) * (parseFloat(product.mrp) * (1 - discountPer / 100))).toFixed(2)
         };
         setAddedProduct([...addedProduct, productObject]);
       })
       .catch((err) => setError({ err: true, message: 'STOCK NOT FOUND' }));
   };
-
+  console.log(addedProduct);
   const handleCloseSnackBar = () => {
     setError('');
   };
@@ -610,7 +614,7 @@ export default function AddSale() {
               id="productId"
               name="productId"
               label="PRODUCT ID"
-              sx={{ width: 300 }}
+              sx={{ width: 220 }}
               value={productId}
               type="text"
               variant="outlined"
@@ -621,7 +625,7 @@ export default function AddSale() {
               id="productId"
               name="productId"
               label="QTY"
-              sx={{ width: 80 }}
+              sx={{ width: 150 }}
               value={quantity}
               type="text"
               variant="outlined"
@@ -631,7 +635,7 @@ export default function AddSale() {
                 }
               }}
             />{' '}
-            <TextField
+            {/* <TextField
               required
               id="productId"
               name="productId"
@@ -643,6 +647,21 @@ export default function AddSale() {
               onChange={(event) => {
                 if (/^-?\d*\.?\d*$/.test(event.target.value)) {
                   setSellingPrice(event.target.value);
+                }
+              }}
+            />{' '} */}
+            <TextField
+              required
+              id="productId"
+              name="productId"
+              label="DISCOUNT PER (%)"
+              sx={{ width: 150 }}
+              value={discountPer}
+              type="text"
+              variant="outlined"
+              onChange={(event) => {
+                if (/^-?\d*\.?\d*$/.test(event.target.value)) {
+                  setDiscountPer(event.target.value);
                 }
               }}
             />{' '}

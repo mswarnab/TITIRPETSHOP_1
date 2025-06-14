@@ -1,4 +1,17 @@
-import { Button, Grid, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import {
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@mui/material';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'assets/images/icons/logo/Titir Pet Logo.png';
@@ -42,6 +55,7 @@ export default function SaleInvoice() {
     doc.html(contentRef.current, {
       callback: (doc) => {
         // When the conversion is done, save the PDF with a filename
+        // window.print();
         doc.save(`${name}.pdf`);
         window.close();
       },
@@ -103,7 +117,7 @@ export default function SaleInvoice() {
       // setPreviousDueAmount(0);
 
       if (tempSaleDetails.customerId && tempSaleDetails.customerId != 'No DATA') {
-        console.log('here');
+        // console.log('here');
         client
           .get('/customer/' + tempSaleDetails.customerId)
           .then((res) => {
@@ -113,7 +127,7 @@ export default function SaleInvoice() {
           })
           .finally(() => setCustomerAVL('NA'));
       } else {
-        console.log('else');
+        // console.log('else');
         setCustomerAVL('NA');
       }
       let saleArray = [];
@@ -194,37 +208,39 @@ export default function SaleInvoice() {
           maxHeight={150}
         >
           <Grid display={'flex'} alignItems={'center'}>
-            <img src={Image} style={{ width: '250px', height: '180px', position: 'relative', left: -45, top: 15 }} />
+            <img src={Image} style={{ width: '250px', height: '180px', position: 'relative', left: -45, top: 30 }} />
             <Grid>
-              <Typography fontFamily="sans-serif" variant="h1" color={'#444597'} style={{ position: 'relative', left: -55 }}>
+              <Typography fontFamily="sans-serif" variant="h1" color={'#444597'} style={{ position: 'relative', left: -55, top: 30 }}>
                 TITIR PET SHOP
               </Typography>
               {/* <Typography variant="body" color={'grey'} sx={{ paddingTop: '8px', position: 'relative', fontSize: 18, left: -50 }}>
                 .
               </Typography> */}
-              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50 }}>
-                Patuliya, Khardaha, Pin: 700118
+              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50, top: 30 }}>
+                Patulia, Khardaha, Pin: 700119
               </Typography>
-              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50 }}>
+              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50, top: 30 }}>
                 Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
               </Typography>
             </Grid>
           </Grid>
 
-          <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Typography fontFamily="sans-serif" variant="h1" color="#444597">
+          <Stack sx={{ display: 'flex' }}>
+            {/* <Typography fontFamily="sans-serif" variant="h1" color="#444597">
               <b>INVOICE</b>
-            </Typography>
+            </Typography> */}
           </Stack>
-        </Stack>
-        {/* </Grid> */}
-        {/* <Divider></Divider> */}
-        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '50px 80px 35px 80px' }} />
-
-        <Stack direction="row" padding={'0px 80px'} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <Stack>
+          <Stack sx={{ position: 'relative', top: 50 }}>
+            {/* <Typography fontFamily="sans-serif" variant="h1" color="#444597">
+              <b>
+                <u>INVOICE</u>
+              </b>
+            </Typography> */}
             <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
               INVOICE NO : <span style={{ color: '#333', fontSize: '19px' }}>{invoiceNumber}</span>
+            </Typography>
+            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              DATE : <span style={{ color: '#333', fontSize: '19px' }}>{dayjs(purchaseDate).format('MMMM DD, YYYY')}</span>
             </Typography>
             <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
               BILL TO : <span style={{ color: '#333', fontSize: '19px' }}>{customerDetails ? customerDetails.customerName : ' '}</span>
@@ -233,20 +249,23 @@ export default function SaleInvoice() {
               MOB: <span style={{ color: '#333', fontSize: '19px' }}> {customerDetails ? customerDetails.customerContactNo : ' '}</span>
             </Typography>
           </Stack>
+        </Stack>
+        {/* </Grid> */}
+        {/* <Divider></Divider> */}
+        {/* <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '50px 80px 35px 80px' }} /> */}
+
+        <Stack direction="row" padding={'0px 80px'} sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Stack paddingLeft={1.5}>
-            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
-              DATE : <span style={{ color: '#333', fontSize: '19px' }}>{dayjs(purchaseDate).format('MMMM DD, YYYY')}</span>
-            </Typography>
             {/* <Typography variant="body">
             Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
           </Typography> */}
           </Stack>
         </Stack>
-        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '50px 80px 35px 80px' }} />
-        <div
+        {/* <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '50px 80px 35px 80px' }} /> */}
+        {/* <div
           style={{
             position: 'absolute',
-            top: 400,
+            top: 227,
             // borderLeft: '1px solid #444597',
             // borderRight: '1px solid #444597',
             // borderTop: '1px solid   #444597',
@@ -262,7 +281,7 @@ export default function SaleInvoice() {
           }}
         >
           <b>ITEM DETAILS</b>
-        </div>
+        </div> */}
         {/* <Grid container sx={{ height: '1px', backgroundColor: '#f5f5f5', margin: '40px 40px 35px 40px' }} /> */}
         {/* <Grid container sx={{ padding: '0px 0px' }}>
           <Grid container style={{ backgroundColor: '#f5f5f5', height: 1 }}>
@@ -280,17 +299,17 @@ export default function SaleInvoice() {
             </Button>
           </Grid>
         </Grid> */}
-        <Grid sx={{ width: '100%', padding: '0px 80px' }}>
+        <Grid sx={{ width: '100%', padding: '50px 80px 0px' }}>
           <DenseTable productDtls={saleDetails} columns={columns} />
         </Grid>
         <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '20px 80px 5px 80px' }} />
 
         <Grid display={'flex'} justifyContent={'space-between'} sx={{ width: '100%', padding: '0px 80px' }}>
           <Typography variant="h4" paddingRight={12} fontFamily="sans-serif" sx={{ color: '#444597' }}>
-            TOTAL AMOUNT
+            FINAL AMOUNT
           </Typography>
           <Typography variant="h4" sx={{ color: '#333', marginLeft: '20px' }}>
-            {formatToRupee(totalAmount + discount)}
+            {formatToRupee(totalAmount)}
           </Typography>
         </Grid>
 
@@ -325,7 +344,7 @@ export default function SaleInvoice() {
               </Grid> */}
 
               <Grid container marginBottom={'15px'} marginTop={'20px'}>
-                <Grid container marginBottom={'5px'}>
+                {/* <Grid container marginBottom={'5px'}>
                   <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                       DISCOUNT :
@@ -336,8 +355,8 @@ export default function SaleInvoice() {
                       {discount > 0 ? formatToRupee(discount) : formatToRupee(0)}
                     </Typography>
                   </Grid>
-                </Grid>
-                <Grid container marginBottom={'5px'}>
+                </Grid> */}
+                {/* <Grid container marginBottom={'5px'}>
                   <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                       FINAL AMOUNT :
@@ -348,7 +367,7 @@ export default function SaleInvoice() {
                       {formatToRupee(totalAmount)}
                     </Typography>
                   </Grid>
-                </Grid>
+                </Grid> */}
                 <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                     AMOUNT PAID :
@@ -385,8 +404,8 @@ export default function SaleInvoice() {
                   </Typography>
                 </Grid> */}
               {/* </Grid> */}
-              <Grid container marginBottom={'5px'}>
-                {/* <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              {/* <Grid container marginBottom={'-15px'}>
+                 <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                     PREVIOUS DUE :
                   </Typography>
@@ -395,9 +414,9 @@ export default function SaleInvoice() {
                   <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
                     {formatToRupee(previousDueAmount)}
                   </Typography>
-                </Grid> */}
-              </Grid>
-              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 0px 5px 200px' }} />
+                </Grid> 
+              </Grid> */}
+              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '-15px 0px 5px 220px' }} />
               <Grid container marginBottom={'5px'}>
                 <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
@@ -428,14 +447,27 @@ function DenseTable({ productDtls = [], columns }) {
   //   createData('Cupcake', 305, 3.7, 67, 4.3),
   //   createData('Gingerbread', 356, 16.0, 49, 3.9)
   // ];
+  // let totalQty = 0;
+  const totalQty = productDtls.reduce((sum, row) => sum + Number(row.quantity), 0);
+  // let totalMrp = 0;
+  const totalMrp = productDtls.reduce((sum, row) => sum + Number(row.mrp) * Number(row.quantity), 0);
+  // let totalDiscount = 0;
+  const totalDiscount = productDtls.reduce((sum, row) => sum + Number(row.rate) * Number(row.quantity), 0);
+  // let totalDiscountedAmount = 0;
+  const totalDiscountedAmount = productDtls.reduce((sum, row) => sum + Number(row.discountedAmount) * Number(row.quantity), 0);
+
   return (
     <Paper sx={{ width: '100%' }}>
       <TableContainer>
         <Table aria-label="sticky table" size="small">
-          <TableHead sx={{ backgroundColor: '#444597', color: 'whitesmoke' }}>
+          <TableHead sx={{ color: 'whitesmoke' }}>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.id} align={column.align} style={{ width: column.minWidth, color: 'whitesmoke', fontSize: '18px' }}>
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{ width: column.minWidth, fontSize: '15px', borderBottom: '1px solid black', borderTop: '1px solid black' }}
+                >
                   {column.label}
                 </TableCell>
               ))}
@@ -445,17 +477,51 @@ function DenseTable({ productDtls = [], columns }) {
             {productDtls.map((row) => (
               <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
                 {/* <TableCell sx={{ fontSize: '16px' }}>{row.purchaseDate}</TableCell> */}
-                <TableCell sx={{ fontSize: '16px' }}>{row.sNo}</TableCell>
-                <TableCell sx={{ fontSize: '16px' }}>{row.item}</TableCell>
-                <TableCell sx={{ fontSize: '16px' }}>{row.quantity}</TableCell>
-                <TableCell sx={{ fontSize: '16px' }}>{row.mrp}</TableCell>
-                <TableCell sx={{ fontSize: '16px' }}>{row.rate}</TableCell>
-                <TableCell sx={{ fontSize: '16px' }}>{row.discountedAmount}</TableCell>
+                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                  {row.sNo}
+                </TableCell>
+                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                  {row.item}
+                </TableCell>
+                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                  {row.quantity}
+                </TableCell>
+                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                  {row.mrp}
+                </TableCell>
+                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                  {row.rate}
+                </TableCell>
+                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                  {row.discountedAmount * row.quantity}
+                </TableCell>
 
                 {/* <TableCell>{row.price}</TableCell> */}
                 {/* <TableCell align="right">{row.quantity}</TableCell> */}
               </TableRow>
             ))}
+            <TableRow>
+              <TableCell colSpan={6}>
+                <Grid sx={{ height: '1px', backgroundColor: '#000' }} />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell variant="head" align="center" colSpan={2} sx={{ fontSize: '15px' }}>
+                Total
+              </TableCell>
+              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+                {totalQty}
+              </TableCell>
+              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+                {totalMrp}
+              </TableCell>
+              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+                {totalDiscount}
+              </TableCell>
+              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+                {totalDiscountedAmount}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
