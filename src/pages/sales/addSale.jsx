@@ -335,6 +335,7 @@ export default function AddSale() {
             billNumber: 'TPS/' + dayjs().format('YYMMDD') + '/' + Math.floor(100 + Math.random() * 900),
             customerName: '',
             customerId: '',
+            customerMobileNo: '',
             billDate: dayjs(),
             dueDate: '',
             billPaidAmount: 0,
