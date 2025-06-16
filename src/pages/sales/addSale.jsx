@@ -175,6 +175,7 @@ export default function AddSale() {
     newArr[eventName] = eventValue;
     setBillDtls(newArr);
   };
+  console.log(billDtls);
   let handleChangeFullPaid = () => {
     // console.log(billDtls);
     let newArr = { ...billDtls };
@@ -344,12 +345,12 @@ export default function AddSale() {
           const width = window.innerWidth; // Get the full width of the screen
           const height = window.innerHeight; // Get the full height of the screen
           window.open(
-            // 'https://titirpetshop-1-ez7f.vercel.app/saleinvoice/' + selectedData._id,
-            'http://localhost:5174/saleinvoice/' + selectedData._id,
+            'https://titirpetshop-1-ez7f.vercel.app/saleinvoice/' + res.data.result.result._id,
+            // 'http://localhost:5174/saleinvoice/' + selectedData._id,
             '',
             `width=${width},height=${height},top=0,left=0`
           );
-          window.close();
+          // window.close();
         })
         .catch((err) => {
           setError({ err: true, message: err.response.data.errorMessage });
@@ -396,7 +397,7 @@ export default function AddSale() {
       })
       .catch((err) => setError({ err: true, message: 'STOCK NOT FOUND' }));
   };
-  console.log(addedProduct);
+  // console.log(addedProduct);
   const handleCloseSnackBar = () => {
     setError('');
   };
