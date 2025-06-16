@@ -56,7 +56,31 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
       setSearchObject(newObj);
     }
   }, [searchObject.dateFilter]);
-
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // console.log('hello');
+      e.preventDefault(); // prevent form submission if in a form
+      createUrlFromFilter(searchObject);
+      handleClose();
+    }
+    if (e.key === 'Escape') {
+      // console.log('bye');
+      e.preventDefault();
+      let newObj = {
+        searchBySupplierName: '',
+        searchByCustomerName: '',
+        searchByInvoiceNo: '',
+        searchByBillNo: '',
+        onlyDue: 'N',
+        fromDate: '',
+        toDate: '',
+        dateFilter: ''
+      };
+      setSearchObject(newObj);
+      createUrlFromFilter(newObj);
+      // console.log("Inputs cleared");
+    }
+  };
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
@@ -114,6 +138,7 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
               </div>
 
               <TextField
+                autoFocus="true"
                 id="outlined-basic"
                 name={
                   screenType.PURCHASE || screenType.SUPPLIER
@@ -137,6 +162,7 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
                   newObj[name] = value;
                   setSearchObject(newObj);
                 }}
+                onKeyDown={handleKeyDown}
               ></TextField>
               {screenType.PURCHASE || screenType.SALE ? (
                 <>
@@ -167,6 +193,7 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
                           ? setSearchObject({ ...searchObject, searchByBillNo: event.target.value })
                           : null
                     }
+                    onKeyDown={handleKeyDown}
                   ></TextField>
                 </>
               ) : null}
@@ -182,6 +209,7 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
                       ? setSearchObject({ ...searchObject, onlyDue: 'Y' })
                       : setSearchObject({ ...searchObject, onlyDue: 'N' })
                   }
+                  onKeyDown={handleKeyDown}
                 />
               </div>
               <Divider />
@@ -298,7 +326,15 @@ export default function CustomerFilter({ screenType = { PURCHASE, SALE, CUSTOMER
                 >
                   Reset
                 </Button>
-                <Button variant="outlined" size="small" color="primary" onClick={() => createUrlFromFilter(searchObject)}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                  onClick={() => {
+                    createUrlFromFilter(searchObject);
+                    handleClose();
+                  }}
+                >
                   Apply
                 </Button>
               </div>

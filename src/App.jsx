@@ -1,5 +1,5 @@
 import { RouterProvider } from 'react-router-dom';
-
+import 'css/index.css';
 // project import
 import { router } from 'routes';
 import ThemeCustomization from 'themes';

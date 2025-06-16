@@ -331,7 +331,7 @@ export default function AddSale() {
         .then((res) => {
           setAddedProduct([]);
           setBillDtls({
-            billNumber: '',
+            billNumber: 'TPS/' + dayjs().format('YYMMDD') + '/' + Math.floor(100 + Math.random() * 900),
             customerName: '',
             customerId: '',
             billDate: dayjs(),
@@ -341,6 +341,14 @@ export default function AddSale() {
             billTotalAmount: 0
           });
           setError({ err: false, message: res.data.message });
+          const width = window.innerWidth; // Get the full width of the screen
+          const height = window.innerHeight; // Get the full height of the screen
+          window.open(
+            // 'https://titirpetshop-1-ez7f.vercel.app/saleinvoice/' + selectedData._id,
+            'http://localhost:5174/saleinvoice/' + selectedData._id,
+            '',
+            `width=${width},height=${height},top=0,left=0`
+          );
           window.close();
         })
         .catch((err) => {
@@ -426,7 +434,7 @@ export default function AddSale() {
             <Typography variant="h4" style={{ marginBottom: 20 }}>
               Create New Selling Bill
             </Typography>
-            <FormControlLabel control={<Switch checked={fullPaid} onChange={handleChangeFullPaid} name="fullPaid" />} label="Full Paid" />
+
             {/* <Typography>Full paid</Typography> */}
           </Stack>
 
@@ -681,6 +689,11 @@ export default function AddSale() {
             // console.log(e);
             return <OnSearchItemBox result={true} selected={true} added={true} data={e} onDelete={handleSelectedProductDelete} />;
           })}
+          <FormControlLabel
+            control={<Switch checked={fullPaid} onChange={handleChangeFullPaid} name="fullPaid" />}
+            label="Full Paid"
+            sx={{ display: 'flex', justifyContent: 'flex-end' }}
+          />
           <Stack direction="row" spacing={2}>
             <Button variant="contained" color="secondary" style={{ width: '100%', marginTop: '30px' }} onClick={() => setOpen(true)}>
               Add Items

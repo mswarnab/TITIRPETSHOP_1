@@ -56,8 +56,8 @@ export default function SaleInvoice() {
       callback: (doc) => {
         // When the conversion is done, save the PDF with a filename
         // window.print();
-        doc.save(`${name}.pdf`);
-        window.close();
+        // doc.save(`${name}.pdf`);
+        // window.close();
       },
       x: 0, // Starting X position of the content in the PDF
       y: 0, // Starting Y position of the content in the PDF
@@ -205,21 +205,21 @@ export default function SaleInvoice() {
           direction="row"
           padding={1.5}
           sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', height: '100%', padding: '0px 80px' }}
-          maxHeight={150}
+          maxHeight={80}
         >
           <Grid display={'flex'} alignItems={'center'}>
-            <img src={Image} style={{ width: '250px', height: '180px', position: 'relative', left: -45, top: 30 }} />
+            <img src={Image} style={{ width: '140px', height: '100px', position: 'relative', left: -45, top: 30 }} />
             <Grid>
-              <Typography fontFamily="sans-serif" variant="h1" color={'#444597'} style={{ position: 'relative', left: -55, top: 30 }}>
+              <Typography fontFamily="sans-serif" variant="h5" color={'#444597'} style={{ position: 'relative', left: -55, top: 30 }}>
                 TITIR PET SHOP
               </Typography>
               {/* <Typography variant="body" color={'grey'} sx={{ paddingTop: '8px', position: 'relative', fontSize: 18, left: -50 }}>
                 .
               </Typography> */}
-              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50, top: 30 }}>
+              <Typography variant="h6" color={'#333'} style={{ position: 'relative', left: -50, top: 30 }}>
                 Patulia, Khardaha, Pin: 700119
               </Typography>
-              <Typography variant="h4" color={'#333'} style={{ position: 'relative', left: -50, top: 30 }}>
+              <Typography variant="h6" color={'#333'} style={{ position: 'relative', left: -50, top: 30 }}>
                 Mob: <span style={{ color: '#1677ff' }}>+91 9836214748</span>
               </Typography>
             </Grid>
@@ -230,23 +230,23 @@ export default function SaleInvoice() {
               <b>INVOICE</b>
             </Typography> */}
           </Stack>
-          <Stack sx={{ position: 'relative', top: 50 }}>
+          <Stack sx={{ position: 'relative', top: 20, right: 40 }}>
             {/* <Typography fontFamily="sans-serif" variant="h1" color="#444597">
               <b>
                 <u>INVOICE</u>
               </b>
             </Typography> */}
-            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
-              INVOICE NO : <span style={{ color: '#333', fontSize: '19px' }}>{invoiceNumber}</span>
+            <Typography variant="h5" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              INVOICE NO : <span style={{ color: '#333', fontSize: '15px' }}>{invoiceNumber}</span>
             </Typography>
-            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
-              DATE : <span style={{ color: '#333', fontSize: '19px' }}>{dayjs(purchaseDate).format('MMMM DD, YYYY')}</span>
+            <Typography variant="h6" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              DATE : <span style={{ color: '#333', fontSize: '13px' }}>{dayjs(purchaseDate).format('MMMM DD, YYYY')}</span>
             </Typography>
-            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
-              BILL TO : <span style={{ color: '#333', fontSize: '19px' }}>{customerDetails ? customerDetails.customerName : ' '}</span>
+            <Typography variant="h6" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              BILL TO : <span style={{ color: '#333', fontSize: '13px' }}>{customerDetails ? customerDetails.customerName : ' '}</span>
             </Typography>
-            <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
-              MOB: <span style={{ color: '#333', fontSize: '19px' }}> {customerDetails ? customerDetails.customerContactNo : ' '}</span>
+            <Typography variant="h6" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+              MOB: <span style={{ color: '#333', fontSize: '13px' }}> {customerDetails ? customerDetails.customerContactNo : ' '}</span>
             </Typography>
           </Stack>
         </Stack>
@@ -302,18 +302,18 @@ export default function SaleInvoice() {
         <Grid sx={{ width: '100%', padding: '50px 80px 0px' }}>
           <DenseTable productDtls={saleDetails} columns={columns} />
         </Grid>
-        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '20px 80px 5px 80px' }} />
+        <Grid container sx={{ height: '1px', backgroundColor: '#444597', margin: '20px 80px 5px 80px', border: '0.5px solid #444597' }} />
 
         <Grid display={'flex'} justifyContent={'space-between'} sx={{ width: '100%', padding: '0px 80px' }}>
-          <Typography variant="h4" paddingRight={12} fontFamily="sans-serif" sx={{ color: '#444597' }}>
-            FINAL AMOUNT
+          <Typography variant="h5" paddingRight={12} fontFamily="sans-serif" sx={{ color: '#444597' }}>
+            FINAL AMOUNT :
           </Typography>
-          <Typography variant="h4" sx={{ color: '#333', marginLeft: '20px' }}>
+          <Typography variant="h6" sx={{ color: '#333', marginLeft: '0px' }}>
             {formatToRupee(totalAmount)}
           </Typography>
         </Grid>
 
-        <Grid container sx={{ height: '2px', backgroundColor: '#444597', margin: '5px 80px 5px 80px' }} />
+        <Grid container sx={{ height: '1px', backgroundColor: '#444597', margin: '5px 80px 5px 80px', border: '0.5px solid #444597' }} />
         {/* <Grid
             container
             sx={{
@@ -324,8 +324,8 @@ export default function SaleInvoice() {
           /> */}
 
         <Grid sx={{ width: '100%', padding: '0px 80px' }}>
-          <Grid display={'flex'} justifyContent={'space-between'}>
-            <Grid lg={6}>
+          <Grid display={'flex'} justifyContent={'flex-end'}>
+            {/* <Grid lg={6}>
               <img
                 src={null}
                 style={
@@ -334,8 +334,8 @@ export default function SaleInvoice() {
                     : { width: '100px', height: '120px', transform: 'scale(1.5)' }
                 }
               />
-            </Grid>
-            <Grid lg={6} display={'flex'} flexDirection={'column'}>
+            </Grid> */}
+            <Grid lg={12} display={'flex'} flexDirection={'column'}>
               {/* <Grid display={'flex'} justifyContent={'space-between'} marginBottom={'15px'}>
                 <Typography variant="h4">Total Amount:</Typography>
                 <Typography variant="h4" sx={{ color: 'cornflowerblue', marginLeft: '20px' }}>
@@ -343,7 +343,7 @@ export default function SaleInvoice() {
                 </Typography>
               </Grid> */}
 
-              <Grid container marginBottom={'15px'} marginTop={'20px'}>
+              <Grid container marginBottom={'15px'} marginTop={'8px'}>
                 {/* <Grid container marginBottom={'5px'}>
                   <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
@@ -368,13 +368,13 @@ export default function SaleInvoice() {
                     </Typography>
                   </Grid>
                 </Grid> */}
-                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                <Grid lg={11} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h5" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                     AMOUNT PAID :
                   </Typography>
                 </Grid>
-                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '20px' }}>
+                <Grid lg={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h6" sx={{ color: '#333', marginLeft: '20px' }}>
                     {formatToRupee(paidAmount)}
                   </Typography>
                 </Grid>
@@ -416,15 +416,15 @@ export default function SaleInvoice() {
                   </Typography>
                 </Grid> 
               </Grid> */}
-              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '-15px 0px 5px 220px' }} />
+              <Grid sx={{ height: '2px', backgroundColor: '#444597', margin: '-15px 0px 5px 90px' }} />
               <Grid container marginBottom={'5px'}>
-                <Grid lg={9} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Typography variant="h4" fontFamily="sans-serif" sx={{ color: '#444597' }}>
+                <Grid lg={11} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h5" fontFamily="sans-serif" sx={{ color: '#444597' }}>
                     TOTAL DUE :
                   </Typography>
                 </Grid>
-                <Grid lg={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Typography variant="h4" sx={{ color: '#333', marginLeft: '0px' }}>
+                <Grid lg={1} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Typography variant="h6" sx={{ color: '#333', marginLeft: '20px' }}>
                     {formatToRupee(totalAmount - paidAmount)}
                   </Typography>
                 </Grid>
@@ -459,14 +459,20 @@ function DenseTable({ productDtls = [], columns }) {
   return (
     <Paper sx={{ width: '100%' }}>
       <TableContainer>
-        <Table aria-label="sticky table" size="small">
+        <Table aria-label="sticky table" size="small" padding="none">
           <TableHead sx={{ color: 'whitesmoke' }}>
             <TableRow>
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ width: column.minWidth, fontSize: '15px', borderBottom: '1px solid black', borderTop: '1px solid black' }}
+                  style={{
+                    width: column.minWidth,
+                    fontSize: '12px',
+                    borderBottom: '1px solid black',
+                    borderTop: '1px solid black',
+                    lineHeight: '0rem'
+                  }}
                 >
                   {column.label}
                 </TableCell>
@@ -477,22 +483,22 @@ function DenseTable({ productDtls = [], columns }) {
             {productDtls.map((row) => (
               <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} hover role="checkbox" tabIndex={-1}>
                 {/* <TableCell sx={{ fontSize: '16px' }}>{row.purchaseDate}</TableCell> */}
-                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                <TableCell sx={{ fontSize: '10px', lineHeight: '0rem' }} variant="head">
                   {row.sNo}
                 </TableCell>
-                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                <TableCell sx={{ fontSize: '10px', lineHeight: '0rem' }} variant="head">
                   {row.item}
                 </TableCell>
-                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                <TableCell sx={{ fontSize: '10px', lineHeight: '0rem' }} variant="head">
                   {row.quantity}
                 </TableCell>
-                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                <TableCell sx={{ fontSize: '10px', lineHeight: '0rem' }} variant="head">
                   {row.mrp}
                 </TableCell>
-                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                <TableCell sx={{ fontSize: '10px', lineHeight: '0rem' }} variant="head">
                   {row.rate}
                 </TableCell>
-                <TableCell sx={{ fontSize: '15px' }} variant="head">
+                <TableCell sx={{ fontSize: '10px', lineHeight: '0rem' }} variant="head">
                   {row.discountedAmount * row.quantity}
                 </TableCell>
 
@@ -500,25 +506,25 @@ function DenseTable({ productDtls = [], columns }) {
                 {/* <TableCell align="right">{row.quantity}</TableCell> */}
               </TableRow>
             ))}
-            <TableRow>
-              <TableCell colSpan={6}>
-                <Grid sx={{ height: '1px', backgroundColor: '#000' }} />
+            <TableRow sx={{ height: '0px' }}>
+              <TableCell colSpan={6} sx={{ lineHeight: '0rem', padding: 0 }}>
+                <Grid sx={{ height: '0px', backgroundColor: '#000', border: '0.5px solid black' }} />
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell variant="head" align="center" colSpan={2} sx={{ fontSize: '15px' }}>
+              <TableCell variant="head" align="center" colSpan={2} sx={{ fontSize: '12px', lineHeight: '0rem' }}>
                 Total
               </TableCell>
-              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+              <TableCell variant="head" sx={{ fontSize: '12px', lineHeight: '0rem' }}>
                 {totalQty}
               </TableCell>
-              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+              <TableCell variant="head" sx={{ fontSize: '12px', lineHeight: '0rem' }}>
                 {totalMrp}
               </TableCell>
-              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+              <TableCell variant="head" sx={{ fontSize: '12px', lineHeight: '0rem' }}>
                 {totalDiscount}
               </TableCell>
-              <TableCell variant="head" sx={{ fontSize: '16px' }}>
+              <TableCell variant="head" sx={{ fontSize: '12px', lineHeight: '0rem' }}>
                 {totalDiscountedAmount}
               </TableCell>
             </TableRow>
