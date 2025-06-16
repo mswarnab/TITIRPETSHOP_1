@@ -55,7 +55,7 @@ export default function SaleInvoice() {
     doc.html(contentRef.current, {
       callback: (doc) => {
         // When the conversion is done, save the PDF with a filename
-        // window.print();
+        window.print();
         // doc.save(`${name}.pdf`);
         // window.close();
       },
