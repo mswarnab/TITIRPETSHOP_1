@@ -37,15 +37,15 @@ function createData(
   id,
   productName,
   mfrCode,
+  mrp,
+  quantity,
+  expDate,
+  rate,
+  purchasePrice,
   invoiceNumber,
   category,
-  expDate,
-  quantity,
-  rate,
   discount,
   schemeDiscount,
-  purchasePrice,
-  mrp,
   sgst,
   cgst,
   supplierName,
@@ -64,9 +64,9 @@ function createData(
     expDate,
     quantity,
     rate,
+    purchasePrice: parseFloat(purchasePrice + sgst + cgst).toFixed(2),
     discount,
     schemeDiscount,
-    purchasePrice: parseFloat(purchasePrice + sgst + cgst).toFixed(2),
     mrp,
     supplierName,
     sgst,
@@ -93,7 +93,7 @@ export default function ManageStock() {
       headerAlign: 'center',
 
       headerName: 'Product Name',
-      width: 250
+      width: 300
       // editable: true
     },
     {
@@ -102,8 +102,55 @@ export default function ManageStock() {
       headerAlign: 'center',
 
       headerName: 'PRODUCT ID',
-      width: 250
+      width: 200
       // editable: true
+    },
+    {
+      field: 'mrp',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+
+      headerName: 'MRP',
+      type: 'number',
+      width: 100
+      // editable: true
+    },
+    {
+      field: 'quantity',
+      headerAlign: 'center',
+
+      headerName: 'QTY',
+      headerClassName: 'super-app-theme--header',
+
+      type: 'number',
+      width: 90,
+      editable: true
+    },
+    {
+      field: 'expDate',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+
+      headerName: 'Expiry Date',
+      width: 160
+    },
+    {
+      field: 'rate',
+      headerAlign: 'center',
+
+      headerClassName: 'super-app-theme--header',
+      headerName: 'Rate',
+      width: 100
+    },
+    {
+      field: 'purchasePrice',
+      headerAlign: 'center',
+
+      headerName: 'Purchase Price (Including GST)',
+      headerClassName: 'super-app-theme--header',
+      //   type: 'number',
+      width: 135
     },
     {
       field: 'invoiceNumber',
@@ -124,34 +171,7 @@ export default function ManageStock() {
       width: 150
       // editable: true
     },
-    {
-      field: 'expDate',
-      headerClassName: 'super-app-theme--header',
-      headerAlign: 'center',
 
-      headerName: 'Expiry Date',
-      width: 160
-    },
-
-    {
-      field: 'quantity',
-      headerAlign: 'center',
-
-      headerName: 'QTY',
-      headerClassName: 'super-app-theme--header',
-
-      type: 'number',
-      width: 90,
-      editable: true
-    },
-    {
-      field: 'rate',
-      headerAlign: 'center',
-
-      headerClassName: 'super-app-theme--header',
-      headerName: 'Rate',
-      width: 100
-    },
     {
       field: 'discount',
       headerAlign: 'center',
@@ -170,27 +190,7 @@ export default function ManageStock() {
       //   type: 'number',
       width: 155
     },
-    {
-      field: 'purchasePrice',
-      headerAlign: 'center',
 
-      headerName: 'Purchase Price (Including GST)',
-      headerClassName: 'super-app-theme--header',
-      //   type: 'number',
-      width: 135
-    },
-
-    {
-      field: 'mrp',
-      headerAlign: 'center',
-
-      headerClassName: 'super-app-theme--header',
-
-      headerName: 'MRP',
-      type: 'number',
-      width: 100
-      // editable: true
-    },
     {
       field: 'supplierName',
       headerAlign: 'center',
@@ -308,15 +308,15 @@ export default function ManageStock() {
             id,
             value.productName,
             value.mfrCode,
+            parseFloat(value.mrp).toFixed(2),
+            value.quantity,
+            value.expDate,
+            parseFloat(value.rate).toFixed(2),
+            parseFloat(value.purchasePrice).toFixed(2),
             value.invoiceNumber,
             value.category,
-            value.expDate,
-            value.quantity,
-            parseFloat(value.rate).toFixed(2),
             parseFloat(value.discount).toFixed(2),
             parseFloat(value.schemeDiscount).toFixed(2),
-            parseFloat(value.purchasePrice).toFixed(2),
-            parseFloat(value.mrp).toFixed(2),
             parseFloat(value.sgst).toFixed(2),
             parseFloat(value.cgst).toFixed(2),
             value.supplierName,

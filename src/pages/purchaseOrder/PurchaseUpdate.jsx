@@ -339,12 +339,15 @@ function DenseTable({ productDtls = [] }) {
             <TableCell>Product Name</TableCell>
             <TableCell align="right">Product ID</TableCell>
             <TableCell align="right">Category</TableCell>
-            <TableCell align="right">Expiry Date</TableCell>
-            <TableCell align="right">Purchase Qty</TableCell>
-            <TableCell align="right">Available Qty</TableCell>
-            <TableCell align="right">Purchase Price + GST</TableCell>
+            <TableCell align="right">Exp Date</TableCell>
+            <TableCell align="right">Qty</TableCell>
+            {/* <TableCell align="right">Available Qty</TableCell> */}
+            <TableCell align="right">Final Rate</TableCell>
             <TableCell align="right">MRP</TableCell>
             <TableCell align="right">GST</TableCell>
+            <TableCell align="right">Discount</TableCell>
+            <TableCell align="right">Scm Disc</TableCell>
+            <TableCell align="right">Total</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -356,11 +359,17 @@ function DenseTable({ productDtls = [] }) {
               <TableCell align="right">{row.mfrCode}</TableCell>
               <TableCell align="right">{row.category}</TableCell>
               <TableCell align="right">{dayjs(row.expDate).format('YYYY-MM-DD')}</TableCell>
-              <TableCell align="right">{parseFloat(row.purchaseQuantity).toFixed(2)}</TableCell>
-              <TableCell align="right">{parseFloat(row.quantity).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseInt(row.purchaseQuantity)}</TableCell>
+              {/* <TableCell align="right">{parseFloat(row.quantity).toFixed(2)}</TableCell> */}
               <TableCell align="right">{parseFloat(row.purchasePrice + row.sgst + row.cgst).toFixed(2)}</TableCell>
               <TableCell align="right">{parseFloat(row.mrp).toFixed(2)}</TableCell>
-              <TableCell align="right">{parseFloat(row.sgst * 2).toFixed(2)}</TableCell>
+              <TableCell align="right">{parseFloat((row.sgst * 2) / row.purchaseQuantity).toFixed(2)}</TableCell>
+              <TableCell align="right">{row.discount + '%'}</TableCell>
+              <TableCell align="right">{row.schemeDiscount + '%'}</TableCell>
+
+              <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                {parseFloat((row.purchasePrice + row.sgst + row.cgst) * row.purchaseQuantity).toFixed(2)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
