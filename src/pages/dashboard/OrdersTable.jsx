@@ -214,6 +214,7 @@ export default function OrderTable() {
             {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
               // console.log(row);
+              if (index >= 10) return null; // Limit to 10 rows for performance
               return (
                 <TableRow
                   hover

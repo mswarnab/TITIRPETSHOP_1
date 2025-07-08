@@ -87,13 +87,13 @@ export default function MonthlyBarChart({ onTotalSaleChange }) {
         let sumSales = 0;
         salesArray.map((e) => {
           dateArray = [...dateArray, dayjs(e.date).format('ddd')];
-          resultArray = [...resultArray, e.result];
+          resultArray = [...resultArray, parseFloat(e.result).toFixed(2)];
           sumSales += parseFloat(e.result);
         });
         // console.log(dateArray);
         barChartOptions.xaxis.categories = dateArray;
         setOptions(barChartOptions);
-        onTotalSaleChange(sumSales);
+        onTotalSaleChange(parseFloat(sumSales).toFixed(2));
         setSeries([{ data: resultArray }]);
         setSalesData({ dateArray, resultArray });
       });
